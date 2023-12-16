@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:12.14
+    container_name: typeorm-postgresql
+    restart: always
+    ports:
+      - "${POSTGRESQL_EXPOSED_PORT}:5432"
+    env_file:
+      - .env
+    volumes:
+      - typeorm-postgresql:${PGDATA}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U typeorm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    profiles:
+      - integration-tests
+
+volumes:
+  typeorm-postgresql:
