@@ -56,7 +56,7 @@ export class CategoryService {
             ])
             .orderBy('category.created_at', 'ASC')
             .addOrderBy('talent.created_at', 'ASC');
-        return await query.getMany();
+        return await query.getRawMany();
     }
 
     findOne(id: number) {

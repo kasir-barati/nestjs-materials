@@ -1,16 +1,15 @@
 version: "3.8"
 
 services:
-  postgres:
+  api-db:
     image: postgres:12.14
-    container_name: typeorm-postgresql
-    restart: always
+    container_name: api-db
     ports:
-      - "${POSTGRESQL_EXPOSED_PORT}:5432"
+      - "${POSTGRES_EXPOSED_PORT}:5432"
     env_file:
       - .env
     volumes:
-      - typeorm-postgresql:${PGDATA}
+      - api-db:${PGDATA}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U typeorm"]
       interval: 5s
@@ -19,5 +18,30 @@ services:
     profiles:
       - integration-tests
 
+  api:
+    image: api
+    container_name: api
+    volumes:
+      - api:${APP_WORKDIR}
+    build:
+      context: .
+      dockerfile: ./dev.Dockerfile
+    ports:
+      - "${APP_EXPOSED_PORT}:${APP_PORT}"
+    depends_on:
+      - api-db
+    profiles:
+      - integration-tests
+    environment:
+      NODE_ENV: development
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "node", "/healthcheck.js"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
-  typeorm-postgresql:
+  api-db:
+  api:
