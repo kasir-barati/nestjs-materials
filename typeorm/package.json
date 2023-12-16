@@ -17,7 +17,7 @@
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "./run-integration-tests.sh",
+        "test:integration": "./run-integration-tests.sh",
         "openapi:generate": "openapi-generator-cli generate -i ./openApi.json -o api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true",
         "openapi:create": "ts-node --project tsconfig.json --transpile-only -r tsconfig-paths/register src/utils/create-openapi-json.util.ts"
     },
