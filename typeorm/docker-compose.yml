@@ -26,6 +26,9 @@ services:
     build:
       context: .
       dockerfile: ./dev.Dockerfile
+      args:
+        APP_PORT: ${APP_PORT}
+        APP_WORKDIR: ${APP_WORKDIR}
     ports:
       - "${APP_EXPOSED_PORT}:${APP_PORT}"
     depends_on:

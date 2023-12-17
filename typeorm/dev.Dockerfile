@@ -1,10 +1,15 @@
+ARG APP_PORT
+ARG APP_WORKDIR
+
 FROM node:20.10.0-slim as base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+# Install package-manager
 RUN corepack enable
 WORKDIR ${APP_WORKDIR}
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
-COPY pnpm-lock.yaml ${APP_WORKDIR}
+RUN echo ${APP_WORKDIR}
+RUN pnpm --version
+COPY ./pnpm-lock.yaml ${APP_WORKDIR}
 RUN pnpm fetch
 
 FROM base AS prod-deps
