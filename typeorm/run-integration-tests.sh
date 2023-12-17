@@ -24,7 +24,7 @@ docker compose --profile integration-tests build
 docker compose --profile integration-tests up -d
 
 # Check if it is healthy
-pnpx wait-on --timeout 5s http://localhost:3000/health
+pnpx wait-on --timeout 10s http://localhost:3000/health
 
 # Run integration tests
 pnpx jest --config jest-integration.config.ts

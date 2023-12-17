@@ -1,12 +1,12 @@
 {
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll": true,
-        "source.organizeImports": true,
-        "source.sortMembers": true
-    },
-    "terminal.integrated.wordSeparators": " ()[]{}',\"`─‘’_",
-    "typescript.preferences.importModuleSpecifier": "project-relative",
-    "javascript.preferences.importModuleSpecifier": "project-relative",
-    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?_"
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit",
+    "source.sortMembers": "explicit"
+  },
+  "terminal.integrated.wordSeparators": " ()[]{}',\"`─‘’_",
+  "typescript.preferences.importModuleSpecifier": "project-relative",
+  "javascript.preferences.importModuleSpecifier": "project-relative",
+  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?_"
 }
