@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
-import Sinon from 'sinon';
-import { AppController } from '../app/app.controller';
-import { TalentController } from '../modules/talent/talent.controller';
-import { CategoryController } from '../modules/category/category.controller';
-import { AppService } from '../app/app.service';
-import { TalentService } from '../modules/talent/talent.service';
-import { CategoryService } from '../modules/category/category.service';
 import { NestFactory } from '@nestjs/core';
+import * as Sinon from 'sinon';
+import { AppController } from '../app/app.controller';
+import { AppService } from '../app/app.service';
+import { CategoryController } from '../modules/category/category.controller';
+import { CategoryService } from '../modules/category/category.service';
+import { TalentController } from '../modules/talent/talent.controller';
+import { TalentService } from '../modules/talent/talent.service';
+import { createSwaggerConfiguration } from './create-swagger.util';
+import { writeOpenApi } from './generate-openapi.util';
 
 @Module({
     imports: [],
@@ -31,5 +33,22 @@ class OpenApiModule {}
 
 async function createOpenApi() {
     const app = await NestFactory.create(OpenApiModule);
-    const document = 
+    const document = createSwaggerConfiguration({
+        app,
+        title: 'My Typeorm RESTful API',
+        description:
+            'It is just another test and has nothing to do with Typeorm API',
+        urlWithoutProtocol: 'localhost:3000',
+    });
+
+    writeOpenApi(document, process.cwd());
 }
+
+createOpenApi()
+    .then(console.log.bind(this, 'OpenAPI specification created'))
+    .catch(
+        console.error.bind(
+            this,
+            'OpenAPI specification failed to be created',
+        ),
+    );

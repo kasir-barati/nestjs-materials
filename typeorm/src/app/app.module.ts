@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CategoryModule } from '../modules/category/category.module';
+import { TalentModule } from '../modules/talent/talent.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { TalentModule } from '../modules/talent/talent.module';
-import { CategoryModule } from '../modules/category/category.module';
 
 @Module({
     imports: [
         TypeOrmModule.forRoot({
             type: 'postgres',
-            host: 'localhost',
+            host: 'api-db',
             port: 5432,
             username: 'typeorm',
             password: 'typeorm',

@@ -1,19 +1,19 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-interface ConfigureSwaggerConfig {
+interface CreateSwaggerConfiguration {
     app: INestApplication;
     title: string;
     description: string;
     urlWithoutProtocol: string;
 }
 
-export function createSwagger({
+export function createSwaggerConfiguration({
     app,
     title,
     description,
     urlWithoutProtocol,
-}: ConfigureSwaggerConfig) {
+}: CreateSwaggerConfiguration) {
     const url = urlWithoutProtocol.endsWith('/')
         ? urlWithoutProtocol.slice(0, -1)
         : urlWithoutProtocol;

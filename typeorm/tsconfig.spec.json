@@ -1,0 +1,7 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "types": ["jest", "node"]
+    },
+    "include": ["jest-integration.config.ts", "**/*.e2e-spec.ts$"]
+}
