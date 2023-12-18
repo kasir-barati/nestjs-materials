@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryModule } from '../modules/category/category.module';
+import { CommentModule } from '../modules/comment/comment.module';
+import { ReviewModule } from '../modules/review/review.module';
 import { TalentModule } from '../modules/talent/talent.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -22,6 +24,8 @@ import { AppService } from './app.service';
         }),
         TalentModule,
         CategoryModule,
+        ReviewModule,
+        CommentModule,
     ],
     controllers: [AppController],
     providers: [AppService],

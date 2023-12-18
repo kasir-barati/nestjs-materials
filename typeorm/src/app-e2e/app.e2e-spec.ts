@@ -11,4 +11,11 @@ describe('AppController (e2e)', () => {
         expect(response.status).toBe(200);
         expect(response.data).toBe('Hello World!');
     });
+
+    it('/health (GET)', async () => {
+        const response = await defaultApi.appControllerGetHealth();
+
+        expect(response.status).toBe(200);
+        expect(response.data).toBeTruthy();
+    });
 });

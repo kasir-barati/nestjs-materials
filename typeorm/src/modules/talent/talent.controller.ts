@@ -10,10 +10,9 @@ import {
 import { CreateTalentDto } from './dto/create-talent.dto';
 import { UpdateTalentDto } from './dto/update-talent.dto';
 import { TalentService } from './talent.service';
-// import { ApiTags } from '@nestjs/swagger';
 
 // @ApiTags('Talents')
-// FIXME: not able to use these decorators since they cause openapi to not generate api client for it
+// FIXME: https://github.com/OpenAPITools/openapi-generator/issues/17413
 @Controller('talent')
 export class TalentController {
     constructor(private readonly talentService: TalentService) {}

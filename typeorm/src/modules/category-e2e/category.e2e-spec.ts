@@ -5,7 +5,8 @@ describe('Category (e2e)', () => {
 
     beforeEach(async () => {});
 
-    it('/categories (GET)', () => {
-        const response = apiClient.; // do not have categories endpoints at all
+    it('/categories (GET)', async () => {
+        // Just a dummy test to keep this file
+        expect(apiClient).toBeDefined();
     });
 });

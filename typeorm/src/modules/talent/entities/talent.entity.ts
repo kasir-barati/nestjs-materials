@@ -1,17 +1,20 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
     BaseEntity,
-    ManyToMany,
-    JoinTable,
     Column,
+    Entity,
+    ManyToMany,
+    OneToMany,
+    PrimaryColumn,
 } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
+import { Review } from '../../review/entities/review.entity';
 
 // Most of the users' data would be kept in our lovely fusionauth
 @Entity('talents')
 export class Talent extends BaseEntity {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryColumn({
+        type: 'uuid',
+    })
     id: string;
 
     @Column({ default: true })
@@ -20,9 +23,9 @@ export class Talent extends BaseEntity {
     @Column({})
     isAdaptable: boolean;
 
-    @ManyToMany((type) => Category, (category) => category.talents, {
-        eager: true,
-    })
-    @JoinTable({ name: 'talents_working_categories' })
-    workingCategories: Category[];
+    @ManyToMany(() => Category, (category) => category.talents)
+    categories: Category[];
+
+    @OneToMany(() => Review, (talentReview) => talentReview.talent)
+    reviews: Review[];
 }

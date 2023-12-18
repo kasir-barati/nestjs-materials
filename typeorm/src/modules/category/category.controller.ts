@@ -14,14 +14,14 @@ import {
     ApiInternalServerErrorResponse,
     ApiOkResponse,
     ApiOperation,
-    ApiTags,
 } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { GetCategoriesResponse } from './dto/get-response';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
-@ApiTags('Categories')
+// @ApiTags('Categories')
+// FIXME: https://github.com/OpenAPITools/openapi-generator/issues/17413
 @Controller('categories')
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}

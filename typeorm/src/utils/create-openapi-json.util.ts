@@ -5,6 +5,10 @@ import { AppController } from '../app/app.controller';
 import { AppService } from '../app/app.service';
 import { CategoryController } from '../modules/category/category.controller';
 import { CategoryService } from '../modules/category/category.service';
+import { CommentController } from '../modules/comment/comment.controller';
+import { CommentService } from '../modules/comment/comment.service';
+import { ReviewController } from '../modules/review/review.controller';
+import { ReviewService } from '../modules/review/review.service';
 import { TalentController } from '../modules/talent/talent.controller';
 import { TalentService } from '../modules/talent/talent.service';
 import { createSwaggerConfiguration } from './create-swagger.util';
@@ -16,6 +20,8 @@ import { writeOpenApi } from './generate-openapi.util';
         AppController,
         TalentController,
         CategoryController,
+        ReviewController,
+        CommentController,
     ],
     providers: [
         { provide: AppService, useValue: Sinon.stub(AppService) },
@@ -26,6 +32,14 @@ import { writeOpenApi } from './generate-openapi.util';
         {
             provide: CategoryService,
             useValue: Sinon.stub(CategoryService),
+        },
+        {
+            provide: ReviewService,
+            useValue: Sinon.stub(ReviewService),
+        },
+        {
+            provide: CommentService,
+            useValue: Sinon.stub(CommentService),
         },
     ],
 })
