@@ -16,7 +16,7 @@ export class Comment {
     text: string;
 
     // A ref to our fusionauth
-    @Column()
+    @Column({ name: 'user_id' })
     userId: string;
 
     @ManyToOne(() => Review, (review) => review.comments)

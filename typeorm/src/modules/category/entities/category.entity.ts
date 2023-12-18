@@ -2,7 +2,6 @@ import {
     BaseEntity,
     Column,
     Entity,
-    JoinTable,
     ManyToMany,
     PrimaryColumn,
     Unique,
@@ -21,6 +20,5 @@ export class Category extends BaseEntity {
     title: string;
 
     @ManyToMany(() => Talent, (talent) => talent.categories)
-    @JoinTable()
     talents: Talent[];
 }
