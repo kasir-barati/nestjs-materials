@@ -18,7 +18,7 @@
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:integration": "./run-integration-tests.sh",
-        "openapi:generate": "openapi-generator-cli generate -i ./openApi.json -o api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true",
+        "openapi:generate": "openapi-generator-cli generate -i /local/openApi.json -o /local/src/api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true",
         "openapi:create": "ts-node --project tsconfig.json --transpile-only -r tsconfig-paths/register src/utils/create-openapi-json.util.ts"
     },
     "dependencies": {
@@ -58,22 +58,5 @@
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.2.0",
         "typescript": "^5.3.2"
-    },
-    "jest": {
-        "moduleFileExtensions": [
-            "js",
-            "json",
-            "ts"
-        ],
-        "rootDir": "src",
-        "testRegex": ".*\\.spec\\.ts$",
-        "transform": {
-            "^.+\\.(t|j)s$": "ts-jest"
-        },
-        "collectCoverageFrom": [
-            "**/*.(t|j)s"
-        ],
-        "coverageDirectory": "../coverage",
-        "testEnvironment": "node"
     }
 }

@@ -1,10 +1,10 @@
 import {
-    Entity,
+    BaseEntity,
     Column,
+    Entity,
+    ManyToMany,
     PrimaryGeneratedColumn,
     Unique,
-    BaseEntity,
-    ManyToMany,
 } from 'typeorm';
 import { Talent } from '../../talent/entities/talent.entity';
 

@@ -9,6 +9,7 @@ export function writeOpenApi(
     outputDirectory: string,
 ) {
     const openApi = JSON.stringify(document);
+
     writeFileSync(
         `${outputDirectory}/openApi.json`,
         openApi,

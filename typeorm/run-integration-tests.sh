@@ -15,7 +15,7 @@ sleep 20
 
 # Create openapi
 pnpm openapi:create
-# Generate openapi
+# Generate openapi 
 pnpm openapi:generate
 
 # Rebuild
@@ -27,4 +27,4 @@ docker compose --profile integration-tests up -d
 pnpx wait-on --timeout 10s http://localhost:3000/health
 
 # Run integration tests
-pnpx jest --config jest-integration.config.ts
+pnpm jest --config jest-integration.config.ts
