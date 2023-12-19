@@ -1,16 +1,16 @@
 import {
-    BaseEntity,
     Column,
     Entity,
     ManyToMany,
     PrimaryColumn,
     Unique,
 } from 'typeorm';
+import { YourBaseEntity } from '../../../utils/your-base-entity.util';
 import { Talent } from '../../talent/entities/talent.entity';
 
 @Entity('categories')
 @Unique(['title'])
-export class Category extends BaseEntity {
+export class Category extends YourBaseEntity {
     @PrimaryColumn({
         type: 'uuid',
     })

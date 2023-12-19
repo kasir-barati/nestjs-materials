@@ -1,5 +1,4 @@
 import {
-    BaseEntity,
     Column,
     Entity,
     JoinTable,
@@ -7,12 +6,13 @@ import {
     OneToMany,
     PrimaryColumn,
 } from 'typeorm';
+import { YourBaseEntity } from '../../../utils/your-base-entity.util';
 import { Category } from '../../category/entities/category.entity';
 import { Review } from '../../review/entities/review.entity';
 
 // Most of the users' data would be kept in our lovely fusionauth
 @Entity('talents')
-export class Talent extends BaseEntity {
+export class Talent extends YourBaseEntity {
     @PrimaryColumn({
         type: 'uuid',
     })

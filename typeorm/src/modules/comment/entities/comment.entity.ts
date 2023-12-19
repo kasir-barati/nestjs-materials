@@ -5,10 +5,11 @@ import {
     ManyToOne,
     PrimaryColumn,
 } from 'typeorm';
+import { YourBaseEntity } from '../../../utils/your-base-entity.util';
 import { Review } from '../../review/entities/review.entity';
 
 @Entity('comments')
-export class Comment {
+export class Comment extends YourBaseEntity {
     @PrimaryColumn()
     id: number;
 

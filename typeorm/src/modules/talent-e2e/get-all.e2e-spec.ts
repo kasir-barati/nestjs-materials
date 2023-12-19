@@ -1,10 +1,12 @@
 import { DefaultApi } from '../../api-client';
 
-describe('Talent e2e (Get all endpoint)', () => {
+describe('Talent e2e (/ GET)', () => {
     const defaultApi = new DefaultApi();
 
-    test('/ (GET)', async () => {
+    it('should be able to return all the talents with their categories, and their reviews', async () => {
         const response = await defaultApi.talentControllerFindAll();
+
+        console.log(response.data);
 
         expect(response.status).toBe(200);
     });
