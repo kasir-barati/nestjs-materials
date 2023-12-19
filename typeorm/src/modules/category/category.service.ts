@@ -14,7 +14,9 @@ export class CategoryService {
     ) {}
 
     create(createCategoryDto: CreateCategoryDto) {
-        return 'This action adds a new category';
+        return this.categoryRepository
+            .create(createCategoryDto)
+            .save();
     }
 
     async findAll(categoryId?: string) {
@@ -59,8 +61,8 @@ export class CategoryService {
         return await query.getRawMany();
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} category`;
+    findOne(id: string) {
+        return this.categoryRepository.findOneByOrFail({ id });
     }
 
     update(id: number, updateCategoryDto: UpdateCategoryDto) {

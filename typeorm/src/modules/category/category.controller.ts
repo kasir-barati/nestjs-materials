@@ -6,17 +6,21 @@ import {
     Get,
     InternalServerErrorException,
     Param,
+    ParseUUIDPipe,
     Patch,
     Post,
 } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
+    ApiCreatedResponse,
     ApiInternalServerErrorResponse,
     ApiOkResponse,
     ApiOperation,
 } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
+import { CreateCategoryResponseDto } from './dto/create-category-response.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { FindOneCategoryResponseDto } from './dto/find-one-category-response.dto';
 import { GetCategoriesResponse } from './dto/get-response';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
@@ -27,9 +31,10 @@ export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
 
     @ApiOperation({ summary: 'Create a new category' })
-    @ApiOkResponse({
-        type: String,
-        description: "Return created category's id",
+    @ApiCreatedResponse({
+        type: CreateCategoryResponseDto,
+        description:
+            'Response contains the id of the created category',
     })
     @ApiBadRequestResponse({
         type: BadRequestException, // FIXME: Create a general error handler and replace this with a better schema
@@ -40,8 +45,13 @@ export class CategoryController {
         description: 'Internal server error',
     })
     @Post()
-    create(@Body() createCategoryDto: CreateCategoryDto) {
-        return this.categoryService.create(createCategoryDto);
+    async create(
+        @Body() createCategoryDto: CreateCategoryDto,
+    ): Promise<CreateCategoryResponseDto> {
+        const category =
+            await this.categoryService.create(createCategoryDto);
+
+        return { id: category.id };
     }
 
     @ApiOperation({ summary: 'Fetch categories' })
@@ -63,20 +73,32 @@ export class CategoryController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.categoryService.findOne(+id);
+    @ApiOperation({ summary: 'Fetch category by ID' })
+    @ApiOkResponse({
+        type: FindOneCategoryResponseDto,
+        description: 'Category with the given ID',
+    })
+    async findOne(
+        @Param('id', ParseUUIDPipe) id: string,
+    ): Promise<FindOneCategoryResponseDto> {
+        const category = await this.categoryService.findOne(id);
+
+        return {
+            id: category.id,
+            title: category.title,
+        };
     }
 
     @Patch(':id')
     update(
-        @Param('id') id: string,
+        @Param('id', ParseUUIDPipe) id: string,
         @Body() updateCategoryDto: UpdateCategoryDto,
     ) {
         return this.categoryService.update(+id, updateCategoryDto);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
+    remove(@Param('id', ParseUUIDPipe) id: string) {
         return this.categoryService.remove(+id);
     }
 }

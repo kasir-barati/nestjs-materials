@@ -7,6 +7,8 @@ import {
     Patch,
     Post,
 } from '@nestjs/common';
+import { ApiCreatedResponse } from '@nestjs/swagger';
+import { CreateTalentResponseDto } from './dto/create-talent-response.dto';
 import { CreateTalentDto } from './dto/create-talent.dto';
 import { UpdateTalentDto } from './dto/update-talent.dto';
 import { TalentService } from './talent.service';
@@ -18,8 +20,17 @@ export class TalentController {
     constructor(private readonly talentService: TalentService) {}
 
     @Post()
-    create(@Body() createTalentDto: CreateTalentDto) {
-        return this.talentService.create(createTalentDto);
+    @ApiCreatedResponse({
+        type: CreateTalentResponseDto,
+        description: 'Response contains the id of the created talent',
+    })
+    async create(
+        @Body() createTalentDto: CreateTalentDto,
+    ): Promise<CreateTalentResponseDto> {
+        const talent =
+            await this.talentService.create(createTalentDto);
+
+        return { id: talent.id };
     }
 
     @Get()

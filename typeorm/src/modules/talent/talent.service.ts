@@ -14,7 +14,18 @@ export class TalentService {
     ) {}
 
     create(createTalentDto: CreateTalentDto) {
-        return 'This action adds a new talent';
+        return this.talentRepository
+            .create({
+                isActive: createTalentDto.isActive,
+                isAdaptable: createTalentDto.isAdaptable,
+                categories:
+                    createTalentDto?.categoriesIds?.map(
+                        (categoryId) => ({
+                            id: categoryId,
+                        }),
+                    ) ?? [],
+            })
+            .save();
     }
 
     async findAll() {

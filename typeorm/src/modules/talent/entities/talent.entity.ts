@@ -11,6 +11,9 @@ import { Category } from '../../category/entities/category.entity';
 import { Review } from '../../review/entities/review.entity';
 
 // Most of the users' data would be kept in our lovely fusionauth
+/**
+ * @description TypeORM uses RFC4122 compliant UUID v4 function for drivers which do not have a built-in uuid function
+ */
 @Entity('talents')
 export class Talent extends YourBaseEntity {
     @PrimaryColumn({
