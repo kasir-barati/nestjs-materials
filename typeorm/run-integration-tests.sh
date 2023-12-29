@@ -19,7 +19,7 @@ pnpm openapi:create
 pnpm openapi:generate
 
 # Rebuild
-docker compose --profile integration-tests build
+BUILDKIT_PROGRESS=plain docker compose --profile integration-tests build
 # Create containers
 docker compose --profile integration-tests up -d
 
