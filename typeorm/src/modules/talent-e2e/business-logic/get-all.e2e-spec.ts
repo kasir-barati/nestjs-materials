@@ -1,4 +1,4 @@
-import { DefaultApi } from '../../api-client';
+import { DefaultApi } from '../../../api-client';
 
 describe('Talent e2e (/ GET)', () => {
     const defaultApi = new DefaultApi();

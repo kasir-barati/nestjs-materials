@@ -27,4 +27,4 @@ docker compose --profile integration-tests up -d
 pnpx wait-on --timeout 10s http://localhost:3000/health
 
 # Run integration tests
-pnpm jest --config jest-integration.config.ts
+pnpm jest --detectOpenHandles --config jest-integration.config.ts
