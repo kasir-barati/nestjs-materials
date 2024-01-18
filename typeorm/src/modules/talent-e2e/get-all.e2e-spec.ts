@@ -6,8 +6,6 @@ describe('Talent e2e (/ GET)', () => {
     it('should be able to return all the talents with their categories, and their reviews', async () => {
         const response = await defaultApi.talentControllerFindAll();
 
-        console.log(response.data);
-
         expect(response.status).toBe(200);
     });
 });
