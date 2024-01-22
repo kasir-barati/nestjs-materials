@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsUUID } from 'class-validator';
+import { IsBoolean, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateTalentDto {
     @IsBoolean()
@@ -17,6 +17,7 @@ export class CreateTalentDto {
     })
     isAdaptable: boolean;
 
+    @IsOptional()
     @IsUUID('4', { each: true })
     @ApiProperty({
         required: false,
