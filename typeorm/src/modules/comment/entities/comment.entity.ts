@@ -3,15 +3,15 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    PrimaryColumn,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { YourBaseEntity } from '../../../utils/your-base-entity.util';
 import { Review } from '../../review/entities/review.entity';
 
 @Entity('comments')
 export class Comment extends YourBaseEntity {
-    @PrimaryColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
     text: string;

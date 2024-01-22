@@ -4,7 +4,7 @@ import {
     JoinTable,
     ManyToMany,
     OneToMany,
-    PrimaryColumn,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { YourBaseEntity } from '../../../utils/your-base-entity.util';
 import { Category } from '../../category/entities/category.entity';
@@ -16,9 +16,7 @@ import { Review } from '../../review/entities/review.entity';
  */
 @Entity('talents')
 export class Talent extends YourBaseEntity {
-    @PrimaryColumn({
-        type: 'uuid',
-    })
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column({ default: true, name: 'is_active' })
