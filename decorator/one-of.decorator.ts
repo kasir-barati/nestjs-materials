@@ -11,9 +11,9 @@ import {
  */
 export function OneOf(properties: string[]) {
   return function (target: any) {
-    for (const property of properties) {
-      applyDecorators(OneOfChecker(properties))(target.prototype, property);
-    }
+    const property = properties[0];
+
+    applyDecorators(OneOfChecker(properties))(target.prototype, property);
   };
 }
 
