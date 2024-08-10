@@ -1,6 +1,12 @@
 import { describe, expect, it } from "@jest/globals";
 import { plainToInstance } from "class-transformer";
-import { IsEmail, IsNumber, validate } from "class-validator";
+import {
+  IsEmail,
+  IsNumber,
+  IsOptional,
+  IsString,
+  validate,
+} from "class-validator";
 import { OneOf } from "./one-of.decorator";
 
 @OneOf(["email", "phone"])
@@ -10,6 +16,10 @@ class CreateUserDto {
 
   @IsNumber()
   phone: number;
+
+  @IsOptional()
+  @IsString()
+  name?: string;
 }
 
 describe("OneOf", () => {
