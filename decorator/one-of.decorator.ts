@@ -1,6 +1,7 @@
 import { applyDecorators } from "@nestjs/common";
 import {
   registerDecorator,
+  ValidateIf,
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
@@ -11,9 +12,22 @@ import {
  */
 export function OneOf(properties: string[]) {
   return function (target: any) {
-    const property = properties[0];
+    for (const property of properties) {
+      const otherProps = properties.filter((prop) => prop !== property);
 
-    applyDecorators(OneOfChecker(properties))(target.prototype, property);
+      applyDecorators(
+        ValidateIf((obj: Record<string, unknown>) => {
+          const areOtherPropsUndefined = otherProps.reduce(
+            (acc, prop) => acc && obj[prop] === undefined,
+            true
+          );
+          const isCurrentPropDefined = obj[property] !== undefined;
+
+          return isCurrentPropDefined || areOtherPropsUndefined;
+        }),
+        OneOfChecker(properties)
+      )(target.prototype, property);
+    }
   };
 }
 

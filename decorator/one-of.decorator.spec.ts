@@ -62,7 +62,7 @@ describe("OneOf", () => {
 
     const errors = await validate(user);
 
-    expect(errors).toHaveLength(1);
+    expect(errors).toHaveLength(2);
     expect(errors).toContainEqual({
       children: [],
       constraints: {
