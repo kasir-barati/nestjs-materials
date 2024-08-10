@@ -52,9 +52,20 @@ class OneOfCheckerConstraint implements ValidatorConstraintInterface {
   }
 
   defaultMessage(validationArguments: ValidationArguments): string {
-    const [constraintProperty]: (() => unknown)[] =
-      validationArguments.constraints;
-    return `Do not send ${constraintProperty} and ${validationArguments.property} at the same time!`;
+    const [properties] = validationArguments.constraints as [string[]];
+    const props = properties.reduce((accumulator, current, index) => {
+      if (index === properties.length - 2) {
+        accumulator += current + ", and ";
+      } else if (index === properties.length - 1) {
+        accumulator += current;
+      } else {
+        accumulator += current + ", ";
+      }
+
+      return accumulator;
+    }, "");
+
+    return `Do not send ${props} at the same time!`;
   }
 }
 

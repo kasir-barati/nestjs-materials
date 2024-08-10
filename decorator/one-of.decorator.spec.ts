@@ -57,19 +57,19 @@ describe("OneOf", () => {
   });
 
   it("should not throw an error when both phone and email is present", async () => {
-    const plain = { email: "gg@pp.cc", phone: "1122334455" };
+    const plain = { email: "gg@pp.cc", phone: 1122334455 };
     const user = plainToInstance(CreateUserDto, plain);
 
     const errors = await validate(user);
 
-    expect(errors).toHaveLength(2);
+    expect(errors).toHaveLength(1);
     expect(errors).toContainEqual({
       children: [],
       constraints: {
-        OneOfChecker: "Do not send email,phone and email at the same time!",
+        OneOfChecker: "Do not send email, and phone at the same time!",
       },
       property: "email",
-      target: { email: "gg@pp.cc", phone: "1122334455" },
+      target: { email: "gg@pp.cc", phone: 1122334455 },
       value: "gg@pp.cc",
     });
   });
