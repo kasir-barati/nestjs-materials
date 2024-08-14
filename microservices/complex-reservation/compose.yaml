@@ -1,0 +1,16 @@
+services:
+  db:
+    image: mongo:8.0.0-rc17-noble
+    container_name: database
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/${MONGO_INITDB_DATABASE} --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
