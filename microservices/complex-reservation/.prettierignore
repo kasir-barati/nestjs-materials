@@ -7,6 +7,7 @@ Docker*
 mockServiceWorker.js
 
 .DS_STORE
+pnpm-lock.yaml
 
 # Angular app specific
 .angular
