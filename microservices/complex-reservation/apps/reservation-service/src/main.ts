@@ -2,6 +2,7 @@ import { createSwaggerConfiguration } from '@app/common';
 import { Logger as NestLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import * as bodyParser from 'body-parser';
 import { Logger } from 'nestjs-pino';
 import reservationServiceConfig from './reservation-service.config';
 import { ReservationServiceModule } from './reservation-service.module';
@@ -13,6 +14,7 @@ async function bootstrap() {
   >(reservationServiceConfig.KEY);
   const appUrl = `http://localhost:${RESERVATION_SERVICE_PORT}/`;
 
+  app.use(bodyParser.json({ type: ['json', '+json'] }));
   app.useGlobalPipes(
     new ValidationPipe({
       errorHttpStatusCode: 400,

@@ -1,4 +1,8 @@
-import { MongoIdPipe } from '@app/common';
+import {
+  GetHeader,
+  MongoIdPipe,
+  PatchContentTypeDto,
+} from '@app/common';
 import {
   BadRequestException,
   Body,
@@ -9,6 +13,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -19,11 +24,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateReservationDto } from './dto/create-reservation.dto';
+import { ReplaceReservationDto } from './dto/replace-reservation.dto';
 import {
   CreatedReservationDto,
   PatchedReservationDto,
   ReadReservationDto,
   ReadReservationsDto,
+  ReplacedReservationDto,
 } from './dto/response.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationService } from './reservation.service';
@@ -108,7 +115,8 @@ export class ReservationController {
 
   @ApiOperation({
     summary: 'Patch a reservation.',
-    description: 'Patch a reservation by id.',
+    description:
+      "Patch a reservation by id. You need to specify the 'content-type' header to 'application/merge-patch+json'. Note: since all the fields for reservation are required you cannot possibly send null to remove a field.",
   })
   @ApiOkResponse({
     type: PatchedReservationDto,
@@ -126,8 +134,34 @@ export class ReservationController {
   update(
     @Param('id', MongoIdPipe) id: string,
     @Body() updateReservationDto: UpdateReservationDto,
+    @GetHeader() _: PatchContentTypeDto,
   ): Promise<PatchedReservationDto> {
     return this.reservationService.update(id, updateReservationDto);
+  }
+
+  @ApiOperation({
+    summary: 'Update a reservation.',
+    description:
+      'Replace old data of a reservation with the new data.',
+  })
+  @ApiOkResponse({
+    type: ReplacedReservationDto,
+    description: 'Returns the updated version.',
+  })
+  @ApiBadRequestResponse({
+    type: BadRequestException,
+    description: 'Bad request.',
+  })
+  @ApiInternalServerErrorResponse({
+    type: InternalServerErrorException,
+    description: 'Server error.',
+  })
+  @Put(':id')
+  replace(
+    @Param('id', MongoIdPipe) id: string,
+    @Body() replaceReservationDto: ReplaceReservationDto,
+  ) {
+    return this.reservationService.update(id, replaceReservationDto);
   }
 
   @ApiOperation({

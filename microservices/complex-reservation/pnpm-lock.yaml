@@ -32,6 +32,9 @@ importers:
       axios:
         specifier: ^1.7.4
         version: 1.7.4
+      body-parser:
+        specifier: ^1.20.2
+        version: 1.20.2
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -66,6 +69,9 @@ importers:
       '@openapitools/openapi-generator-cli':
         specifier: ^2.13.4
         version: 2.13.4(@nestjs/platform-express@9.4.3(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.1))(@nestjs/core@9.4.3))(class-transformer@0.5.1)(class-validator@0.14.1)
+      '@types/body-parser':
+        specifier: ^1.19.5
+        version: 1.19.5
       '@types/express':
         specifier: ^4.17.13
         version: 4.17.21

@@ -1,4 +1,7 @@
-import { ReservationServiceApi } from '../../../api-client';
+import {
+  ReplaceReservationDto,
+  ReservationServiceApi,
+} from '../../../api-client';
 import { ReservationBuilder } from '../../builders/reservation.builder';
 
 describe('Reservation service (e2e - business logic)', () => {
@@ -55,17 +58,47 @@ describe('Reservation service (e2e - business logic)', () => {
 
   it('should update reservation', async () => {
     const id = await new ReservationBuilder().build();
-    const newStart = new Date(2010).toISOString();
+    const newStart = new Date('2010').toISOString();
 
-    const { data: reservation } =
-      await reservationServiceApi.reservationControllerUpdate({
-        id,
-        updateReservationDto: {
-          start: newStart,
+    const { data: reservation, config } =
+      await reservationServiceApi.reservationControllerUpdate(
+        {
+          id,
+          updateReservationDto: {
+            start: newStart,
+          },
         },
-      });
+        {
+          headers: {
+            'Content-Type': 'application/merge-patch+json',
+          },
+        },
+      );
 
     expect(reservation.start).toBe(newStart);
+  });
+
+  it('should replace reservation', async () => {
+    const id = await new ReservationBuilder().build();
+    const replaceReservationDto: ReplaceReservationDto = {
+      end: new Date('2019').toISOString(),
+      start: new Date('2018').toISOString(),
+      invoiceId: '66bf3c870022fff2ec279a52',
+      locationId: '66bf3c8f1855b23ca852efce',
+    };
+
+    const { data: reservation } =
+      await reservationServiceApi.reservationControllerReplace({
+        id,
+        replaceReservationDto,
+      });
+
+    expect(reservation).toStrictEqual(
+      expect.objectContaining({
+        _id: id,
+        ...replaceReservationDto,
+      }),
+    );
   });
 
   it('should delete reservation', async () => {

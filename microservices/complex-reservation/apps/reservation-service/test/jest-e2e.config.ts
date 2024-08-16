@@ -6,6 +6,9 @@ export default {
   rootDir: '.',
   testEnvironment: 'node',
   testMatch: ['**/*.e2e-spec.ts'],
+  // testMatch: [
+  //   '**/reservation-service/test/e2e-tests/business/reservation.e2e-spec.ts',
+  // ],
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },

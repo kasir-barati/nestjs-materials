@@ -1,5 +1,6 @@
 import {
   CreateReservationDto,
+  ReplaceReservationDto,
   ReservationServiceApi,
 } from '../../../api-client';
 
@@ -82,6 +83,56 @@ describe('Reservation service (e2e - validation)', () => {
           },
         },
         {
+          headers: {
+            'Content-Type': 'application/merge-patch+json',
+          },
+          validateStatus(status) {
+            return status > 200;
+          },
+        },
+      );
+
+    expect(status).toBe(400);
+  });
+
+  it('should throw error on replacing reservation with garbage data, and id', async () => {
+    const { status } =
+      await reservationServiceApi.reservationControllerReplace(
+        {
+          id: 123 as unknown as string,
+          replaceReservationDto: {
+            start: 123 as unknown as string,
+            end: new Date().toISOString(),
+            invoiceId: '66bf58b4cd4909241798e00a',
+            locationId: '66bf58bcd83d946cc9ae38bb',
+          } as ReplaceReservationDto,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/merge-patch+json',
+          },
+          validateStatus(status) {
+            return status > 200;
+          },
+        },
+      );
+
+    expect(status).toBe(400);
+  });
+
+  it('should throw error on replacing reservation if some fields are missing', async () => {
+    const { status } =
+      await reservationServiceApi.reservationControllerReplace(
+        {
+          id: '66bf589cec6be699439d46d0',
+          replaceReservationDto: {
+            start: 123 as unknown as string,
+          } as ReplaceReservationDto,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/merge-patch+json',
+          },
           validateStatus(status) {
             return status > 200;
           },

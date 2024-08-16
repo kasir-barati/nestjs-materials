@@ -109,3 +109,5 @@ export class ReadReservationsDto implements Pagination<Reservation> {
 }
 
 export class PatchedReservationDto extends CreatedReservationDto {}
+
+export class ReplacedReservationDto extends CreatedReservationDto {}

@@ -17,18 +17,16 @@ describe('ReservationService', () => {
 
   it('should create reservation', async () => {
     const createReservationDto = SinonMock.with<CreateReservationDto>(
-      {},
+      {
+        end: new Date().toISOString(),
+        start: new Date().toISOString(),
+      },
     );
-    repository.create
-      .withArgs({
-        userId: 'object id',
-        ...createReservationDto,
-      })
-      .resolves({
-        _id: 'new object id',
-        userId: 'object id',
-        ...createReservationDto,
-      });
+    repository.create.resolves({
+      _id: 'new object id',
+      userId: 'object id',
+      ...createReservationDto,
+    });
 
     const result = await service.create(
       'object id',
@@ -71,8 +69,8 @@ describe('ReservationService', () => {
   it('should update reservation by id', async () => {
     const resolvedValue = SinonMock.with<Reservation>({});
     const updateReservationDto: UpdateReservationDto = {
-      end: new Date(),
-      start: new Date(),
+      end: new Date().toISOString(),
+      start: new Date().toISOString(),
     };
     repository.findById
       .withArgs('Some object id')
