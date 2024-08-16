@@ -3,6 +3,7 @@ export * from './database/abstract.repository';
 export * from './database/abstract.schema';
 export * from './database/database.module';
 export * from './database/database.type';
+export * from './logger/logger.module';
 export * from './pipes/mongo-id.pipe';
 export * from './types/mock.type';
 export * from './types/node-env.type';

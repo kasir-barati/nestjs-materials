@@ -1,7 +1,8 @@
 import { createSwaggerConfiguration } from '@app/common';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger as NestLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { Logger } from 'nestjs-pino';
 import reservationServiceConfig from './reservation-service.config';
 import { ReservationServiceModule } from './reservation-service.module';
 
@@ -23,6 +24,7 @@ async function bootstrap() {
       validateCustomDecorators: true,
     }),
   );
+  app.useLogger(app.get(Logger));
 
   createSwaggerConfiguration({
     app,
@@ -33,11 +35,11 @@ async function bootstrap() {
   });
 
   await app.listen(RESERVATION_SERVICE_PORT);
-  Logger.log(
+  NestLogger.log(
     'Application is up and running: ' + appUrl,
     'NestApplication',
   );
-  Logger.log(
+  NestLogger.log(
     'Swagger is up and running: ' + appUrl + SWAGGER_PATH,
     'NestApplication',
   );
