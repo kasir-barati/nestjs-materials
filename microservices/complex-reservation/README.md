@@ -16,6 +16,12 @@ A reservation booking system that has the following features:
 3. `pnpm compose:up`.
 4. `pnpm start`.
 
+## Run E2E tests
+
+1. `cp .env.example .env`
+2. `pnpm i --frozen-lockfile`
+3. `./run-e2e.sh`
+
 ### Update 3rd-party libs
 
 `pnpm up --latest`

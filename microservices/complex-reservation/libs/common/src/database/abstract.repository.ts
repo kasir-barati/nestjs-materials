@@ -12,7 +12,9 @@ export class AbstractRepository<Document extends AbstractDocument> {
   constructor(protected readonly model: Model<Document>) {}
 
   // #region Create
-  async create(data: Omit<Document, '_id'>): Promise<Document> {
+  async create(
+    data: Omit<Document, '_id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Document> {
     const createdDocument = await this.model.create(data);
 
     return createdDocument.toObject();

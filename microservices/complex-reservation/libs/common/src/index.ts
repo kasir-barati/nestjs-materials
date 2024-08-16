@@ -1,3 +1,13 @@
 import databaseConfig from './database/database.config';
-import { DatabaseModule } from './database/database.module';
-export { databaseConfig, DatabaseModule };
+export * from './database/abstract.repository';
+export * from './database/abstract.schema';
+export * from './database/database.module';
+export * from './database/database.type';
+export * from './pipes/mongo-id.pipe';
+export * from './types/mock.type';
+export * from './types/node-env.type';
+export * from './utils/create-swagger-configuration.util';
+export * from './utils/generate-openapi.util';
+export * from './utils/sinon-mock.util';
+export * from './utils/validate-env.util';
+export { databaseConfig };
