@@ -9,6 +9,10 @@ A reservation booking system that has the following features:
 - Persist reservations.
 - Send email notifications.
 
+## Learn more
+
+- [PATCH vs PUT HTTP verb](https://dev.to/kasir-barati/patch-vs-put-2pa3).
+
 ## Start the app in dev env
 
 1. `pnpm i --frozen-lockfile	`
