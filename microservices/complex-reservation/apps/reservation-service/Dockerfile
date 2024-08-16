@@ -16,4 +16,4 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm run build
 EXPOSE ${RESERVATION_SERVICE_PORT}
-CMD [ "pnpm", "start" ]
+CMD [ "node", "dist/apps/reservation-service/main" ]
