@@ -15,7 +15,10 @@ import { UserService } from '../../src/user/user.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [join(process.cwd(), '.env')],
+      envFilePath: [
+        join(process.cwd(), '.env'),
+        join(process.cwd(), 'apps', 'auth-service', '.env'),
+      ],
       load: [databaseConfig, authServiceConfig],
       isGlobal: true,
       cache: true,

@@ -22,6 +22,12 @@ export default registerAs(
 );
 
 class EnvironmentVariables implements AuthServiceConfig {
+  @IsString()
+  JWT_SECRET: string;
+
+  @IsString()
+  JWT_EXPIRATION: string;
+
   @IsOptional()
   @IsString()
   SWAGGER_PATH: string = 'docs';

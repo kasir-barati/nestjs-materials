@@ -13,7 +13,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file: .env
+    env_file:
+      - .env
+      - apps/auth-service/.env
 
   reservation-api:
     image: reservation-api

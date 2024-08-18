@@ -16,7 +16,7 @@ A reservation booking system that has the following features:
 ## Start the app in dev env
 
 1. `pnpm i --frozen-lockfile	`
-2. `cp .env.example .env`.
+2. Copy `.env.example` files and create `.env` files.
 3. `pnpm compose:up`.
 4. `pnpm start`.
 
