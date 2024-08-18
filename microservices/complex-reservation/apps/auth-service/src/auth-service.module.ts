@@ -7,8 +7,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { join } from 'path';
-import authServiceConfig from './auth-service.config';
-import { JwtModuleConfig } from './jwt-module.config';
+import authServiceConfig from './configs/auth-service.config';
+import { JwtModuleConfig } from './configs/jwt-module.config';
 import { UserModule } from './user/user.module';
 
 @Module({

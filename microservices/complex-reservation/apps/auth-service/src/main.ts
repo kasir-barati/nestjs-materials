@@ -3,8 +3,8 @@ import { Logger as NestLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
-import authServiceConfig from './auth-service.config';
 import { AuthModule } from './auth-service.module';
+import authServiceConfig from './configs/auth-service.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);

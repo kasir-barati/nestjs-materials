@@ -1,7 +1,7 @@
 import { validateEnv } from '@app/common';
 import { registerAs } from '@nestjs/config';
 import { IsInt, IsOptional, IsString } from 'class-validator';
-import { AuthServiceConfig } from './auth-service.type';
+import { AuthServiceConfig } from '../auth-service.type';
 
 declare global {
   namespace NodeJS {

@@ -8,7 +8,7 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { join } from 'path';
 import * as Sinon from 'sinon';
-import authServiceConfig from '../../src/auth-service.config';
+import authServiceConfig from '../../src/configs/auth-service.config';
 import { UserController } from '../../src/user/user.controller';
 import { UserService } from '../../src/user/user.service';
 
