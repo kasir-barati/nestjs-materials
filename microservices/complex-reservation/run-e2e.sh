@@ -31,14 +31,17 @@ fi
 echo "Create openaApi.json..."
 echo ""
 npx ts-node --transpile-only -r tsconfig-paths/register apps/reservation-service/test/utils/create-openapi-json.util.ts
+npx ts-node --transpile-only -r tsconfig-paths/register apps/auth-service/test/utils/create-openapi-json.util.ts
 # endregion
 
 # region Generate API client.
 echo "Generate api-client..."
 echo ""
 npx openapi-generator-cli generate -i /local/apps/reservation-service/openApi.json -o /local/apps/reservation-service/api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true
+npx openapi-generator-cli generate -i /local/apps/auth-service/openApi.json -o /local/apps/auth-service/api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true
 # endregion
 
 echo "Run tests..."
 echo ""
 npx jest --config apps/reservation-service/test/jest-e2e.config.ts
+npx jest --config apps/auth-service/test/jest-e2e.config.ts

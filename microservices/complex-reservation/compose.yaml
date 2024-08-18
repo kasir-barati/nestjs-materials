@@ -1,4 +1,20 @@
 services:
+  auth-api:
+    image: auth-api
+    container_name: auth-api-container
+    ports:
+      - ${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}
+    build:
+      context: .
+      dockerfile: ./apps/auth-service/Dockerfile
+      args:
+        AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+        MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+
   reservation-api:
     image: reservation-api
     container_name: reservation-api-container

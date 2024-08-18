@@ -36,7 +36,7 @@ import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationService } from './reservation.service';
 
 @ApiTags('Reservation service')
-@Controller('reservation')
+@Controller('reservations')
 export class ReservationController {
   constructor(
     private readonly reservationService: ReservationService,
