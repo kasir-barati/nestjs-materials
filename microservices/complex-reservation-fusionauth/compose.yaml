@@ -1,0 +1,48 @@
+services:
+  auth-api:
+    image: auth-api
+    container_name: auth-api-container
+    ports:
+      - ${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}
+    build:
+      context: .
+      dockerfile: ./apps/auth-service/Dockerfile
+      args:
+        AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+        MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+
+  reservation-api:
+    image: reservation-api
+    container_name: reservation-api-container
+    ports:
+      - ${RESERVATION_SERVICE_PORT}:${RESERVATION_SERVICE_PORT}
+    build:
+      context: .
+      dockerfile: ./apps/reservation-service/Dockerfile
+      args:
+        RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+        MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+
+  db:
+    image: mongo:8.0.0-rc17-noble
+    container_name: database
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
