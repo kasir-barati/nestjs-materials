@@ -32,8 +32,8 @@ async function bootstrap() {
     app,
     appUrl,
     swaggerPath: SWAGGER_PATH,
-    title: 'Reservation service.',
-    description: 'Reservation service.',
+    title: 'Reservation microservice.',
+    description: 'Reservation microservice RESTful API.',
   });
 
   await app.listen(RESERVATION_SERVICE_PORT);

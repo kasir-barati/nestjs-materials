@@ -7,8 +7,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { join } from 'path';
+import { AuthServiceController } from './auth-service.controller';
+import { AuthServiceService } from './auth-service.service';
 import authServiceConfig from './configs/auth-service.config';
 import { JwtModuleConfig } from './configs/jwt-module.config';
+import { LocalStrategy } from './strategies/local.strategy';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -30,7 +33,7 @@ import { UserModule } from './user/user.module';
     }),
     UserModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AuthServiceController],
+  providers: [AuthServiceService, LocalStrategy],
 })
 export class AuthModule {}

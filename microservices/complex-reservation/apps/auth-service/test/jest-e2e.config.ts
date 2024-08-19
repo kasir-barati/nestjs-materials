@@ -17,6 +17,9 @@ export default {
   rootDir: '.',
   testEnvironment: 'node',
   testMatch: ['**/*.e2e-spec.ts'],
+  // testMatch: [
+  //   '**/apps/auth-service/test/e2e-tests/business/auth.e2e-spec.ts',
+  // ],
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },

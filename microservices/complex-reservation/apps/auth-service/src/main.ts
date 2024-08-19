@@ -30,8 +30,8 @@ async function bootstrap() {
     app,
     appUrl,
     swaggerPath: SWAGGER_PATH,
-    title: 'Auth service.',
-    description: 'Auth service.',
+    title: 'Auth microservice.',
+    description: 'Auth microservice RESTful API.',
   });
 
   await app.listen(AUTH_SERVICE_PORT);

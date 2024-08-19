@@ -3,7 +3,7 @@ import {
   Body,
   Controller,
   InternalServerErrorException,
-  Post,
+  Put,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -37,7 +37,7 @@ export class UserController {
     type: InternalServerErrorException,
     description: 'Server error.',
   })
-  @Post()
+  @Put()
   create(@Body() createUserDto: CreateUserDto): Promise<string> {
     return this.userService.create(createUserDto);
   }

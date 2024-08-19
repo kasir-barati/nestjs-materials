@@ -12,7 +12,6 @@ import {
   InternalServerErrorException,
   Param,
   Patch,
-  Post,
   Put,
 } from '@nestjs/common';
 import {
@@ -59,7 +58,7 @@ export class ReservationController {
     type: InternalServerErrorException,
     description: 'Server error.',
   })
-  @Post()
+  @Put()
   create(
     @Body() createReservationDto: CreateReservationDto,
   ): Promise<CreatedReservationDto> {
