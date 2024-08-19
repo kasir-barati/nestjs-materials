@@ -1,7 +1,11 @@
 import { Logger, NotFoundException } from '@nestjs/common';
 import { FilterQuery, Model, UpdateQuery } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
-import { Pagination } from './database.type';
+import {
+  DuplicationError,
+  MongoError,
+  Pagination,
+} from './database.type';
 
 export class AbstractRepository<Document extends AbstractDocument> {
   // Do the same thing in the extended classes
@@ -15,7 +19,19 @@ export class AbstractRepository<Document extends AbstractDocument> {
   async create(
     data: Omit<Document, '_id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Document> {
-    const createdDocument = await this.model.create(data);
+    const createdDocument = await this.model
+      .create(data)
+      .catch((error: MongoError) => {
+        if (error.code === 11000) {
+          const field = Object.keys(error.keyValue)[0];
+
+          throw new DuplicationError(
+            field,
+            field + ' already exists.',
+          );
+        }
+        throw error;
+      });
 
     return createdDocument.toObject();
   }

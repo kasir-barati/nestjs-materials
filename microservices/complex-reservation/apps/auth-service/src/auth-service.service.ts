@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { verify } from 'argon2';
 import { Response } from 'express';
 import { DateTime } from 'luxon';
+import { JwtPayload } from './auth-service.type';
 import authServiceConfig from './configs/auth-service.config';
 import { UserService } from './user/user.service';
 
@@ -54,7 +55,7 @@ export class AuthServiceService {
   }
 
   async login(user: User, response: Response) {
-    const payload = {
+    const payload: JwtPayload = {
       sub: user._id,
       email: user.email,
     };
@@ -65,6 +66,17 @@ export class AuthServiceService {
       httpOnly: true,
       expires,
     });
+  }
+
+  getUserForJwtStrategy(id: string) {
+    const user = this.userService.findById(id).catch((error) => {
+      if (error instanceof NotFoundException) {
+        throw new UnauthorizedException();
+      }
+      throw error;
+    });
+
+    return user;
   }
 
   private generateExpires() {

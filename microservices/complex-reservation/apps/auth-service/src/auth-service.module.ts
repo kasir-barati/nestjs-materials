@@ -11,6 +11,7 @@ import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
 import authServiceConfig from './configs/auth-service.config';
 import { JwtModuleConfig } from './configs/jwt-module.config';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { UserModule } from './user/user.module';
 
@@ -34,6 +35,6 @@ import { UserModule } from './user/user.module';
     UserModule,
   ],
   controllers: [AuthServiceController],
-  providers: [AuthServiceService, LocalStrategy],
+  providers: [AuthServiceService, LocalStrategy, JwtStrategy],
 })
 export class AuthModule {}

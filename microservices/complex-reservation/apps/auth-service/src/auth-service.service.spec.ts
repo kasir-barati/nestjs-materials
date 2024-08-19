@@ -132,4 +132,33 @@ describe('AuthServiceService', () => {
       ),
     ).toBeTruthy();
   });
+
+  it('should get user for jwt strategy', async () => {
+    const id = 'object id';
+    userService.findById.resolves({ _id: id });
+
+    const user = await service.getUserForJwtStrategy(id);
+
+    expect(user).toStrictEqual({ _id: id });
+  });
+
+  it('should throw unauthorized exception on get user for jwt strategy with non-existing id', async () => {
+    const id = 'object id';
+    userService.findById.rejects(new NotFoundException());
+
+    const result = service.getUserForJwtStrategy(id);
+
+    await expect(result).rejects.toThrowError(
+      new UnauthorizedException(),
+    );
+  });
+
+  it('should rethrow any exception on get user for jwt strategy when it is not UnauthorizedException', async () => {
+    const id = 'object id';
+    userService.findById.rejects(new Error());
+
+    const result = service.getUserForJwtStrategy(id);
+
+    await expect(result).rejects.toThrowError(new Error());
+  });
 });

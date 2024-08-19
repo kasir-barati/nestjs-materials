@@ -2,6 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { AbstractRepository } from './abstract.repository';
 import { AbstractDocument } from './abstract.schema';
+import { DuplicationError, MongoError } from './database.type';
 
 const mockedFind = jest.fn();
 const mockedCreate = jest.fn();
@@ -62,6 +63,21 @@ describe('AbstractRepository', () => {
       _id: expect.any(String),
       ...data,
     });
+  });
+
+  it('should thrown a duplication error on creating a new document', async () => {
+    const error = new MongoError();
+    error.keyValue = { email: 'IDK' };
+    error.code = 11000;
+    mockedCreate.mockRejectedValue(error);
+
+    const document = repository.create({
+      testField: 'some random value',
+    });
+
+    await expect(document).rejects.toThrowError(
+      new DuplicationError('email', 'email already exists.'),
+    );
   });
 
   it('should propagate thrown error by create method', async () => {

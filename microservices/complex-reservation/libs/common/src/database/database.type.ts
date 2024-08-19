@@ -11,3 +11,17 @@ export interface Pagination<Document> {
   next: number | null;
   data: Document[];
 }
+export class MongoError {
+  public code: number;
+  public message: string;
+  public keyValue: Record<string, unknown>;
+  public name: string | 'MongoError';
+}
+export class DuplicationError extends Error {
+  constructor(
+    public readonly field: string,
+    public readonly message: string,
+  ) {
+    super(message);
+  }
+}

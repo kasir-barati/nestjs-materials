@@ -12,6 +12,7 @@ import { AuthServiceController } from '../../src/auth-service.controller';
 import { AuthServiceService } from '../../src/auth-service.service';
 import authServiceConfig from '../../src/configs/auth-service.config';
 import { UserController } from '../../src/user/user.controller';
+import { UserSerializer } from '../../src/user/user.serializer';
 import { UserService } from '../../src/user/user.service';
 
 @Module({
@@ -31,6 +32,10 @@ import { UserService } from '../../src/user/user.service';
     {
       provide: UserService,
       useValue: Sinon.stub(UserService),
+    },
+    {
+      provide: UserSerializer,
+      useValue: Sinon.stub(UserSerializer),
     },
     {
       provide: AuthServiceService,

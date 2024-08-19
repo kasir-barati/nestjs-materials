@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { User, UserSchema } from './entities/user.entity';
 import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
+import { UserSerializer } from './user.serializer';
 import { UserService } from './user.service';
 
 @Module({
@@ -12,7 +13,7 @@ import { UserService } from './user.service';
     ]),
   ],
   controllers: [UserController],
-  providers: [UserService, UserRepository],
+  providers: [UserService, UserRepository, UserSerializer],
   exports: [UserService],
 })
 export class UserModule {}

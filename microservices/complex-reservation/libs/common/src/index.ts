@@ -15,6 +15,7 @@ export * from './utils/create-swagger-configuration.util';
 export * from './utils/generate-openapi.util';
 export * from './utils/generate-random-string.util';
 export * from './utils/get-param-decorator-factory.util';
+export * from './utils/login.util';
 export * from './utils/sinon-mock.util';
 export * from './utils/validate-env.util';
 export { databaseConfig };
