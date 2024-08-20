@@ -35,6 +35,19 @@ services:
       - .env
       - apps/reservation-service/.env
 
+  payment-api:
+    image: payment-api
+    container_name: payment-api-container
+    build:
+      context: .
+      dockerfile: ./apps/payment-service/Dockerfile
+      args:
+        MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: apps/payment-service/.env
+
   db:
     image: mongo:8.0.0-rc17-noble
     container_name: database
