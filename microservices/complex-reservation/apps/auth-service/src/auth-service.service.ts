@@ -1,4 +1,4 @@
-import { User } from '@app/common';
+import { AttachedUserToTheRequest } from '@app/common';
 import {
   Inject,
   Injectable,
@@ -28,7 +28,7 @@ export class AuthServiceService {
   async validateLogin(
     email: string,
     password: string,
-  ): Promise<User> {
+  ): Promise<AttachedUserToTheRequest> {
     const user = await this.userService
       .findByEmail(email)
       .catch((error) => {
@@ -54,7 +54,7 @@ export class AuthServiceService {
     };
   }
 
-  async login(user: User, response: Response) {
+  async login(user: AttachedUserToTheRequest, response: Response) {
     const payload: JwtPayload = {
       sub: user._id,
       email: user.email,

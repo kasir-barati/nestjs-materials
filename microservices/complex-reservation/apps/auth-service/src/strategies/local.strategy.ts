@@ -1,4 +1,4 @@
-import { User } from '@app/common';
+import { AttachedUserToTheRequest } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
@@ -14,7 +14,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(email: string, password: string): Promise<User> {
+  validate(
+    email: string,
+    password: string,
+  ): Promise<AttachedUserToTheRequest> {
     return this.authServiceService.validateLogin(email, password);
   }
 }

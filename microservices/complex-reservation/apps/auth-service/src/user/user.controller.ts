@@ -1,4 +1,4 @@
-import { GetUser, User } from '@app/common';
+import { AttachedUserToTheRequest, GetUser } from '@app/common';
 import {
   BadRequestException,
   Body,
@@ -66,7 +66,9 @@ export class UserController {
   })
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async me(@GetUser() user: User): Promise<MeDto> {
+  async me(
+    @GetUser() user: AttachedUserToTheRequest,
+  ): Promise<MeDto> {
     const data = await this.userService.findById(user._id);
     const serializedData = this.userSerializer.serializeMe(data);
 

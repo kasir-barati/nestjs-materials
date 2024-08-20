@@ -41,7 +41,7 @@ export class AuthServiceController {
   @Post('login')
   @HttpCode(200)
   async login(
-    @GetUser() user: User,
+    @GetUser() user: AttachedUserToTheRequest,
     @Res({ passthrough: true }) response: Response,
   ) {
     await this.authServiceService.login(user, response);

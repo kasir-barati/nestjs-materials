@@ -1,4 +1,4 @@
-import { User } from '@app/common';
+import { AttachedUserToTheRequest } from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -27,7 +27,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<User> {
+  async validate(
+    payload: JwtPayload,
+  ): Promise<AttachedUserToTheRequest> {
     const user = await this.authServiceService.getUserForJwtStrategy(
       payload.sub,
     );

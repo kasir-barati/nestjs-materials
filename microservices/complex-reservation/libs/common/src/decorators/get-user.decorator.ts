@@ -2,10 +2,13 @@ import {
   createParamDecorator,
   ExecutionContext,
 } from '@nestjs/common';
-import { User } from '../types/user.type';
+import { AttachedUserToTheRequest } from '../types/attached-user-to-the-request.type';
 
 export const GetUser = createParamDecorator(
-  (_data: unknown, ctx: ExecutionContext): User => {
+  (
+    _data: unknown,
+    ctx: ExecutionContext,
+  ): AttachedUserToTheRequest => {
     const request = ctx.switchToHttp().getRequest();
 
     return request.user;
