@@ -6,7 +6,7 @@ import {
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
-import reservationServiceConfig from './reservation-service.config';
+import reservationServiceConfig from './configs/reservation-service.config';
 import { ReservationModule } from './reservation/reservation.module';
 
 @Module({
@@ -14,7 +14,10 @@ import { ReservationModule } from './reservation/reservation.module';
     LoggerModule,
     DatabaseModule,
     ConfigModule.forRoot({
-      envFilePath: [join(process.cwd(), '.env')],
+      envFilePath: [
+        join(process.cwd(), '.env'),
+        join(process.cwd(), 'apps', 'reservation-service', '.env'),
+      ],
       load: [databaseConfig, reservationServiceConfig],
       isGlobal: true,
       cache: true,

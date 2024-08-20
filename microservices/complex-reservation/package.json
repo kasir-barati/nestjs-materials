@@ -23,6 +23,7 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "*",
+    "@nestjs/microservices": "^10.4.1",
     "@nestjs/mongoose": "^10.0.10",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^9.0.0",

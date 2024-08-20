@@ -1,6 +1,8 @@
 import {
+  AUTH_SERVICE,
   createSwaggerConfiguration,
   databaseConfig,
+  JwtAuthGuard,
   writeOpenApi,
 } from '@app/common';
 import { Logger, Module } from '@nestjs/common';
@@ -8,14 +10,18 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { join } from 'path';
 import * as Sinon from 'sinon';
-import reservationServiceConfig from '../../src/reservation-service.config';
+import reservationServiceConfig from '../../src/configs/reservation-service.config';
 import { ReservationController } from '../../src/reservation/reservation.controller';
+import { ReservationRepository } from '../../src/reservation/reservation.repository';
 import { ReservationService } from '../../src/reservation/reservation.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [join(process.cwd(), '.env')],
+      envFilePath: [
+        join(process.cwd(), '.env'),
+        join(process.cwd(), 'apps', 'reservation-service', '.env'),
+      ],
       load: [databaseConfig, reservationServiceConfig],
       isGlobal: true,
       cache: true,
@@ -26,6 +32,14 @@ import { ReservationService } from '../../src/reservation/reservation.service';
     {
       provide: ReservationService,
       useValue: Sinon.stub(ReservationService),
+    },
+    {
+      provide: ReservationRepository,
+      useValue: Sinon.stub(ReservationRepository),
+    },
+    {
+      provide: AUTH_SERVICE,
+      useValue: Sinon.stub(JwtAuthGuard),
     },
   ],
 })

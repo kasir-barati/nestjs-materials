@@ -1,5 +1,8 @@
 import {
+  AttachedUserToTheRequest,
   GetHeader,
+  GetUser,
+  JwtAuthGuard,
   MongoIdPipe,
   PatchContentTypeDto,
 } from '@app/common';
@@ -13,6 +16,7 @@ import {
   Param,
   Patch,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -58,12 +62,14 @@ export class ReservationController {
     type: InternalServerErrorException,
     description: 'Server error.',
   })
+  @UseGuards(JwtAuthGuard)
   @Put()
   create(
+    @GetUser() user: AttachedUserToTheRequest,
     @Body() createReservationDto: CreateReservationDto,
   ): Promise<CreatedReservationDto> {
     return this.reservationService.create(
-      'user id', // TODO: extract it from req.
+      user._id,
       createReservationDto,
     );
   }
@@ -84,6 +90,7 @@ export class ReservationController {
     type: InternalServerErrorException,
     description: 'Server error.',
   })
+  @UseGuards(JwtAuthGuard)
   @Get()
   read(): Promise<ReadReservationsDto> {
     return this.reservationService.read();
@@ -105,6 +112,7 @@ export class ReservationController {
     type: InternalServerErrorException,
     description: 'Server error.',
   })
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findById(
     @Param('id', MongoIdPipe) id: string,
@@ -129,6 +137,7 @@ export class ReservationController {
     type: InternalServerErrorException,
     description: 'Server error.',
   })
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(
     @Param('id', MongoIdPipe) id: string,
@@ -155,6 +164,7 @@ export class ReservationController {
     type: InternalServerErrorException,
     description: 'Server error.',
   })
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   replace(
     @Param('id', MongoIdPipe) id: string,
@@ -178,6 +188,7 @@ export class ReservationController {
     type: InternalServerErrorException,
     description: 'Server error.',
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   delete(@Param('id', MongoIdPipe) id: string): Promise<void> {
     return this.reservationService.delete(id);

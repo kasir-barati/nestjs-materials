@@ -3,8 +3,9 @@ import { Logger as NestLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
 import { Logger } from 'nestjs-pino';
-import reservationServiceConfig from './reservation-service.config';
+import reservationServiceConfig from './configs/reservation-service.config';
 import { ReservationServiceModule } from './reservation-service.module';
 
 async function bootstrap() {
@@ -14,6 +15,7 @@ async function bootstrap() {
   >(reservationServiceConfig.KEY);
   const appUrl = `http://localhost:${RESERVATION_SERVICE_PORT}/`;
 
+  app.use(cookieParser());
   app.use(bodyParser.json({ type: ['json', '+json'] }));
   app.useGlobalPipes(
     new ValidationPipe({

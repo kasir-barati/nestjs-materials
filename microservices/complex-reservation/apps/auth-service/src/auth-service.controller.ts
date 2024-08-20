@@ -1,4 +1,9 @@
-import { GetUser, User } from '@app/common';
+import {
+  AttachedUserToTheRequest,
+  GetUser,
+  MESSAGE_PATTERN_FOR_AUTHENTICATION_FLOW,
+  MicroservicesPayload,
+} from '@app/common';
 import {
   BadRequestException,
   Controller,
@@ -8,6 +13,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
@@ -16,6 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthServiceService } from './auth-service.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @ApiTags('Auth service')
@@ -47,5 +54,17 @@ export class AuthServiceController {
     await this.authServiceService.login(user, response);
 
     response.send();
+  }
+
+  /**
+   * This message handler listens for messages that fulfill the MESSAGE_PATTERN_FOR_AUTHENTICATION_FLOW message pattern.
+   * @returns the user attached to the request object. This user was attached in our JWT strategy to the request object. And now the client has the user info returned from this message handler. Note that here we are only checking whether user is authenticated or not in our JWT auth guard.
+   */
+  @UseGuards(JwtAuthGuard)
+  @MessagePattern(MESSAGE_PATTERN_FOR_AUTHENTICATION_FLOW)
+  async authenticate(
+    @Payload() data: MicroservicesPayload,
+  ): Promise<AttachedUserToTheRequest> {
+    return data.user;
   }
 }

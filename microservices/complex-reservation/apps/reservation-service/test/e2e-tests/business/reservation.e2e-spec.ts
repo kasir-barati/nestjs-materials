@@ -1,3 +1,4 @@
+import { getTempUser, login } from '@app/common';
 import {
   ReplaceReservationDto,
   ReservationServiceApi,
@@ -6,12 +7,17 @@ import { ReservationBuilder } from '../../builders/reservation.builder';
 
 describe('Reservation service (e2e - business logic)', () => {
   let reservationServiceApi: ReservationServiceApi;
+  const user = getTempUser();
 
   beforeAll(() => {
     reservationServiceApi = new ReservationServiceApi();
   });
 
   it('should create a new reservation', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
     const createReservationDto = {
       end: new Date().toISOString(),
       start: new Date().toISOString(),
@@ -20,9 +26,16 @@ describe('Reservation service (e2e - business logic)', () => {
     };
 
     const { data: reservation } =
-      await reservationServiceApi.reservationControllerCreate({
-        createReservationDto,
-      });
+      await reservationServiceApi.reservationControllerCreate(
+        {
+          createReservationDto,
+        },
+        {
+          headers: {
+            Cookie: authenticationJwtCookie,
+          },
+        },
+      );
 
     expect(reservation).toStrictEqual({
       __v: expect.any(Number),
@@ -35,10 +48,18 @@ describe('Reservation service (e2e - business logic)', () => {
   });
 
   it('should read all reservations', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
     await new ReservationBuilder().build();
 
     const { data } =
-      await reservationServiceApi.reservationControllerRead();
+      await reservationServiceApi.reservationControllerRead({
+        headers: {
+          Cookie: authenticationJwtCookie,
+        },
+      });
 
     expect(data.data.length).toBeGreaterThanOrEqual(1);
     expect(data.page).toBe(1);
@@ -46,17 +67,32 @@ describe('Reservation service (e2e - business logic)', () => {
   });
 
   it('should find reservation by id', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
     const id = await new ReservationBuilder().build();
 
     const { data: reservation } =
-      await reservationServiceApi.reservationControllerFindById({
-        id,
-      });
+      await reservationServiceApi.reservationControllerFindById(
+        {
+          id,
+        },
+        {
+          headers: {
+            Cookie: authenticationJwtCookie,
+          },
+        },
+      );
 
     expect(reservation._id).toBe(id);
   });
 
   it('should update reservation', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
     const id = await new ReservationBuilder().build();
     const newStart = new Date('2010').toISOString();
 
@@ -71,6 +107,7 @@ describe('Reservation service (e2e - business logic)', () => {
         {
           headers: {
             'Content-Type': 'application/merge-patch+json',
+            'Cookie': authenticationJwtCookie,
           },
         },
       );
@@ -79,6 +116,10 @@ describe('Reservation service (e2e - business logic)', () => {
   });
 
   it('should replace reservation', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
     const id = await new ReservationBuilder().build();
     const replaceReservationDto: ReplaceReservationDto = {
       end: new Date('2019').toISOString(),
@@ -88,10 +129,17 @@ describe('Reservation service (e2e - business logic)', () => {
     };
 
     const { data: reservation } =
-      await reservationServiceApi.reservationControllerReplace({
-        id,
-        replaceReservationDto,
-      });
+      await reservationServiceApi.reservationControllerReplace(
+        {
+          id,
+          replaceReservationDto,
+        },
+        {
+          headers: {
+            Cookie: authenticationJwtCookie,
+          },
+        },
+      );
 
     expect(reservation).toStrictEqual(
       expect.objectContaining({
@@ -102,12 +150,25 @@ describe('Reservation service (e2e - business logic)', () => {
   });
 
   it('should delete reservation', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
     const id = await new ReservationBuilder().build();
 
+    console.log(authenticationJwtCookie);
+
     const { status } =
-      await reservationServiceApi.reservationControllerDelete({
-        id,
-      });
+      await reservationServiceApi.reservationControllerDelete(
+        {
+          id,
+        },
+        {
+          headers: {
+            Cookie: authenticationJwtCookie,
+          },
+        },
+      );
 
     expect(status).toBe(200);
   });

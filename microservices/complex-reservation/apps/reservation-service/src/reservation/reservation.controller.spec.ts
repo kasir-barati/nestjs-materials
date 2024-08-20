@@ -1,4 +1,9 @@
-import { Pagination, SinonMock, SinonMockType } from '@app/common';
+import {
+  AttachedUserToTheRequest,
+  Pagination,
+  SinonMock,
+  SinonMockType,
+} from '@app/common';
 import { ReplaceReservationDto } from './dto/replace-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { Reservation } from './entities/reservation.entity';
@@ -27,7 +32,10 @@ describe('ReservationController', () => {
       _id: 'object id',
     });
 
-    const reservation = await controller.create(requestBody);
+    const reservation = await controller.create(
+      SinonMock.with<AttachedUserToTheRequest>({ _id: 'user id' }),
+      requestBody,
+    );
 
     expect(reservation).toStrictEqual({
       ...requestBody,

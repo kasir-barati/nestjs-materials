@@ -2,7 +2,6 @@ import { AttachedUserToTheRequest } from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthServiceService } from '../auth-service.service';
 import { JwtPayload } from '../auth-service.type';
@@ -19,8 +18,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          return request?.cookies?.Authentication;
+        (request: any) => {
+          return (
+            request?.cookies?.Authentication ??
+            request?.['Authentication']
+          );
         },
       ]),
       secretOrKey: authServiceConfigs.JWT_SECRET,

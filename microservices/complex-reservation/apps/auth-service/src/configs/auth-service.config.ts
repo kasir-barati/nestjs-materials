@@ -34,4 +34,7 @@ class EnvironmentVariables implements AuthServiceConfig {
 
   @IsInt()
   AUTH_SERVICE_PORT: number;
+
+  @IsInt()
+  TCP_PORT: number;
 }

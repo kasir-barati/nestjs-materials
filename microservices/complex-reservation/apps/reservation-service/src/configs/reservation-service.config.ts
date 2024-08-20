@@ -1,7 +1,7 @@
 import { validateEnv } from '@app/common';
 import { registerAs } from '@nestjs/config';
 import { IsInt, IsOptional, IsString } from 'class-validator';
-import { ReservationServiceConfig } from './reservation-service.type';
+import { ReservationServiceConfig } from '../reservation-service.type';
 
 declare global {
   namespace NodeJS {
@@ -25,6 +25,12 @@ class EnvironmentVariables implements ReservationServiceConfig {
   @IsOptional()
   @IsString()
   SWAGGER_PATH: string = 'docs';
+
+  @IsString()
+  AUTH_HOST: string;
+
+  @IsInt()
+  AUTH_TCP_PORT: number;
 
   @IsInt()
   RESERVATION_SERVICE_PORT: number;

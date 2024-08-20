@@ -1,4 +1,15 @@
 import type { Config } from 'jest';
+import { join } from 'path';
+
+const appCommonPath = join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'libs',
+  'common',
+  'src$1',
+);
 
 export default {
   displayName: 'reservation-service e2e tests',
@@ -11,6 +22,9 @@ export default {
   // ],
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
+  },
+  moduleNameMapper: {
+    '^@app/common(.*)$': appCommonPath,
   },
   setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
   detectOpenHandles: true,

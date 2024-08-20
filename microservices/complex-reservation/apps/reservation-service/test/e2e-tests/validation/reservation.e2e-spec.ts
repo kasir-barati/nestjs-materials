@@ -1,3 +1,4 @@
+import { getTempUser, login } from '@app/common';
 import {
   CreateReservationDto,
   ReplaceReservationDto,
@@ -12,6 +13,7 @@ describe('Reservation service (e2e - validation)', () => {
     invoiceId: '66be172a5d93fb9303e46ae3',
     locationId: '66be17356d013c36717843e9',
   };
+  const user = getTempUser();
 
   beforeAll(() => {
     reservationServiceApi = new ReservationServiceApi();
@@ -41,12 +43,20 @@ describe('Reservation service (e2e - validation)', () => {
   ])(
     'should throw error on creating a new reservation with garbage data: %p',
     async (createReservationDto: CreateReservationDto) => {
+      const authenticationJwtCookie = await login(
+        user.email,
+        user.password,
+      );
+
       const { status } =
         await reservationServiceApi.reservationControllerCreate(
           {
             createReservationDto,
           },
           {
+            headers: {
+              Cookie: authenticationJwtCookie,
+            },
             validateStatus(status) {
               return status > 200;
             },
@@ -58,12 +68,20 @@ describe('Reservation service (e2e - validation)', () => {
   );
 
   it('should throw error on fetching reservation with bad id', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
+
     const { status } =
       await reservationServiceApi.reservationControllerFindById(
         {
           id: 'garbage value',
         },
         {
+          headers: {
+            Cookie: authenticationJwtCookie,
+          },
           validateStatus(status) {
             return status > 200;
           },
@@ -74,6 +92,11 @@ describe('Reservation service (e2e - validation)', () => {
   });
 
   it('should throw error on updating reservation with garbage data or id', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
+
     const { status } =
       await reservationServiceApi.reservationControllerUpdate(
         {
@@ -85,6 +108,7 @@ describe('Reservation service (e2e - validation)', () => {
         {
           headers: {
             'Content-Type': 'application/merge-patch+json',
+            'Cookie': authenticationJwtCookie,
           },
           validateStatus(status) {
             return status > 200;
@@ -96,6 +120,11 @@ describe('Reservation service (e2e - validation)', () => {
   });
 
   it('should throw error on replacing reservation with garbage data, and id', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
+
     const { status } =
       await reservationServiceApi.reservationControllerReplace(
         {
@@ -110,6 +139,7 @@ describe('Reservation service (e2e - validation)', () => {
         {
           headers: {
             'Content-Type': 'application/merge-patch+json',
+            'Cookie': authenticationJwtCookie,
           },
           validateStatus(status) {
             return status > 200;
@@ -121,6 +151,11 @@ describe('Reservation service (e2e - validation)', () => {
   });
 
   it('should throw error on replacing reservation if some fields are missing', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
+
     const { status } =
       await reservationServiceApi.reservationControllerReplace(
         {
@@ -132,6 +167,7 @@ describe('Reservation service (e2e - validation)', () => {
         {
           headers: {
             'Content-Type': 'application/merge-patch+json',
+            'Cookie': authenticationJwtCookie,
           },
           validateStatus(status) {
             return status > 200;
@@ -143,12 +179,20 @@ describe('Reservation service (e2e - validation)', () => {
   });
 
   it('should throw error on deleting reservation with garbage id', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
+
     const { status } =
       await reservationServiceApi.reservationControllerDelete(
         {
           id: 'non-objectId',
         },
         {
+          headers: {
+            Cookie: authenticationJwtCookie,
+          },
           validateStatus(status) {
             return status > 200;
           },

@@ -1,3 +1,4 @@
+import { getTempUser, login } from '@app/common';
 import { ReservationServiceApi } from '../../api-client';
 
 export class ReservationBuilder {
@@ -34,15 +35,27 @@ export class ReservationBuilder {
     return this;
   }
   async build(): Promise<string> {
+    const user = getTempUser();
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
     const { data } =
-      await this.reservationServiceApi.reservationControllerCreate({
-        createReservationDto: {
-          end: this.end,
-          start: this.start,
-          invoiceId: this.invoiceId,
-          locationId: this.locationId,
+      await this.reservationServiceApi.reservationControllerCreate(
+        {
+          createReservationDto: {
+            end: this.end,
+            start: this.start,
+            invoiceId: this.invoiceId,
+            locationId: this.locationId,
+          },
         },
-      });
+        {
+          headers: {
+            Cookie: authenticationJwtCookie,
+          },
+        },
+      );
 
     return data._id;
   }

@@ -1,12 +1,24 @@
-import { DuplicationError } from '@app/common';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { DuplicationError, getTempUser } from '@app/common';
+import {
+  BadRequestException,
+  Injectable,
+  OnModuleInit,
+} from '@nestjs/common';
 import { hash } from 'argon2';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRepository } from './user.repository';
 
 @Injectable()
-export class UserService {
+export class UserService implements OnModuleInit {
   constructor(private readonly userRepository: UserRepository) {}
+
+  onModuleInit() {
+    const defaultTempUserForTestPurposes = getTempUser();
+    this.create({
+      email: defaultTempUserForTestPurposes.email,
+      password: defaultTempUserForTestPurposes.password,
+    });
+  }
 
   async create(createUserDto: CreateUserDto): Promise<string> {
     const { password, ...rest } = createUserDto;

@@ -1,5 +1,9 @@
-import { DatabaseModule } from '@app/common';
+import { AUTH_SERVICE, DatabaseModule } from '@app/common';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ClientsModule } from '@nestjs/microservices';
+import { AuthClientsModuleConfig } from '../configs/auth-client-module.config';
+import reservationServiceConfig from '../configs/reservation-service.config';
 import {
   Reservation,
   ReservationSchema,
@@ -12,6 +16,13 @@ import { ReservationService } from './reservation.service';
   imports: [
     DatabaseModule.forFeature([
       { name: Reservation.name, schema: ReservationSchema },
+    ]),
+    ClientsModule.registerAsync([
+      {
+        name: AUTH_SERVICE,
+        imports: [ConfigModule.forFeature(reservationServiceConfig)],
+        useClass: AuthClientsModuleConfig,
+      },
     ]),
   ],
   controllers: [ReservationController],
