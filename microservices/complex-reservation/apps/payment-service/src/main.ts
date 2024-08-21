@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
@@ -11,14 +12,28 @@ async function bootstrap() {
     ConfigType<typeof paymentServiceConfig>
   >(paymentServiceConfig.KEY);
 
-  app.connectMicroservice({
-    transport: Transport.TCP,
-    options: {
-      host: '0.0.0.0',
-      port: TCP_PORT,
+  app.connectMicroservice(
+    {
+      transport: Transport.TCP,
+      options: {
+        host: '0.0.0.0',
+        port: TCP_PORT,
+      },
     },
-  });
+    { inheritAppConfig: true },
+  );
   app.useLogger(app.get(Logger));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      errorHttpStatusCode: 400,
+      whitelist: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+      validateCustomDecorators: true,
+    }),
+  );
 
   await app.startAllMicroservices();
 }

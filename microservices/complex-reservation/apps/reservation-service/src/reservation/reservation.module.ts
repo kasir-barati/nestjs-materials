@@ -1,8 +1,13 @@
-import { AUTH_SERVICE, DatabaseModule } from '@app/common';
+import {
+  AUTH_SERVICE,
+  DatabaseModule,
+  PAYMENT_SERVICE,
+} from '@app/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule } from '@nestjs/microservices';
 import { AuthClientsModuleConfig } from '../configs/auth-client-module.config';
+import { PaymentClientsModuleConfig } from '../configs/payment-client-module.config';
 import reservationServiceConfig from '../configs/reservation-service.config';
 import {
   Reservation,
@@ -22,6 +27,11 @@ import { ReservationService } from './reservation.service';
         name: AUTH_SERVICE,
         imports: [ConfigModule.forFeature(reservationServiceConfig)],
         useClass: AuthClientsModuleConfig,
+      },
+      {
+        name: PAYMENT_SERVICE,
+        imports: [ConfigModule.forFeature(reservationServiceConfig)],
+        useClass: PaymentClientsModuleConfig,
       },
     ]),
   ],

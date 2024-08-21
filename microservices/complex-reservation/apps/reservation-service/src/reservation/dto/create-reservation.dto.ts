@@ -1,7 +1,8 @@
+import { ChargeMicroservicesPayload } from '@app/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsMongoId } from 'class-validator';
 
-export class CreateReservationDto {
+export class CreateReservationDto extends ChargeMicroservicesPayload {
   @ApiProperty({
     type: String,
     required: true,
@@ -19,15 +20,6 @@ export class CreateReservationDto {
   })
   @IsDateString()
   start: string;
-
-  @ApiProperty({
-    type: String,
-    required: true,
-    example: '66be1648e0cf5a3b4db5b18e',
-    description: "This reservation's invoice id.",
-  })
-  @IsMongoId()
-  invoiceId: string;
 
   @ApiProperty({
     type: String,

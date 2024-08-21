@@ -32,6 +32,12 @@ class EnvironmentVariables implements ReservationServiceConfig {
   @IsInt()
   AUTH_TCP_PORT: number;
 
+  @IsString()
+  PAYMENT_HOST: string;
+
+  @IsInt()
+  PAYMENT_TCP_PORT: number;
+
   @IsInt()
   RESERVATION_SERVICE_PORT: number;
 }

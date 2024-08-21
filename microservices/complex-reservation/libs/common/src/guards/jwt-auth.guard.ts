@@ -5,11 +5,12 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { map, Observable, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import {
   AUTH_SERVICE,
   MESSAGE_PATTERN_FOR_AUTHENTICATION_FLOW,
 } from '../constants/services.constant';
+import { AttachedUserToTheRequest } from '../types/attached-user-to-the-request.type';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -28,15 +29,22 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     return this.authClient
-      .send(MESSAGE_PATTERN_FOR_AUTHENTICATION_FLOW, {
-        Authentication: jwt,
-      })
+      .send<AttachedUserToTheRequest>(
+        MESSAGE_PATTERN_FOR_AUTHENTICATION_FLOW,
+        {
+          Authentication: jwt,
+        },
+      )
       .pipe(
         tap((response) => {
           // Here is where MicroservicesPayload.user is assigned.
           context.switchToHttp().getRequest().user = response;
         }),
         map(() => true),
+        catchError(() => {
+          // Write some more logic to handle different errors...
+          return of(false);
+        }),
       );
   }
 }

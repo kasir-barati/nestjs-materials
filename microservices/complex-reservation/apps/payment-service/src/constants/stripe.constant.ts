@@ -1,0 +1,1 @@
+export const STRIPE_INSTANCE = 'STRIPE_INSTANCE';

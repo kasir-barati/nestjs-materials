@@ -10,8 +10,9 @@ describe('Reservation service (e2e - validation)', () => {
   const createReservationDto: CreateReservationDto = {
     end: new Date().toISOString(),
     start: new Date().toISOString(),
-    invoiceId: '66be172a5d93fb9303e46ae3',
     locationId: '66be17356d013c36717843e9',
+    amount: 123123,
+    token: 'pm_card_visa_debit',
   };
   const user = getTempUser();
 
@@ -30,7 +31,7 @@ describe('Reservation service (e2e - validation)', () => {
     },
     {
       ...createReservationDto,
-      invoiceId: false,
+      amount: false,
     },
     {
       ...createReservationDto,

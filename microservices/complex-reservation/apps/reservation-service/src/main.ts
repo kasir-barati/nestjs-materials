@@ -22,9 +22,6 @@ async function bootstrap() {
       errorHttpStatusCode: 400,
       whitelist: true,
       transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
       validateCustomDecorators: true,
     }),
   );

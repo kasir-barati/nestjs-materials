@@ -4,6 +4,7 @@ import {
   SinonMock,
   SinonMockType,
 } from '@app/common';
+import { CreateReservationDto } from './dto/create-reservation.dto';
 import { ReplaceReservationDto } from './dto/replace-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { Reservation } from './entities/reservation.entity';
@@ -20,11 +21,17 @@ describe('ReservationController', () => {
   });
 
   it('should create a reservation', async () => {
-    const requestBody = {
+    const requestBody: CreateReservationDto = {
       end: new Date().toISOString(),
       start: new Date().toISOString(),
-      invoiceId: 'object id',
       locationId: 'object id',
+      amount: 12312312,
+      card: {
+        cvc: '123',
+        expMonth: 12,
+        expYear: 2026,
+        number: '2223000048410010',
+      },
     };
     service.create.withArgs('user id', requestBody).resolves({
       ...requestBody,

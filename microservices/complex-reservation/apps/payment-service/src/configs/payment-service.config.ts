@@ -1,6 +1,6 @@
 import { validateEnv } from '@app/common';
 import { registerAs } from '@nestjs/config';
-import { IsInt } from 'class-validator';
+import { IsInt, IsString } from 'class-validator';
 import { PaymentServiceConfig } from '../payment-service.type';
 
 declare global {
@@ -22,6 +22,9 @@ export default registerAs(
 );
 
 class EnvironmentVariables implements PaymentServiceConfig {
+  @IsString()
+  STRIPE_SECRET_KEY: string;
+
   @IsInt()
   TCP_PORT: number;
 }

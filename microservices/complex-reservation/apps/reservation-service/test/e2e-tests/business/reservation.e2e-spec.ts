@@ -1,5 +1,6 @@
 import { getTempUser, login } from '@app/common';
 import {
+  CreateReservationDto,
   ReplaceReservationDto,
   ReservationServiceApi,
 } from '../../../api-client';
@@ -18,11 +19,12 @@ describe('Reservation service (e2e - business logic)', () => {
       user.email,
       user.password,
     );
-    const createReservationDto = {
+    const createReservationDto: CreateReservationDto = {
       end: new Date().toISOString(),
       start: new Date().toISOString(),
-      invoiceId: '66be172a5d93fb9303e46ae3',
       locationId: '66be17356d013c36717843e9',
+      amount: 12312312,
+      token: 'pm_card_visa',
     };
 
     const { data: reservation } =
@@ -40,10 +42,13 @@ describe('Reservation service (e2e - business logic)', () => {
     expect(reservation).toStrictEqual({
       __v: expect.any(Number),
       _id: expect.any(String),
-      ...createReservationDto,
       userId: expect.any(String),
+      invoiceId: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
+      end: createReservationDto.end,
+      start: createReservationDto.start,
+      locationId: createReservationDto.locationId,
     });
   });
 

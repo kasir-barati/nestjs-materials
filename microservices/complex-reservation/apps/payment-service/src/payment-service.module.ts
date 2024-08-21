@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import paymentServiceConfig from './configs/payment-service.config';
+import { stripeFactory } from './configs/stripe.config';
 import { PaymentServiceController } from './payment-service.controller';
 import { PaymentServiceService } from './payment-service.service';
 
@@ -19,6 +20,6 @@ import { PaymentServiceService } from './payment-service.service';
     }),
   ],
   controllers: [PaymentServiceController],
-  providers: [PaymentServiceService],
+  providers: [PaymentServiceService, stripeFactory],
 })
 export class PaymentServiceModule {}

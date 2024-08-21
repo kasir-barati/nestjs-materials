@@ -12,12 +12,15 @@ import { UserRepository } from './user.repository';
 export class UserService implements OnModuleInit {
   constructor(private readonly userRepository: UserRepository) {}
 
-  onModuleInit() {
+  async onModuleInit() {
     const defaultTempUserForTestPurposes = getTempUser();
-    this.create({
-      email: defaultTempUserForTestPurposes.email,
-      password: defaultTempUserForTestPurposes.password,
-    });
+
+    if (!(await this.isSeeded())) {
+      await this.create({
+        email: defaultTempUserForTestPurposes.email,
+        password: defaultTempUserForTestPurposes.password,
+      });
+    }
   }
 
   async create(createUserDto: CreateUserDto): Promise<string> {
@@ -44,5 +47,16 @@ export class UserService implements OnModuleInit {
 
   findById(id: string) {
     return this.userRepository.findById(id);
+  }
+
+  private async isSeeded() {
+    const { email } = getTempUser();
+    try {
+      await this.findByEmail(email);
+
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

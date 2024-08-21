@@ -1,8 +1,8 @@
 import {
   AttachedUserToTheRequest,
+  AuthenticateMicroservicesPayload,
   GetUser,
   MESSAGE_PATTERN_FOR_AUTHENTICATION_FLOW,
-  MicroservicesPayload,
 } from '@app/common';
 import {
   BadRequestException,
@@ -63,7 +63,7 @@ export class AuthServiceController {
   @UseGuards(JwtAuthGuard)
   @MessagePattern(MESSAGE_PATTERN_FOR_AUTHENTICATION_FLOW)
   async authenticate(
-    @Payload() data: MicroservicesPayload,
+    @Payload() data: AuthenticateMicroservicesPayload,
   ): Promise<AttachedUserToTheRequest> {
     return data.user;
   }

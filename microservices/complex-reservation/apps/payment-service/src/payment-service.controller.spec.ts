@@ -1,26 +1,44 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import {
+  ChargeMicroservicesPayload,
+  SinonMock,
+  SinonMockType,
+} from '@app/common';
 import { PaymentServiceController } from './payment-service.controller';
 import { PaymentServiceService } from './payment-service.service';
 
 describe('PaymentServiceController', () => {
-  let paymentServiceController: PaymentServiceController;
+  let controller: PaymentServiceController;
+  let service: SinonMockType<PaymentServiceService>;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      controllers: [PaymentServiceController],
-      providers: [PaymentServiceService],
-    }).compile();
-
-    paymentServiceController = app.get<PaymentServiceController>(
-      PaymentServiceController,
-    );
+    service = SinonMock.of(PaymentServiceService);
+    controller = new PaymentServiceController(service);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(paymentServiceController.getHello()).toBe(
-        'Hello World!',
-      );
-    });
+  it.each<ChargeMicroservicesPayload>([
+    {
+      amount: 1000,
+      card: {
+        cvc: '737',
+        expMonth: 5,
+        expYear: 2026,
+        number: '374245455400122',
+      },
+    },
+    {
+      amount: 9000,
+      card: {
+        cvc: '737',
+        expMonth: 10,
+        expYear: 2030,
+        number: '8171999927660000',
+      },
+    },
+  ])('should charge', async (data) => {
+    service.charge.resolves();
+
+    await controller.charge(data);
+
+    expect(service.charge.calledWith(data)).toBeTruthy();
   });
 });

@@ -4,14 +4,16 @@ import { ReservationServiceApi } from '../../api-client';
 export class ReservationBuilder {
   private end: string;
   private start: string;
-  private invoiceId: string;
+  private amount: number;
+  private token: string;
   private locationId: string;
   private reservationServiceApi: ReservationServiceApi;
 
   constructor() {
     this.end = new Date().toISOString();
     this.start = new Date().toISOString();
-    this.invoiceId = '66bf079a665dc2b271bc1432';
+    this.amount = 1231231;
+    this.token = 'pm_card_discover';
     this.locationId = '66bf07a03c3dd10425e4fb94';
     this.reservationServiceApi = new ReservationServiceApi();
   }
@@ -26,12 +28,16 @@ export class ReservationBuilder {
       typeof value === 'string' ? value : value.toISOString();
     return this;
   }
-  setInvoiceId(value: string) {
-    this.invoiceId = value;
+  setAmount(value: number) {
+    this.amount = value;
     return this;
   }
   setLocationId(value: string) {
     this.locationId = value;
+    return this;
+  }
+  setToken(value: string) {
+    this.token = value;
     return this;
   }
   async build(): Promise<string> {
@@ -45,8 +51,9 @@ export class ReservationBuilder {
         {
           createReservationDto: {
             end: this.end,
+            token: this.token,
             start: this.start,
-            invoiceId: this.invoiceId,
+            amount: this.amount,
             locationId: this.locationId,
           },
         },

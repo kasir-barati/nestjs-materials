@@ -12,6 +12,7 @@ export * from './guards/jwt-auth.guard';
 export * from './logger/logger.module';
 export * from './pipes/mongo-id.pipe';
 export * from './types/attached-user-to-the-request.type';
+export * from './types/charge-response.type';
 export * from './types/microservices-payload.type';
 export * from './types/mock.type';
 export * from './types/node-env.type';

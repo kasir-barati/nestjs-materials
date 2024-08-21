@@ -26,6 +26,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { Observable } from 'rxjs';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { ReplaceReservationDto } from './dto/replace-reservation.dto';
 import {
@@ -67,7 +68,7 @@ export class ReservationController {
   create(
     @GetUser() user: AttachedUserToTheRequest,
     @Body() createReservationDto: CreateReservationDto,
-  ): Promise<CreatedReservationDto> {
+  ): Observable<Promise<CreatedReservationDto>> {
     return this.reservationService.create(
       user._id,
       createReservationDto,
