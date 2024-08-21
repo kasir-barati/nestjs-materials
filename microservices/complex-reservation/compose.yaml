@@ -48,6 +48,19 @@ services:
         condition: service_healthy
     env_file: apps/payment-service/.env
 
+  notification-api:
+    image: notification-api
+    container_name: notification-api-container
+    build:
+      context: .
+      dockerfile: ./apps/notification-service/Dockerfile
+      args:
+        MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+
   db:
     image: mongo:8.0.0-rc17-noble
     container_name: database
