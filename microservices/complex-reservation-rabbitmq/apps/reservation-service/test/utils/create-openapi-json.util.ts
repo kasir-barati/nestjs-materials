@@ -1,7 +1,6 @@
 import {
   AUTH_SERVICE,
   createSwaggerConfiguration,
-  databaseConfig,
   JwtAuthGuard,
   writeOpenApi,
 } from '@app/common';
@@ -22,7 +21,7 @@ import { ReservationService } from '../../src/reservation/reservation.service';
         join(process.cwd(), '.env'),
         join(process.cwd(), 'apps', 'reservation-service', '.env'),
       ],
-      load: [databaseConfig, reservationServiceConfig],
+      load: [reservationServiceConfig],
       isGlobal: true,
       cache: true,
     }),

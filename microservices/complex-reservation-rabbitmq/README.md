@@ -2,7 +2,7 @@
 
 In this project we will write E2E tests, automating our tests and unit tests. To learn more about tests. Learn more about testing [here](https://github.com/kasir-barati/awesome-js-ts/blob/main/.github/docs/testing.md).
 
-A reservation booking system that has the following features:
+A reservation booking system that has the following features and each feature has its own database if it needs (exposing their port are just for you to connect to them with mongo-compass on your local system. But our code is utilizing docker internal networking system to connect and find the appropriate database instance in our compose stack):
 
 - Payment.
 - Bill users.
@@ -21,13 +21,13 @@ A reservation booking system that has the following features:
 ## Topics that can be considered for further discussion
 
 - CI/CD.
-- [Shared database VS separate database](https://youtu.be/mBNDxpJTg8U?t=285).
 - Create client SDK for your microservices.
 - Retry mechanism for even-driven communication.
 - Which microservice can access another microservice and to which extend.
 
 ## Learn more
 
+- [My own documentation as an introductory info for microservices](https://github.com/kasir-barati/you-say/blob/main/.github/docs/microservices/README.md).
 - [PATCH vs PUT HTTP verb](https://dev.to/kasir-barati/patch-vs-put-2pa3).
 - [The concept of machine-2-machine communication and as such permissions](https://www.reddit.com/r/microservices/comments/16kpc6z/authentication_and_authorization_between_internal).
 

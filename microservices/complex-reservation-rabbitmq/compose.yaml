@@ -11,7 +11,7 @@ services:
         AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
         MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
     depends_on:
-      db:
+      auth-db:
         condition: service_healthy
     env_file:
       - .env
@@ -29,7 +29,7 @@ services:
         RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
         MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
     depends_on:
-      db:
+      reservation-db:
         condition: service_healthy
     env_file:
       - .env
@@ -43,9 +43,6 @@ services:
       dockerfile: ./apps/payment-service/Dockerfile
       args:
         MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
-    depends_on:
-      db:
-        condition: service_healthy
     env_file: apps/payment-service/.env
 
   notification-api:
@@ -57,19 +54,31 @@ services:
       args:
         MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
     depends_on:
-      db:
-        condition: service_healthy
       mailcatcher:
         condition: service_started
     env_file: apps/notification-service/.env
 
-  db:
+  auth-db:
     image: mongo:8.0.0-rc17-noble
-    container_name: database
+    container_name: auth-database
     ports:
-      - 27017:27017
+      - 27018:27017
     environment:
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  reservation-db:
+    image: mongo:8.0.0-rc17-noble
+    container_name: reservation-database
+    ports:
+      - 27019:27017
+    environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     healthcheck:

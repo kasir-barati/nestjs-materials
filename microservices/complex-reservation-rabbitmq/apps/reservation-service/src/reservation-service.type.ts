@@ -7,4 +7,6 @@ export interface ReservationServiceConfig {
   NOTIFICATION_HOST: string;
   NOTIFICATION_TCP_PORT: number;
   RESERVATION_SERVICE_PORT: number;
+  DATABASE_URL: string;
+  MONGO_INITDB_DATABASE: string;
 }

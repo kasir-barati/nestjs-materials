@@ -1,20 +1,24 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ModelDefinition, MongooseModule } from '@nestjs/mongoose';
-import databaseConfig from './database.config';
-import { MongooseModuleConfig } from './mongoose-module.config';
+import { DynamicModule, Module } from '@nestjs/common';
+import {
+  ModelDefinition,
+  MongooseModule,
+  MongooseModuleAsyncOptions,
+} from '@nestjs/mongoose';
 
-@Module({
-  imports: [
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule.forFeature(databaseConfig)],
-      useClass: MongooseModuleConfig,
-    }),
-  ],
-  providers: [ConfigService],
-})
+@Module({})
 export class DatabaseModule {
   static forFeature(models: ModelDefinition[]) {
     return MongooseModule.forFeature(models);
+  }
+  static forRootAsync(
+    options: MongooseModuleAsyncOptions,
+  ): DynamicModule {
+    return {
+      module: DatabaseModule,
+      imports: [
+        ...options.imports,
+        MongooseModule.forRootAsync(options),
+      ],
+    };
   }
 }

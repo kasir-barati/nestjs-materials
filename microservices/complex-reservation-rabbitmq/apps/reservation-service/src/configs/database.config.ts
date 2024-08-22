@@ -4,23 +4,23 @@ import {
   MongooseModuleOptions,
   MongooseOptionsFactory,
 } from '@nestjs/mongoose';
-import databaseConfig from './database.config';
+import reservationServiceConfig from './reservation-service.config';
 
-export class MongooseModuleConfig implements MongooseOptionsFactory {
-  private readonly logger = new Logger(MongooseModuleConfig.name);
+export class DatabaseConfig implements MongooseOptionsFactory {
+  private readonly logger = new Logger(DatabaseConfig.name);
 
   constructor(
-    @Inject(databaseConfig.KEY)
-    private readonly databaseConfigs: ConfigType<
-      typeof databaseConfig
+    @Inject(reservationServiceConfig.KEY)
+    private readonly reservationServiceConfigs: ConfigType<
+      typeof reservationServiceConfig
     >,
   ) {}
 
   createMongooseOptions():
     | MongooseModuleOptions
     | Promise<MongooseModuleOptions> {
-    const { DATABASE_URL, MONGO_INITDB_DATABASE } =
-      this.databaseConfigs;
+    const { MONGO_INITDB_DATABASE, DATABASE_URL } =
+      this.reservationServiceConfigs;
 
     this.logger.log(
       `MongoDB connection string: ${DATABASE_URL}/${MONGO_INITDB_DATABASE}`,

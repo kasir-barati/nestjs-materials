@@ -1,6 +1,5 @@
 import {
   createSwaggerConfiguration,
-  databaseConfig,
   writeOpenApi,
 } from '@app/common';
 import { Logger, Module } from '@nestjs/common';
@@ -22,7 +21,7 @@ import { UserService } from '../../src/user/user.service';
         join(process.cwd(), '.env'),
         join(process.cwd(), 'apps', 'auth-service', '.env'),
       ],
-      load: [databaseConfig, authServiceConfig],
+      load: [authServiceConfig],
       isGlobal: true,
       cache: true,
     }),

@@ -4,6 +4,8 @@ export interface AuthServiceConfig {
   SWAGGER_PATH: string;
   TCP_PORT: number;
   AUTH_SERVICE_PORT: number;
+  DATABASE_URL: string;
+  MONGO_INITDB_DATABASE: string;
 }
 
 export interface JwtPayload {

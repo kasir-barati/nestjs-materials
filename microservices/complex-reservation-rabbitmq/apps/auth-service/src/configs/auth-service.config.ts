@@ -37,4 +37,10 @@ class EnvironmentVariables implements AuthServiceConfig {
 
   @IsInt()
   TCP_PORT: number;
+
+  @IsString()
+  DATABASE_URL: string;
+
+  @IsString()
+  MONGO_INITDB_DATABASE: string;
 }
