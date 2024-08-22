@@ -27,25 +27,19 @@ class EnvironmentVariables implements ReservationServiceConfig {
   SWAGGER_PATH: string = 'docs';
 
   @IsString()
-  AUTH_HOST: string;
-
-  @IsInt()
-  AUTH_TCP_PORT: number;
+  AUTH_QUEUE: string;
 
   @IsString()
-  PAYMENT_HOST: string;
-
-  @IsInt()
-  PAYMENT_TCP_PORT: number;
+  PAYMENT_QUEUE: string;
 
   @IsInt()
   RESERVATION_SERVICE_PORT: number;
 
   @IsString()
-  NOTIFICATION_HOST: string;
+  NOTIFICATION_QUEUE: string;
 
-  @IsInt()
-  NOTIFICATION_TCP_PORT: number;
+  @IsString()
+  RABBITMQ_URI: string;
 
   @IsString()
   DATABASE_URL: string;

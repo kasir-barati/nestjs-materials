@@ -1,5 +1,6 @@
 export interface NotificationServiceConfig {
-  TCP_PORT: number;
+  NOTIFICATION_QUEUE: string;
+  RABBITMQ_URI: string;
   SMTP_HOST: string;
   SMTP_PORT: number;
   SMTP_USERNAME: string;

@@ -8,16 +8,16 @@ import { PaymentServiceModule } from './payment-service.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(PaymentServiceModule);
-  const { TCP_PORT } = app.get<
+  const { RABBITMQ_URI, PAYMENT_QUEUE } = app.get<
     ConfigType<typeof paymentServiceConfig>
   >(paymentServiceConfig.KEY);
 
   app.connectMicroservice(
     {
-      transport: Transport.TCP,
+      transport: Transport.RMQ,
       options: {
-        host: '0.0.0.0',
-        port: TCP_PORT,
+        urls: [RABBITMQ_URI],
+        queue: PAYMENT_QUEUE,
       },
     },
     { inheritAppConfig: true },

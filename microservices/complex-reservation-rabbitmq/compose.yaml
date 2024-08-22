@@ -13,6 +13,8 @@ services:
     depends_on:
       auth-db:
         condition: service_healthy
+      message-brocker:
+        condition: service_healthy
     env_file:
       - .env
       - apps/auth-service/.env
@@ -31,23 +33,30 @@ services:
     depends_on:
       reservation-db:
         condition: service_healthy
+      message-brocker:
+        condition: service_healthy
     env_file:
       - .env
       - apps/reservation-service/.env
 
-  payment-api:
-    image: payment-api
-    container_name: payment-api-container
+  payment-service:
+    image: payment-service
+    container_name: payment-service-container
     build:
       context: .
       dockerfile: ./apps/payment-service/Dockerfile
       args:
         MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
-    env_file: apps/payment-service/.env
+    depends_on:
+      message-brocker:
+        condition: service_healthy
+    env_file:
+      - .env
+      - apps/payment-service/.env
 
-  notification-api:
-    image: notification-api
-    container_name: notification-api-container
+  notification-service:
+    image: notification-service
+    container_name: notification-service-container
     build:
       context: .
       dockerfile: ./apps/notification-service/Dockerfile
@@ -56,7 +65,11 @@ services:
     depends_on:
       mailcatcher:
         condition: service_started
-    env_file: apps/notification-service/.env
+      message-brocker:
+        condition: service_healthy
+    env_file:
+      - .env
+      - apps/notification-service/.env
 
   auth-db:
     image: mongo:8.0.0-rc17-noble
@@ -87,6 +100,21 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+
+  message-brocker:
+    image: rabbitmq:4.0-rc-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    user: ${RABBITMQ_DEFAULT_USER}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 1s
+      timeout: 3s
+      retries: 30
 
   mailcatcher:
     image: sj26/mailcatcher:v0.8.2

@@ -10,16 +10,21 @@ import authServiceConfig from './configs/auth-service.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
-  const { SWAGGER_PATH, AUTH_SERVICE_PORT, TCP_PORT } = app.get<
-    ConfigType<typeof authServiceConfig>
-  >(authServiceConfig.KEY);
+  const {
+    SWAGGER_PATH,
+    AUTH_SERVICE_PORT,
+    RABBITMQ_URI,
+    AUTH_QUEUE,
+  } = app.get<ConfigType<typeof authServiceConfig>>(
+    authServiceConfig.KEY,
+  );
   const appUrl = `http://localhost:${AUTH_SERVICE_PORT}/`;
 
   app.connectMicroservice({
-    transport: Transport.TCP,
+    transport: Transport.RMQ,
     options: {
-      host: '0.0.0.0',
-      port: TCP_PORT,
+      urls: [RABBITMQ_URI],
+      queue: AUTH_QUEUE,
     },
   });
   app.use(cookieParser());

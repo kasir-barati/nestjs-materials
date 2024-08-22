@@ -19,10 +19,10 @@ export class AuthClientsModuleConfig
 
   createClientOptions(): Promise<ClientProvider> | ClientProvider {
     return {
-      transport: Transport.TCP,
+      transport: Transport.RMQ,
       options: {
-        host: this.authServiceConfigs.AUTH_HOST,
-        port: this.authServiceConfigs.AUTH_TCP_PORT,
+        urls: [this.authServiceConfigs.RABBITMQ_URI],
+        queue: this.authServiceConfigs.AUTH_QUEUE,
       },
     };
   }

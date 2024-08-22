@@ -15,6 +15,7 @@ import { PaymentServiceService } from './payment-service.service';
       isGlobal: true,
       load: [paymentServiceConfig],
       envFilePath: [
+        join(process.cwd(), '.env'),
         join(process.cwd(), 'apps', 'payment-service', '.env'),
       ],
     }),

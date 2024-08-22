@@ -19,10 +19,10 @@ export class PaymentClientsModuleConfig
 
   createClientOptions(): Promise<ClientProvider> | ClientProvider {
     return {
-      transport: Transport.TCP,
+      transport: Transport.RMQ,
       options: {
-        host: this.authServiceConfigs.PAYMENT_HOST,
-        port: this.authServiceConfigs.PAYMENT_TCP_PORT,
+        urls: [this.authServiceConfigs.RABBITMQ_URI],
+        queue: this.authServiceConfigs.PAYMENT_QUEUE,
       },
     };
   }

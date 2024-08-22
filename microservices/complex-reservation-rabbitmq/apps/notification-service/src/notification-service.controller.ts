@@ -4,7 +4,13 @@ import {
   RpcValidationFilter,
 } from '@app/common';
 import { Controller, UseFilters } from '@nestjs/common';
-import { EventPattern, Payload } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
+import { Channel, Message } from 'amqplib';
 import { NotificationServiceService } from './notification-service.service';
 
 @Controller()
@@ -15,11 +21,21 @@ export class NotificationServiceController {
 
   @UseFilters(new RpcValidationFilter())
   @EventPattern(EVENT_PATTERN_FOR_EMAIL_NOTIFICATION)
-  sendEmailNotification(
+  async sendEmailNotification(
     @Payload() data: EmailNotificationMicroservicesPayload,
+    @Ctx() context: RmqContext,
   ): Promise<boolean> {
-    return this.notificationServiceService.sendEmailNotification(
-      data,
-    );
+    const channel: Channel = context.getChannelRef();
+    const originalMessage = context.getMessage() as Message;
+    const isSent =
+      await this.notificationServiceService.sendEmailNotification(
+        data,
+      );
+
+    if (isSent) {
+      channel.ack(originalMessage);
+    }
+
+    return isSent;
   }
 }

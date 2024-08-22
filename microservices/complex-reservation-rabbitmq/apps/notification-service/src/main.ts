@@ -8,16 +8,17 @@ import { NotificationServiceModule } from './notification-service.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(NotificationServiceModule);
-  const { TCP_PORT } = app.get<
+  const { RABBITMQ_URI, NOTIFICATION_QUEUE } = app.get<
     ConfigType<typeof notificationServiceConfig>
   >(notificationServiceConfig.KEY);
 
   app.connectMicroservice(
     {
-      transport: Transport.TCP,
+      transport: Transport.RMQ,
       options: {
-        host: '0.0.0.0',
-        port: TCP_PORT,
+        noAck: false,
+        urls: [RABBITMQ_URI],
+        queue: NOTIFICATION_QUEUE,
       },
     },
     { inheritAppConfig: true },

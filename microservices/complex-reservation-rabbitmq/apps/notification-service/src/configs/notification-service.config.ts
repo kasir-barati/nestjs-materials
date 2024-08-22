@@ -25,8 +25,11 @@ class EnvironmentVariables implements NotificationServiceConfig {
   @IsEmail()
   FROM_EMAIL: string;
 
-  @IsInt()
-  TCP_PORT: number;
+  @IsString()
+  NOTIFICATION_QUEUE: string;
+
+  @IsString()
+  RABBITMQ_URI: string;
 
   @IsString()
   SMTP_HOST: string;

@@ -1,4 +1,5 @@
 export interface PaymentServiceConfig {
-  TCP_PORT: number;
+  PAYMENT_QUEUE: string;
+  RABBITMQ_URI: string;
   STRIPE_SECRET_KEY: string;
 }

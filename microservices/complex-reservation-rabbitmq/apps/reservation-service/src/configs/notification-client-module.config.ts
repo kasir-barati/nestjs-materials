@@ -19,10 +19,10 @@ export class NotificationClientsModuleConfig
 
   createClientOptions(): Promise<ClientProvider> | ClientProvider {
     return {
-      transport: Transport.TCP,
+      transport: Transport.RMQ,
       options: {
-        host: this.authServiceConfigs.NOTIFICATION_HOST,
-        port: this.authServiceConfigs.NOTIFICATION_TCP_PORT,
+        urls: [this.authServiceConfigs.RABBITMQ_URI],
+        queue: this.authServiceConfigs.NOTIFICATION_QUEUE,
       },
     };
   }

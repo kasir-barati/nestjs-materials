@@ -15,6 +15,7 @@ import { NotificationServiceService } from './notification-service.service';
       isGlobal: true,
       load: [notificationServiceConfig],
       envFilePath: [
+        join(process.cwd(), '.env'),
         join(process.cwd(), 'apps', 'notification-service', '.env'),
       ],
     }),

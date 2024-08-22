@@ -35,8 +35,11 @@ class EnvironmentVariables implements AuthServiceConfig {
   @IsInt()
   AUTH_SERVICE_PORT: number;
 
-  @IsInt()
-  TCP_PORT: number;
+  @IsString()
+  AUTH_QUEUE: string;
+
+  @IsString()
+  RABBITMQ_URI: string;
 
   @IsString()
   DATABASE_URL: string;
