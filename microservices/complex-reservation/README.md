@@ -20,7 +20,9 @@ A reservation booking system that has the following features:
 
 ## Topics that can be considered for further discussion
 
+- CI/CD.
 - [Shared database VS separate database](https://youtu.be/mBNDxpJTg8U?t=285).
+- Create client SDK for your microservices.
 - Retry mechanism for even-driven communication.
 - Which microservice can access another microservice and to which extend.
 
