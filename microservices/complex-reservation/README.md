@@ -20,7 +20,7 @@ A reservation booking system that has the following features:
 
 ## Topics that can be considered for further discussion
 
-- Shared database VS separate database.
+- [Shared database VS separate database](https://youtu.be/mBNDxpJTg8U?t=285).
 - Retry mechanism for even-driven communication.
 - Which microservice can access another microservice and to which extend.
 
