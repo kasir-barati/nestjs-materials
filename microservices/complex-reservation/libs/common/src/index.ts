@@ -8,6 +8,7 @@ export * from './database/database.type';
 export * from './decorators/get-header.decorator';
 export * from './decorators/get-user.decorator';
 export * from './dto/patch-content-type.dto';
+export * from './filters/rpc-validation.filter';
 export * from './guards/jwt-auth.guard';
 export * from './logger/logger.module';
 export * from './pipes/mongo-id.pipe';

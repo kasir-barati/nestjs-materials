@@ -59,7 +59,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file: .env
+      mailcatcher:
+        condition: service_started
+    env_file: apps/notification-service/.env
 
   db:
     image: mongo:8.0.0-rc17-noble
@@ -76,3 +78,9 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+
+  mailcatcher:
+    image: sj26/mailcatcher:v0.8.2
+    ports:
+      - "1025:1025"
+      - "1080:1080"

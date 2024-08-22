@@ -161,8 +161,6 @@ describe('Reservation service (e2e - business logic)', () => {
     );
     const id = await new ReservationBuilder().build();
 
-    console.log(authenticationJwtCookie);
-
     const { status } =
       await reservationServiceApi.reservationControllerDelete(
         {

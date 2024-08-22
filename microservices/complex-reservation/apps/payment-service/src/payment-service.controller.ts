@@ -2,10 +2,10 @@ import {
   ChargeMicroservicesPayload,
   ChargeResponseDto,
   MESSAGE_PATTERN_FOR_CHARGING_USER,
+  RpcValidationFilter,
 } from '@app/common';
 import { Controller, UseFilters } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { RpcValidationFilter } from './filters/rpc-validation.filter';
 import { PaymentServiceService } from './payment-service.service';
 
 @Controller()

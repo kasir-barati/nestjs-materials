@@ -9,9 +9,25 @@ A reservation booking system that has the following features:
 - Persist reservations.
 - Send email notifications.
 
+  - In dev env you can see them by going to this url: http://localhost:1080/.
+  - Right now we ain't re-authenticating user in the notification service, though you might wanna do or do not do it:
+
+    | Do it                                                                                           | Do not do it                                                                              |
+    | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+    | **Security Sensitivity**: E.g trigger financial transactions or access to sensitive data.       | **Trust Between Services**: Microservices often operate within a trusted network.         |
+    | **Different Security Context**: E.g. stricter requirements and regulations.                     | **Separation of Concerns**: You could argue that it is not notification's responsibility. |
+    | There is **significant time gap** between the initial authentication & notification being sent. | **Performance Considerations**: too much load on auth service.                            |
+
+## Topics that can be considered for further discussion
+
+- Shared database VS separate database.
+- Retry mechanism for even-driven communication.
+- Which microservice can access another microservice and to which extend.
+
 ## Learn more
 
 - [PATCH vs PUT HTTP verb](https://dev.to/kasir-barati/patch-vs-put-2pa3).
+- [The concept of machine-2-machine communication and as such permissions](https://www.reddit.com/r/microservices/comments/16kpc6z/authentication_and_authorization_between_internal).
 
 ## Start the app in dev env
 

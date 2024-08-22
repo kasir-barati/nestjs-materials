@@ -1,4 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  EmailNotificationMicroservicesPayload,
+  EVENT_PATTERN_FOR_EMAIL_NOTIFICATION,
+  RpcValidationFilter,
+} from '@app/common';
+import { Controller, UseFilters } from '@nestjs/common';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import { NotificationServiceService } from './notification-service.service';
 
 @Controller()
@@ -7,8 +13,13 @@ export class NotificationServiceController {
     private readonly notificationServiceService: NotificationServiceService,
   ) {}
 
-  @Get()
-  getHello(): string {
-    return this.notificationServiceService.getHello();
+  @UseFilters(new RpcValidationFilter())
+  @EventPattern(EVENT_PATTERN_FOR_EMAIL_NOTIFICATION)
+  sendEmailNotification(
+    @Payload() data: EmailNotificationMicroservicesPayload,
+  ): Promise<boolean> {
+    return this.notificationServiceService.sendEmailNotification(
+      data,
+    );
   }
 }

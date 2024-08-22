@@ -40,4 +40,10 @@ class EnvironmentVariables implements ReservationServiceConfig {
 
   @IsInt()
   RESERVATION_SERVICE_PORT: number;
+
+  @IsString()
+  NOTIFICATION_HOST: string;
+
+  @IsInt()
+  NOTIFICATION_TCP_PORT: number;
 }

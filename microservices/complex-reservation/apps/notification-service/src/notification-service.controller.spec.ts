@@ -1,4 +1,8 @@
-import { SinonMock, SinonMockType } from '@app/common';
+import {
+  EmailNotificationMicroservicesPayload,
+  SinonMock,
+  SinonMockType,
+} from '@app/common';
 import { NotificationServiceController } from './notification-service.controller';
 import { NotificationServiceService } from './notification-service.service';
 
@@ -11,7 +15,23 @@ describe('NotificationServiceController', () => {
     controller = new NotificationServiceController(service);
   });
 
-  it('should return "Hello World!"', () => {
-    expect(controller.getHello()).toBe('Hello World!');
-  });
+  it.each<EmailNotificationMicroservicesPayload>([
+    {
+      email: 'joker@role.ir',
+      text: 'funny.',
+    },
+    {
+      email: 'hero@her.sp',
+      text: 'Lorem.',
+    },
+  ])(
+    'should return true after successful email sending',
+    async (data) => {
+      service.sendEmailNotification.withArgs(data).resolves(true);
+
+      const isSent = await controller.sendEmailNotification(data);
+
+      expect(isSent).toBeTruthy();
+    },
+  );
 });
