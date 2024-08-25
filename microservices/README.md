@@ -37,3 +37,7 @@ Microservices are small programs, each with a specific and narrow scope, that ar
 | Messaging Queues | Asynchronously communication through RabbitMQ, Apache Kafka, or Amazon SQS. Decouples communication. Supports event-driven architectures.                                                |
 | Event Streaming  | Services produce and consume events. Real-time communication and data processing. Useful for when we need to process events asynchronously and distribute them across multiple services. |
 | NATS             | An infrastructure that allows data exchange, segmented in the form of messages. It is a messaging system. Designed for building distributed systems & microservices architectures.       |
+
+# RabbitMQ
+
+- `connectMicroservice` only connects to a queue (or create it if needed). In other words, it performs `assertQueue` operation ([ref](https://stackoverflow.com/a/68935959/8784518)).

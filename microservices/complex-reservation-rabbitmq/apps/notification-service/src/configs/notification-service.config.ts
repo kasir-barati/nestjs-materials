@@ -26,6 +26,9 @@ class EnvironmentVariables implements NotificationServiceConfig {
   FROM_EMAIL: string;
 
   @IsString()
+  NOTIFICATION_DLQ: string;
+
+  @IsString()
   NOTIFICATION_QUEUE: string;
 
   @IsString()
