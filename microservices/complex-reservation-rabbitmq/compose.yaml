@@ -71,6 +71,25 @@ services:
       - .env
       - apps/notification-service/.env
 
+  dead-letter-notification-service:
+    image: dead-letter-notification-service
+    container_name: dead-letter-notification-service-container
+    build:
+      context: .
+      dockerfile: ./apps/dead-letter-notification-service/Dockerfile
+      args:
+        MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
+    depends_on:
+      mailcatcher:
+        condition: service_started
+      message-brocker:
+        condition: service_healthy
+      dead-letter-notification-db:
+        condition: service_healthy
+    env_file:
+      - .env
+      - apps/dead-letter-notification-service/.env
+
   auth-db:
     image: mongo:8.0.0-rc17-noble
     container_name: auth-database
@@ -91,6 +110,21 @@ services:
     container_name: reservation-database
     ports:
       - 27019:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  dead-letter-notification-db:
+    image: mongo:8.0.0-rc17-noble
+    container_name: dead-letter-notification-database
+    ports:
+      - 27020:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}

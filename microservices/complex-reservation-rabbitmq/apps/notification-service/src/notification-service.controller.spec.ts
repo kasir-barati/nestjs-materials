@@ -4,6 +4,7 @@ import {
   SinonMockType,
 } from '@app/common';
 import { RmqContext } from '@nestjs/microservices';
+import * as Sinon from 'sinon';
 import { NotificationServiceController } from './notification-service.controller';
 import { NotificationServiceService } from './notification-service.service';
 
@@ -26,33 +27,29 @@ describe('NotificationServiceController', () => {
       email: 'hero@her.sp',
       text: 'Lorem.',
     },
-  ])(
-    'should return true after successful email sending',
-    async (data) => {
-      const mockAck = jest.fn();
-      const rmqContext = SinonMock.of(RmqContext, {
-        getChannelRef: jest.fn(() => ({ ack: mockAck })),
-      });
-      service.sendEmailNotification.withArgs(data).resolves(true);
+  ])('should send email: %p', async (data) => {
+    const rmqContext = SinonMock.of(RmqContext);
+    service.sendEmailNotification.resolves();
 
-      const isSent = await controller.sendEmailNotification(
+    await controller.sendEmailNotification(data, rmqContext);
+
+    expect(
+      service.sendEmailNotification.calledWith(
         data,
-        rmqContext,
-      );
+        Sinon.match.any,
+        Sinon.match.any,
+      ),
+    ).toBeTruthy();
+  });
 
-      expect(mockAck).toHaveBeenCalledTimes(1);
-      expect(isSent).toBeTruthy();
-    },
-  );
-
-  it('should return false after failing to send email', async () => {
+  it('should fail to send email', async () => {
     const mockAck = jest.fn();
     const rmqContext = SinonMock.of(RmqContext, {
       getChannelRef: jest.fn(() => ({ ack: mockAck })),
     });
-    service.sendEmailNotification.resolves(false);
+    service.sendEmailNotification.resolves();
 
-    const isSent = await controller.sendEmailNotification(
+    await controller.sendEmailNotification(
       {
         email: 'hero@her.sp',
         text: 'Lorem.',
@@ -61,6 +58,5 @@ describe('NotificationServiceController', () => {
     );
 
     expect(mockAck).toHaveBeenCalledTimes(0);
-    expect(isSent).toBeFalsy();
   });
 });

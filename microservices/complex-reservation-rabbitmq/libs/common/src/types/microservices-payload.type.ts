@@ -51,4 +51,13 @@ export class EmailNotificationMicroservicesPayload {
   })
   @IsString()
   text?: string;
+
+  @ApiProperty({
+    type: Number,
+    example: '3',
+    description:
+      "How many times it should be retried. You do not need to specify this. It'll be managed & added by DLQ service.",
+  })
+  @IsInt()
+  retryCount?: number;
 }

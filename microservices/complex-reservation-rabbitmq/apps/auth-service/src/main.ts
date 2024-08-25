@@ -2,7 +2,7 @@ import { createSwaggerConfiguration } from '@app/common';
 import { Logger as NestLogger, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices';
+import { RmqOptions, Transport } from '@nestjs/microservices';
 import * as cookieParser from 'cookie-parser';
 import { Logger } from 'nestjs-pino';
 import { AuthModule } from './auth-service.module';
@@ -20,7 +20,7 @@ async function bootstrap() {
   );
   const appUrl = `http://localhost:${AUTH_SERVICE_PORT}/`;
 
-  app.connectMicroservice({
+  app.connectMicroservice<RmqOptions>({
     transport: Transport.RMQ,
     options: {
       urls: [RABBITMQ_URI],

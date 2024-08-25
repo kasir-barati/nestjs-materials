@@ -38,11 +38,20 @@ A reservation booking system that has the following features and each feature ha
 3. `pnpm compose:up`.
 4. `pnpm start`.
 
-## Run E2E tests
+## Run tests
+
+For tests read this [doc](https://github.com/kasir-barati/awesome-js-ts/blob/main/.github/docs/testing.md).
+
+### Run e2e tests
 
 1. `cp .env.example .env`
 2. `pnpm i --frozen-lockfile`
-3. `./run-e2e.sh`
+3. `./run-e2e.sh` add `--build` flag if you need to rebuild your stack.
+
+### Run unit tests
+
+1. `pnpm i --frozen-lockfile`
+2. `pnpm test`
 
 ### Update 3rd-party libs
 

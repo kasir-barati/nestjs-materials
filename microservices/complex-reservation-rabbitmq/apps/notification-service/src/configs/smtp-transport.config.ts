@@ -2,7 +2,7 @@ import { FactoryProvider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createTransport, Transporter } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { SMTP_TRANSPORTER_INSTANCE } from '../constants/smtp-transport.constant';
+import { SMTP_TRANSPORTER_INSTANCE } from '../notification-service.constant';
 import { NotificationServiceConfig } from '../notification-service.type';
 
 export const smtpTransporterFactory: FactoryProvider<

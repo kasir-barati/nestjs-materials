@@ -52,6 +52,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/notification-service/tsconfig.app.json"
       }
+    },
+    "dead-letter-notification-service": {
+      "type": "application",
+      "root": "apps/dead-letter-notification-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/dead-letter-notification-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/dead-letter-notification-service/tsconfig.app.json"
+      }
     }
   },
   "monorepo": true,

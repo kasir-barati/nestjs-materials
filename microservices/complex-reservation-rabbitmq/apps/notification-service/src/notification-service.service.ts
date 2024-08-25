@@ -1,7 +1,8 @@
 import { EmailNotificationMicroservicesPayload } from '@app/common';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Channel, Message } from 'amqplib';
 import { Transporter } from 'nodemailer';
-import { SMTP_TRANSPORTER_INSTANCE } from './constants/smtp-transport.constant';
+import { SMTP_TRANSPORTER_INSTANCE } from './notification-service.constant';
 
 @Injectable()
 export class NotificationServiceService {
@@ -16,19 +17,22 @@ export class NotificationServiceService {
 
   async sendEmailNotification(
     data: EmailNotificationMicroservicesPayload,
-  ): Promise<boolean> {
+    channel: Channel,
+    message: Message,
+  ): Promise<void> {
     const { email, ...rest } = data;
 
-    return await this.transporter
-      .sendMail({
+    try {
+      await this.transporter.sendMail({
         to: email,
         ...rest,
-      })
-      .then(() => true)
-      .catch((error) => {
-        // retry, log it in a audit log collection/table, or push it to failed messages queue.
-        this.logger.error(error);
-        return false;
       });
+
+      channel.ack(message);
+    } catch (error) {
+      this.logger.error(error);
+
+      channel.reject(message, false);
+    }
   }
 }

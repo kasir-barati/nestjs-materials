@@ -11,12 +11,12 @@ import {
   RmqContext,
 } from '@nestjs/microservices';
 import { Channel, Message } from 'amqplib';
-import { NotificationServiceService } from './notification-service.service';
+import { DeadLetterNotificationServiceService } from './dead-letter-notification-service.service';
 
 @Controller()
-export class NotificationServiceController {
+export class DeadLetterNotificationServiceController {
   constructor(
-    private readonly notificationServiceService: NotificationServiceService,
+    private readonly deadLetterNotificationServiceService: DeadLetterNotificationServiceService,
   ) {}
 
   @UseFilters(new RpcValidationFilter())
@@ -28,7 +28,7 @@ export class NotificationServiceController {
     const channel: Channel = context.getChannelRef();
     const originalMessage = context.getMessage() as Message;
 
-    await this.notificationServiceService.sendEmailNotification(
+    await this.deadLetterNotificationServiceService.sendEmailNotification(
       data,
       channel,
       originalMessage,

@@ -16,12 +16,18 @@ import { ReservationService } from './reservation.service';
 describe('ReservationService', () => {
   let service: ReservationService;
   let repository: SinonMockType<ReservationRepository>;
-  let paymentClient: SinonMockType<ClientProxy>;
+  let paymentServiceClient: SinonMockType<ClientProxy>;
+  let notificationServiceClient: SinonMockType<ClientProxy>;
 
   beforeEach(() => {
-    paymentClient = SinonMock.with<ClientProxy>({});
+    notificationServiceClient = SinonMock.with<ClientProxy>({});
+    paymentServiceClient = SinonMock.with<ClientProxy>({});
     repository = SinonMock.of(ReservationRepository);
-    service = new ReservationService(repository, paymentClient);
+    service = new ReservationService(
+      repository,
+      paymentServiceClient,
+      notificationServiceClient,
+    );
   });
 
   // Failing with timeout error. Increasing timeout did not help.
@@ -30,11 +36,12 @@ describe('ReservationService', () => {
       {
         end: new Date().toISOString(),
         start: new Date().toISOString(),
-        card: {},
         amount: 1222,
+        locationId: 'object id',
+        token: 'tok_123',
       },
     );
-    paymentClient.send.returns(
+    paymentServiceClient.send.returns(
       of(
         SinonMock.with<ChargeResponseDto>({
           id: 'invoice id',
@@ -49,7 +56,10 @@ describe('ReservationService', () => {
     });
 
     const result = await firstValueFrom(
-      service.create('object id', createReservationDto),
+      service.create(
+        { _id: 'object id', email: 'user@temp.cp' },
+        createReservationDto,
+      ),
     );
 
     expect(result).toStrictEqual({

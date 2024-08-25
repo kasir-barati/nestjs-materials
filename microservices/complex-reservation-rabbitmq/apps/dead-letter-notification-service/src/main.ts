@@ -3,21 +3,25 @@ import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { RmqOptions, Transport } from '@nestjs/microservices';
 import { Logger } from 'nestjs-pino';
-import paymentServiceConfig from './configs/payment-service.config';
-import { PaymentServiceModule } from './payment-service.module';
+import deadLetterNotificationServiceConfig from './configs/dead-letter-notification-service.config';
+import { DeadLetterNotificationServiceModule } from './dead-letter-notification-service.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(PaymentServiceModule);
-  const { RABBITMQ_URI, PAYMENT_QUEUE } = app.get<
-    ConfigType<typeof paymentServiceConfig>
-  >(paymentServiceConfig.KEY);
+  const app = await NestFactory.create(
+    DeadLetterNotificationServiceModule,
+  );
+  const { RABBITMQ_URI, NOTIFICATION_DLQ } = app.get<
+    ConfigType<typeof deadLetterNotificationServiceConfig>
+  >(deadLetterNotificationServiceConfig.KEY);
 
   app.connectMicroservice<RmqOptions>(
     {
       transport: Transport.RMQ,
       options: {
+        // Explicit acknowledgement of messages is required.
+        noAck: false,
         urls: [RABBITMQ_URI],
-        queue: PAYMENT_QUEUE,
+        queue: NOTIFICATION_DLQ,
       },
     },
     { inheritAppConfig: true },
@@ -28,9 +32,6 @@ async function bootstrap() {
       errorHttpStatusCode: 400,
       whitelist: true,
       transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
       validateCustomDecorators: true,
     }),
   );

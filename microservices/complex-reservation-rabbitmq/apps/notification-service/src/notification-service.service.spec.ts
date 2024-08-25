@@ -3,14 +3,19 @@ import {
   SinonMock,
   SinonMockType,
 } from '@app/common';
+import { Channel, Message } from 'amqplib';
 import { Transporter } from 'nodemailer';
 import { NotificationServiceService } from './notification-service.service';
 
 describe('NotificationServiceService', () => {
   let service: NotificationServiceService;
   let transporter: SinonMockType<Transporter>;
+  let channel: SinonMockType<Channel>;
+  let message: SinonMockType<Message>;
 
   beforeEach(async () => {
+    channel = SinonMock.with<Channel>({});
+    message = SinonMock.with<Message>({});
     transporter = SinonMock.with<Transporter>({});
     service = new NotificationServiceService(transporter);
   });
@@ -20,9 +25,9 @@ describe('NotificationServiceService', () => {
     { email: 'come@raw.eu', text: 'Plain test' },
   ])('should send email notification', async (data) => {
     const { email, ...rest } = data;
-    transporter.sendMail.resolves(true);
+    transporter.sendMail.resolves();
 
-    const isSent = await service.sendEmailNotification(data);
+    await service.sendEmailNotification(data, channel, message);
 
     expect(
       transporter.sendMail.calledWith({
@@ -30,17 +35,21 @@ describe('NotificationServiceService', () => {
         ...rest,
       }),
     ).toBeTruthy();
-    expect(isSent).toBeTruthy();
+    expect(channel.ack.calledWith(message)).toBeTruthy();
   });
 
-  it('should return false in case of failing to send email', async () => {
-    transporter.sendMail.rejects(false);
+  it('should reject message on failing to send email', async () => {
+    transporter.sendMail.rejects();
 
-    const isSent = await service.sendEmailNotification({
-      email: 'clergy@gorge.de',
-      text: 'Test.',
-    });
+    await service.sendEmailNotification(
+      {
+        email: 'clergy@gorge.de',
+        text: 'Test.',
+      },
+      channel,
+      message,
+    );
 
-    expect(isSent).toBeFalsy();
+    expect(channel.reject.calledWith(message)).toBeTruthy();
   });
 });
