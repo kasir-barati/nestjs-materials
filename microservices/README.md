@@ -40,4 +40,4 @@ Microservices are small programs, each with a specific and narrow scope, that ar
 
 # RabbitMQ
 
-- `connectMicroservice` only connects to a queue (or create it if needed). In other words, it performs `assertQueue` operation ([ref](https://stackoverflow.com/a/68935959/8784518)).
+- Although `connectMicroservice` only connects to a queue (or create it if needed. it performs `assertQueue` operation ([ref](https://stackoverflow.com/a/68935959/8784518)) you can always extend `ServerRmq` class, learn more [here](https://github.com/nestjs/nest/issues/3981#issuecomment-581126236).
