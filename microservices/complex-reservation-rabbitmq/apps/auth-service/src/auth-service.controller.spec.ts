@@ -1,8 +1,5 @@
-import {
-  generateRandomString,
-  SinonMock,
-  SinonMockType,
-} from '@app/common';
+import { generateRandomString } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { Response } from 'express';
 import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';

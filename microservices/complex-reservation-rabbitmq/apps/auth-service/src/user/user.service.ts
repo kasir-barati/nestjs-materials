@@ -1,4 +1,5 @@
-import { DuplicationError, getTempUser } from '@app/common';
+import { DuplicationError } from '@app/common';
+import { getTempUser } from '@app/testing';
 import {
   BadRequestException,
   Injectable,

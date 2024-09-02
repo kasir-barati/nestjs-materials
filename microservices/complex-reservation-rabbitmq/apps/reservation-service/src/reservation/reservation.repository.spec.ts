@@ -1,4 +1,4 @@
-import { SinonMock, SinonMockType } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { Model } from 'mongoose';
 import { Reservation } from './entities/reservation.entity';
 import { ReservationRepository } from './reservation.repository';

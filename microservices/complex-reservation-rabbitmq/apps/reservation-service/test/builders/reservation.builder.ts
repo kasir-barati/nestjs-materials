@@ -1,4 +1,5 @@
-import { getTempUser, login } from '@app/common';
+import { login } from '@app/common';
+import { getTempUser } from '@app/testing';
 import { ReservationServiceApi } from '../../api-client';
 
 export class ReservationBuilder {

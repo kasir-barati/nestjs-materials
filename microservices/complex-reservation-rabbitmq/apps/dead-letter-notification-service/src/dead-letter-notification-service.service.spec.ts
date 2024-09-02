@@ -1,9 +1,8 @@
 import {
   EmailNotificationMicroservicesPayload,
   EVENT_PATTERN_FOR_EMAIL_NOTIFICATION,
-  SinonMock,
-  SinonMockType,
 } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { ClientProxy } from '@nestjs/microservices';
 import { Channel, Message } from 'amqplib';
 import { DeadLetterNotificationServiceService } from './dead-letter-notification-service.service';

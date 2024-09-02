@@ -1,4 +1,4 @@
-import { SinonMock, SinonMockType } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { Model } from 'mongoose';
 import { FailedEmail } from '../entities/failed-email.entity';
 import { FailedEmailRepository } from './failed-email.repository';

@@ -1,8 +1,5 @@
-import {
-  DuplicationError,
-  SinonMock,
-  SinonMockType,
-} from '@app/common';
+import { DuplicationError } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { BadRequestException } from '@nestjs/common';
 import { hash } from 'argon2';
 import { UserRepository } from './user.repository';

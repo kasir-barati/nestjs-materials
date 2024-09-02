@@ -3,7 +3,10 @@ import { config } from 'dotenv';
 import { join } from 'path';
 
 config({
-  path: join(process.cwd(), '.env'),
+  path: [
+    join(process.cwd(), '.env'),
+    join(process.cwd(), 'apps', 'auth-service', '.env'),
+  ],
 });
 
 axios.interceptors.response.use(

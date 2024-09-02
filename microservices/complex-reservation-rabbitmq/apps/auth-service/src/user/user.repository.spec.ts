@@ -1,4 +1,4 @@
-import { SinonMock, SinonMockType } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { User } from './entities/user.entity';

@@ -1,8 +1,5 @@
-import {
-  generateRandomString,
-  SinonMock,
-  SinonMockType,
-} from '@app/common';
+import { generateRandomString } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { RmqContext } from '@nestjs/microservices';
 import { DeadLetterNotificationServiceController } from './dead-letter-notification-service.controller';
 import { DeadLetterNotificationServiceService } from './dead-letter-notification-service.service';

@@ -1,4 +1,4 @@
-import { SinonMock } from '@app/common';
+import { SinonMock } from '@app/testing';
 import { User } from './entities/user.entity';
 import { UserSerializer } from './user.serializer';
 

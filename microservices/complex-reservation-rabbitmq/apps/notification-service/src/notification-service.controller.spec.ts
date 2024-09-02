@@ -1,8 +1,5 @@
-import {
-  EmailNotificationMicroservicesPayload,
-  SinonMock,
-  SinonMockType,
-} from '@app/common';
+import { EmailNotificationMicroservicesPayload } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { RmqContext } from '@nestjs/microservices';
 import * as Sinon from 'sinon';
 import { NotificationServiceController } from './notification-service.controller';

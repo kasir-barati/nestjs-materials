@@ -1,9 +1,5 @@
-import {
-  AttachedUserToTheRequest,
-  Pagination,
-  SinonMock,
-  SinonMockType,
-} from '@app/common';
+import { AttachedUserToTheRequest, Pagination } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { firstValueFrom } from 'rxjs';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { ReplaceReservationDto } from './dto/replace-reservation.dto';

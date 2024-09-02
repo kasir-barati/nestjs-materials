@@ -1,4 +1,4 @@
-import { SinonMock } from '@app/common';
+import { SinonMock } from '@app/testing';
 import { ReservationServiceApi } from '../../../api-client';
 
 describe('Reservation service (e2e - auth)', () => {

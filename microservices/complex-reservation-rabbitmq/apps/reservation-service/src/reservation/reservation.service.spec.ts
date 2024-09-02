@@ -1,9 +1,5 @@
-import {
-  ChargeResponseDto,
-  Pagination,
-  SinonMock,
-  SinonMockType,
-} from '@app/common';
+import { ChargeResponseDto, Pagination } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { ClientProxy } from '@nestjs/microservices';
 import { Types } from 'mongoose';
 import { firstValueFrom, of } from 'rxjs';

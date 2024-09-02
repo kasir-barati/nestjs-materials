@@ -1,8 +1,5 @@
-import {
-  EmailNotificationMicroservicesPayload,
-  SinonMock,
-  SinonMockType,
-} from '@app/common';
+import { EmailNotificationMicroservicesPayload } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { Channel, Message } from 'amqplib';
 import { Transporter } from 'nodemailer';
 import { NotificationServiceService } from './notification-service.service';

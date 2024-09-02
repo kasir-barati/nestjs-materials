@@ -1,4 +1,4 @@
-import { SinonMock, SinonMockType } from '@app/common';
+import { SinonMock, SinonMockType } from '@app/testing';
 import { UserController } from './user.controller';
 import { UserSerializer } from './user.serializer';
 import { UserService } from './user.service';
