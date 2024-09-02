@@ -1,6 +1,6 @@
-import { validateEnv } from '@app/common';
+import { NodeEnv, validateEnv } from '@app/common';
 import { registerAs } from '@nestjs/config';
-import { IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { PaymentServiceConfig } from '../payment-service.type';
 
 declare global {
@@ -30,4 +30,8 @@ class EnvironmentVariables implements PaymentServiceConfig {
 
   @IsString()
   RABBITMQ_URI: string;
+
+  @IsEnum(NodeEnv)
+  @IsOptional()
+  NODE_ENV: NodeEnv = NodeEnv.development;
 }

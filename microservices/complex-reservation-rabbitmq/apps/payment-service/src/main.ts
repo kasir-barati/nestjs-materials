@@ -1,4 +1,3 @@
-import { ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { RmqOptions, Transport } from '@nestjs/microservices';
@@ -18,22 +17,13 @@ async function bootstrap() {
       options: {
         urls: [RABBITMQ_URI],
         queue: PAYMENT_QUEUE,
+        // Explicit acknowledgement of messages is required.
+        noAck: false,
       },
     },
     { inheritAppConfig: true },
   );
   app.useLogger(app.get(Logger));
-  app.useGlobalPipes(
-    new ValidationPipe({
-      errorHttpStatusCode: 400,
-      whitelist: true,
-      transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-      validateCustomDecorators: true,
-    }),
-  );
 
   await app.startAllMicroservices();
 }

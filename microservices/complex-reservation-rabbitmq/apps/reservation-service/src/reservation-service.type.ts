@@ -3,6 +3,8 @@ export interface ReservationServiceConfig {
   AUTH_QUEUE: string;
   PAYMENT_QUEUE: string;
   NOTIFICATION_QUEUE: string;
+  NOTIFICATION_TTL: number;
+  NOTIFICATION_DLQ: string;
   RABBITMQ_URI: string;
   RESERVATION_SERVICE_PORT: number;
   DATABASE_URL: string;

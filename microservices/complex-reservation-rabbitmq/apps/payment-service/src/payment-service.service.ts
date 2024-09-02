@@ -1,5 +1,6 @@
 import { ChargeMicroservicesPayload } from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
+import { Channel, Message } from 'amqplib';
 import Stripe from 'stripe';
 import { STRIPE_INSTANCE } from './constants/stripe.constant';
 
@@ -11,9 +12,18 @@ export class PaymentServiceService {
   ) {}
 
   async charge({
-    token,
-    amount,
-  }: ChargeMicroservicesPayload): Promise<Stripe.PaymentIntent> {
+    payload,
+    channel,
+    message,
+  }: {
+    payload: ChargeMicroservicesPayload;
+    channel: Channel;
+    message: Message;
+  }): Promise<Stripe.PaymentIntent> {
+    // No need for retry logic
+    channel.ack(message);
+
+    const { amount, token } = payload;
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount,
       confirm: true,

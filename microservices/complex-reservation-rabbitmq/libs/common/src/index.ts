@@ -1,3 +1,4 @@
+export * from './constants/notification-options.constant';
 export * from './constants/services.constant';
 export * from './constants/temp-user.constant';
 export * from './database/abstract.repository';
@@ -20,6 +21,7 @@ export * from './utils/create-swagger-configuration.util';
 export * from './utils/generate-openapi.util';
 export * from './utils/generate-random-string.util';
 export * from './utils/get-param-decorator-factory.util';
+export * from './utils/is-test-env.util';
 export * from './utils/login.util';
 export * from './utils/sinon-mock.util';
 export * from './utils/validate-env.util';

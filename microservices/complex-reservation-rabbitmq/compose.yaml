@@ -138,6 +138,7 @@ services:
   message-brocker:
     image: rabbitmq:4.0-rc-management-alpine
     ports:
+      - 5672:5672
       - 15672:15672
     user: ${RABBITMQ_DEFAULT_USER}
     environment:
@@ -154,3 +155,9 @@ services:
     ports:
       - "1025:1025"
       - "1080:1080"
+
+  mockserver:
+    image: mockserver/mockserver:5.15.0
+    restart: on-failure:3
+    ports:
+      - 1081:1080

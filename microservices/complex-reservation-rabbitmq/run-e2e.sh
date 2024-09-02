@@ -1,6 +1,7 @@
 #! /bin/bash
 
 # region cleanup
+clear
 echo "Compose down..."
 echo ""
 docker compose down -v
@@ -9,6 +10,7 @@ docker compose down -v
 
 # region bootstrap app & its deps
 # Check if --build flag is provided
+echo ""
 echo "Start containers..."
 echo ""
 
@@ -45,3 +47,5 @@ echo "Run tests..."
 echo ""
 npx jest --config apps/reservation-service/test/jest-e2e.config.ts
 npx jest --config apps/auth-service/test/jest-e2e.config.ts
+npx jest --config apps/notification-service/test/jest-e2e.config.ts
+npx jest --config apps/payment-service/test/jest-e2e.config.ts

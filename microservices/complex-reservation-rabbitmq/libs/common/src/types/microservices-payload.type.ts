@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsInt, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { AnyOf } from '../decorators/any-of.decorator';
 import { AttachedUserToTheRequest } from './attached-user-to-the-request.type';
 
 export interface AuthenticateMicroservicesPayload {
@@ -16,6 +23,7 @@ export class ChargeMicroservicesPayload {
     example: 'tok_someId',
   })
   @IsString()
+  @IsNotEmpty()
   token: string;
 
   @ApiProperty({
@@ -27,6 +35,7 @@ export class ChargeMicroservicesPayload {
   amount: number;
 }
 
+@AnyOf(['html', 'text'])
 export class EmailNotificationMicroservicesPayload {
   @ApiProperty({
     type: String,
@@ -59,5 +68,6 @@ export class EmailNotificationMicroservicesPayload {
       "How many times it should be retried. You do not need to specify this. It'll be managed & added by DLQ service.",
   })
   @IsInt()
+  @IsOptional()
   retryCount?: number;
 }

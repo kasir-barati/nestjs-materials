@@ -38,6 +38,12 @@ class EnvironmentVariables implements ReservationServiceConfig {
   @IsString()
   NOTIFICATION_QUEUE: string;
 
+  @IsInt()
+  NOTIFICATION_TTL: number;
+
+  @IsString()
+  NOTIFICATION_DLQ: string;
+
   @IsString()
   RABBITMQ_URI: string;
 

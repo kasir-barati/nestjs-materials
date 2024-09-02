@@ -3,7 +3,11 @@ import {
   EVENT_PATTERN_FOR_EMAIL_NOTIFICATION,
   RpcValidationFilter,
 } from '@app/common';
-import { Controller, UseFilters } from '@nestjs/common';
+import {
+  Controller,
+  UseFilters,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   Ctx,
   EventPattern,
@@ -22,7 +26,15 @@ export class DeadLetterNotificationServiceController {
   @UseFilters(new RpcValidationFilter())
   @EventPattern(EVENT_PATTERN_FOR_EMAIL_NOTIFICATION)
   async sendEmailNotification(
-    @Payload() data: EmailNotificationMicroservicesPayload,
+    @Payload(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        errorHttpStatusCode: 400,
+        validateCustomDecorators: true,
+      }),
+    )
+    data: EmailNotificationMicroservicesPayload,
     @Ctx() context: RmqContext,
   ): Promise<void> {
     const channel: Channel = context.getChannelRef();

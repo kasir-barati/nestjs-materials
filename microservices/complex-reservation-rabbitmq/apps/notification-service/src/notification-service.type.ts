@@ -1,4 +1,5 @@
 export interface NotificationServiceConfig {
+  NOTIFICATION_TTL: number;
   NOTIFICATION_DLQ: string;
   NOTIFICATION_QUEUE: string;
   RABBITMQ_URI: string;

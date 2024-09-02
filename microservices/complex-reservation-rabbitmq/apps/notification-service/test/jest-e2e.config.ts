@@ -10,6 +10,15 @@ const appCommonPath = join(
   'common',
   'src$1',
 );
+const appTestingPath = join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'libs',
+  'testing',
+  'src$1',
+);
 
 export default {
   displayName: 'notification-service e2e tests',
@@ -22,6 +31,7 @@ export default {
   },
   moduleNameMapper: {
     '^@app/common(.*)$': appCommonPath,
+    '^@app/testing(.*)$': appTestingPath,
   },
   setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
   detectOpenHandles: true,
