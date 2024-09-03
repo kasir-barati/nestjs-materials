@@ -12,10 +12,9 @@ for arg in "$@"; do
 done
 
 if [ "$BUILD" == true ]; then
-  DOCKER_BUILDKIT=0 docker compose up --build -d
-else
-  DOCKER_BUILDKIT=0 docker compose up -d
+    DOCKER_BUILDKIT=0 docker-compose build --no-cache
 fi
+docker compose up -d
 # endregion
 
 ./scripts/create-openapi.sh
@@ -25,8 +24,8 @@ echo ""
 echo "Run tests..."
 echo ""
 npx jest --config apps/reservation-service/test/jest-e2e.config.ts
-# npx jest --config apps/auth-service/test/jest-e2e.config.ts
-# npx jest --config apps/dead-letter-notification-service/test/jest-e2e.config.ts
-# npx jest --config apps/notification-service/test/jest-e2e.config.ts
+npx jest --config apps/auth-service/test/jest-e2e.config.ts
+npx jest --config apps/dead-letter-notification-service/test/jest-e2e.config.ts
+npx jest --config apps/notification-service/test/jest-e2e.config.ts
 
-# ./scripts/run-payment-e2e-tests.sh
+./scripts/run-payment-e2e-tests.sh

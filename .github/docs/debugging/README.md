@@ -1,3 +1,13 @@
+# How to debug your app
+
+1. Pay close attention to the bug itself and try think why it is happening.
+
+   E.g. I had this weird looking issue with my code. I was configuring my RabbitMQ client and server using a helper function to generate `queueOptions` thus having same options. You know that your client app and server should use same queue options in order to be able to see each other and send messages to each other.
+
+   Thus far everything was OK, except that I was using TS's "Indexed Access Types": `RmqOptions['options']['queueOptions']` but to my surprise it won't throw an error if you use invalid object properties. As such I was passing some wrong values and my `queueOptions` was nested inside a property that was not correct.
+
+   So my app was not bootstrapping the queue with the right configurations. Therefore when my `ClientProxy` was trying to publish a message in that queue, my app was crashing. As you can see most of the times changes that we make can be the root of an issue.
+
 # How to debug flaky tests effectively
 
 First watch this [YouTube video about flaky test](https://youtu.be/CL1w32iCVM4?si=7IPoTynDTPgLFgtk) which says that **there are not flaky tests**. Now let's talk about different types of flakiness:

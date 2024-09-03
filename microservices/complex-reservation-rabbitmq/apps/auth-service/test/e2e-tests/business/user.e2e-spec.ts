@@ -1,4 +1,5 @@
-import { generateRandomString, login } from '@app/common';
+import { generateRandomString } from '@app/common';
+import { login } from '@app/testing';
 import {
   CreateUserDto,
   MeDto,

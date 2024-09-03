@@ -38,18 +38,9 @@ export class ReservationService {
       token,
       amount,
     });
-    console.log();
-    console.log();
-    console.log('43. Service');
-    console.log();
 
     return observable.pipe(
       map((paymentResponse) => {
-        console.log();
-        console.log();
-        console.log('50. Service');
-        console.dir(paymentResponse, { depth: null });
-        console.log();
         return this.reservationRepository.create({
           userId: user._id,
           ...rest,

@@ -1,4 +1,4 @@
-import { getNotificationOptions } from '@app/common';
+import { getNotificationQueueOptions } from '@app/common';
 import { Inject } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import {
@@ -25,16 +25,18 @@ export class NotificationClientsModuleConfig
       NOTIFICATION_QUEUE,
       NOTIFICATION_TTL,
     } = this.deadLetterNotificationServiceConfigs;
-    const options = getNotificationOptions({
-      url: RABBITMQ_URI,
+    const queueOptions = getNotificationQueueOptions({
       dlq: NOTIFICATION_DLQ,
-      queue: NOTIFICATION_QUEUE,
       messageTtl: NOTIFICATION_TTL,
     });
 
     return {
       transport: Transport.RMQ,
-      options,
+      options: {
+        urls: [RABBITMQ_URI],
+        queue: NOTIFICATION_QUEUE,
+        queueOptions,
+      },
     };
   }
 }

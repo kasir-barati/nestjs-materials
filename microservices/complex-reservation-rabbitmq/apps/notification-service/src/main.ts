@@ -1,4 +1,4 @@
-import { getNotificationOptions } from '@app/common';
+import { getNotificationQueueOptions } from '@app/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { RmqOptions, Transport } from '@nestjs/microservices';
@@ -16,10 +16,8 @@ async function bootstrap() {
   } = app.get<ConfigType<typeof notificationServiceConfig>>(
     notificationServiceConfig.KEY,
   );
-  const queueOptions = getNotificationOptions({
-    url: RABBITMQ_URI,
+  const queueOptions = getNotificationQueueOptions({
     dlq: NOTIFICATION_DLQ,
-    queue: NOTIFICATION_QUEUE,
     messageTtl: NOTIFICATION_TTL,
   });
 
