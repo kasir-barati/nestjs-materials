@@ -4,7 +4,7 @@ import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
-import { Logger } from 'nestjs-pino';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import reservationServiceConfig from './configs/reservation-service.config';
 import { ReservationServiceModule } from './reservation-service.module';
 
@@ -26,6 +26,7 @@ async function bootstrap() {
     }),
   );
   app.useLogger(app.get(Logger));
+  app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   createSwaggerConfiguration({
     app,

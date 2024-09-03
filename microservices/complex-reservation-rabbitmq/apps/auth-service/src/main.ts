@@ -4,7 +4,7 @@ import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { RmqOptions, Transport } from '@nestjs/microservices';
 import * as cookieParser from 'cookie-parser';
-import { Logger } from 'nestjs-pino';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { AuthModule } from './auth-service.module';
 import authServiceConfig from './configs/auth-service.config';
 
@@ -40,6 +40,7 @@ async function bootstrap() {
     }),
   );
   app.useLogger(app.get(Logger));
+  app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   createSwaggerConfiguration({
     app,

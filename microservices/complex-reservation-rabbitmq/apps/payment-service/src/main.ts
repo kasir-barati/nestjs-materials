@@ -1,7 +1,7 @@
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { RmqOptions, Transport } from '@nestjs/microservices';
-import { Logger } from 'nestjs-pino';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import paymentServiceConfig from './configs/payment-service.config';
 import { PaymentServiceModule } from './payment-service.module';
 
@@ -24,6 +24,7 @@ async function bootstrap() {
     { inheritAppConfig: true },
   );
   app.useLogger(app.get(Logger));
+  app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   await app.startAllMicroservices();
 }

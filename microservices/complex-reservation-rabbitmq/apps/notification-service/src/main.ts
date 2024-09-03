@@ -2,7 +2,7 @@ import { getNotificationOptions } from '@app/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { RmqOptions, Transport } from '@nestjs/microservices';
-import { Logger } from 'nestjs-pino';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import notificationServiceConfig from './configs/notification-service.config';
 import { NotificationServiceModule } from './notification-service.module';
 
@@ -34,6 +34,7 @@ async function bootstrap() {
     },
   });
   app.useLogger(app.get(Logger));
+  app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   await app.startAllMicroservices();
 }
