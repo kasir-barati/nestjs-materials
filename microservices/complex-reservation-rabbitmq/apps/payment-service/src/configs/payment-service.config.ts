@@ -1,7 +1,10 @@
 import { NodeEnv, validateEnv } from '@app/common';
 import { registerAs } from '@nestjs/config';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { PaymentServiceConfig } from '../payment-service.type';
+import {
+  PaymentServiceConfig,
+  StripeEnv,
+} from '../payment-service.type';
 
 declare global {
   namespace NodeJS {
@@ -34,4 +37,7 @@ class EnvironmentVariables implements PaymentServiceConfig {
   @IsEnum(NodeEnv)
   @IsOptional()
   NODE_ENV: NodeEnv = NodeEnv.development;
+
+  @IsEnum(StripeEnv)
+  STRIPE_ENV: StripeEnv;
 }

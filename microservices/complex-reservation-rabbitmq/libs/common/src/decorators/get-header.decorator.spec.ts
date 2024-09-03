@@ -1,7 +1,7 @@
+import { SinonMock, SinonMockType } from '@app/testing';
 import { ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
 import { getParamDecoratorFactory } from '../utils/get-param-decorator-factory.util';
-import { SinonMock, SinonMockType } from '../utils/sinon-mock.util';
 import { GetHeader } from './get-header.decorator';
 
 describe('GetHeader Decorator', () => {

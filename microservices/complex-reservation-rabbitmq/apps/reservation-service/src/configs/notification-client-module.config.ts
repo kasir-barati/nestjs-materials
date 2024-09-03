@@ -25,15 +25,16 @@ export class NotificationClientsModuleConfig
       NOTIFICATION_QUEUE,
       NOTIFICATION_DLQ,
     } = this.authServiceConfigs;
+    const options = getNotificationOptions({
+      url: RABBITMQ_URI,
+      dlq: NOTIFICATION_DLQ,
+      queue: NOTIFICATION_QUEUE,
+      messageTtl: NOTIFICATION_TTL,
+    });
 
     return {
       transport: Transport.RMQ,
-      options: getNotificationOptions({
-        url: RABBITMQ_URI,
-        dlq: NOTIFICATION_DLQ,
-        queue: NOTIFICATION_QUEUE,
-        messageTtl: NOTIFICATION_TTL,
-      }),
+      options,
     };
   }
 }

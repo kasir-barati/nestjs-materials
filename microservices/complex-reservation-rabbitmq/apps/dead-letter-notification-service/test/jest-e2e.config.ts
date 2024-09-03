@@ -21,14 +21,11 @@ const appTestingPath = join(
 );
 
 export default {
-  displayName: 'reservation-service e2e tests',
+  displayName: 'dead-letter-notification-service e2e tests',
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '.',
   testEnvironment: 'node',
   testMatch: ['**/*.e2e-spec.ts'],
-  // testMatch: [
-  //   '**/reservation-service/test/e2e-tests/business/reservation.e2e-spec.ts',
-  // ],
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },

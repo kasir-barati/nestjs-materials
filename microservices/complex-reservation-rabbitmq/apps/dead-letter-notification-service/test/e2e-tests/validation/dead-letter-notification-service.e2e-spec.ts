@@ -10,30 +10,20 @@ import {
 } from '@app/testing';
 import { Channel } from 'amqplib';
 
-describe('Notification service (e2e - validation)', () => {
+describe('Dead letter notification service (e2e - validation)', () => {
   let mailCatcherDriver: MailCatcherDriver;
   let rabbitMqDriver: RabbitMqDriver;
   let channel: Channel;
-  const {
-    NOTIFICATION_QUEUE,
-    NOTIFICATION_DLQ,
-    RABBITMQ_URI,
-    NOTIFICATION_TTL,
-  } = process.env;
+  const { NOTIFICATION_DLQ, RABBITMQ_URI } = process.env;
 
   beforeAll(async () => {
     const rabbitMqUrl = generateRabbitMqUrl(RABBITMQ_URI);
     mailCatcherDriver = new MailCatcherDriver();
     rabbitMqDriver = new RabbitMqDriver({
-      queueName: NOTIFICATION_QUEUE,
+      queueName: NOTIFICATION_DLQ,
       rabbitMqUrl,
     });
-    channel = await rabbitMqDriver.getChannel({
-      maxLength: 13,
-      messageTtl: Number(NOTIFICATION_TTL),
-      deadLetterExchange: '',
-      deadLetterRoutingKey: NOTIFICATION_DLQ,
-    });
+    channel = await rabbitMqDriver.getChannel();
   });
   afterAll(async () => {
     await rabbitMqDriver.cleanup();
@@ -46,7 +36,7 @@ describe('Notification service (e2e - validation)', () => {
     'should not send email when published message in the queue is junk data: %p',
     async (junkData) => {
       channel.sendToQueue(
-        NOTIFICATION_QUEUE,
+        NOTIFICATION_DLQ,
         Buffer.from(
           JSON.stringify({
             data: junkData,

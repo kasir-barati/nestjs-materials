@@ -5,13 +5,14 @@ import {
 } from '@app/common';
 import {
   generateRabbitMqUrl,
+  MailCatcherDriver,
   RabbitMqDriver,
   sleep,
 } from '@app/testing';
 import { Channel } from 'amqplib';
-import { getMail } from '../../utils/get-mail.util';
 
-describe('Notification service (e2e - validation)', () => {
+describe('Notification service (e2e - business)', () => {
+  let mailCatcherDriver: MailCatcherDriver;
   let rabbitMqDriver: RabbitMqDriver;
   let channel: Channel;
   const {
@@ -23,6 +24,7 @@ describe('Notification service (e2e - validation)', () => {
 
   beforeAll(async () => {
     const rabbitMqUrl = generateRabbitMqUrl(RABBITMQ_URI);
+    mailCatcherDriver = new MailCatcherDriver();
     rabbitMqDriver = new RabbitMqDriver({
       queueName: NOTIFICATION_QUEUE,
       rabbitMqUrl,
@@ -48,7 +50,7 @@ describe('Notification service (e2e - validation)', () => {
       text: 'RAM, CPU',
     },
   ])(
-    'should send be able to send email: %p',
+    'should be able to send email: %p',
     async (data) => {
       channel.sendToQueue(
         NOTIFICATION_QUEUE,
@@ -62,7 +64,7 @@ describe('Notification service (e2e - validation)', () => {
 
       await sleep();
 
-      const message = await getMail(data.email);
+      const message = await mailCatcherDriver.getMail(data.email);
 
       expect(message).toBeDefined();
     },

@@ -69,6 +69,10 @@ export class ReservationController {
     @GetUser() user: AttachedUserToTheRequest,
     @Body() createReservationDto: CreateReservationDto,
   ): Observable<Promise<CreatedReservationDto>> {
+    console.log();
+    console.log();
+    console.log('Controller');
+    console.log();
     return this.reservationService.create(user, createReservationDto);
   }
 

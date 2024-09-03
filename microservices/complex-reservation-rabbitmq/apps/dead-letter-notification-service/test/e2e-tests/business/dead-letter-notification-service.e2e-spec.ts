@@ -1,6 +1,7 @@
 import {
   EmailNotificationMicroservicesPayload,
   EVENT_PATTERN_FOR_EMAIL_NOTIFICATION,
+  generateRandomString,
 } from '@app/common';
 import {
   generateRabbitMqUrl,
@@ -10,46 +11,42 @@ import {
 } from '@app/testing';
 import { Channel } from 'amqplib';
 
-describe('Notification service (e2e - validation)', () => {
+describe('Notification service (e2e - business)', () => {
   let mailCatcherDriver: MailCatcherDriver;
   let rabbitMqDriver: RabbitMqDriver;
   let channel: Channel;
-  const {
-    NOTIFICATION_QUEUE,
-    NOTIFICATION_DLQ,
-    RABBITMQ_URI,
-    NOTIFICATION_TTL,
-  } = process.env;
+  const { NOTIFICATION_DLQ, RABBITMQ_URI } = process.env;
 
   beforeAll(async () => {
     const rabbitMqUrl = generateRabbitMqUrl(RABBITMQ_URI);
     mailCatcherDriver = new MailCatcherDriver();
     rabbitMqDriver = new RabbitMqDriver({
-      queueName: NOTIFICATION_QUEUE,
+      queueName: NOTIFICATION_DLQ,
       rabbitMqUrl,
     });
-    channel = await rabbitMqDriver.getChannel({
-      maxLength: 13,
-      messageTtl: Number(NOTIFICATION_TTL),
-      deadLetterExchange: '',
-      deadLetterRoutingKey: NOTIFICATION_DLQ,
-    });
+    channel = await rabbitMqDriver.getChannel();
   });
   afterAll(async () => {
     await rabbitMqDriver.cleanup();
   });
 
   it.each<EmailNotificationMicroservicesPayload>([
-    { email: 'junk-mail', html: '<span>Ooops</span>' },
-    { email: 'mail@temp.eu' },
+    {
+      email: `${generateRandomString()}@life.pi`,
+      html: '<span>Sharp</span>',
+    },
+    {
+      email: `${generateRandomString()}@monday.cpu`,
+      text: 'RAM, CPU',
+    },
   ])(
-    'should not send email when published message in the queue is junk data: %p',
-    async (junkData) => {
+    'should be able to send email: %p',
+    async (data) => {
       channel.sendToQueue(
-        NOTIFICATION_QUEUE,
+        NOTIFICATION_DLQ,
         Buffer.from(
           JSON.stringify({
-            data: junkData,
+            data,
             pattern: EVENT_PATTERN_FOR_EMAIL_NOTIFICATION,
           }),
         ),
@@ -57,9 +54,9 @@ describe('Notification service (e2e - validation)', () => {
 
       await sleep();
 
-      const message = await mailCatcherDriver.getMail(junkData.email);
+      const message = await mailCatcherDriver.getMail(data.email);
 
-      expect(message).toBeUndefined();
+      expect(message).toBeDefined();
     },
     20000,
   );

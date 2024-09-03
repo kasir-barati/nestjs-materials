@@ -1,4 +1,3 @@
-import { ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { RmqOptions, Transport } from '@nestjs/microservices';
@@ -14,27 +13,16 @@ async function bootstrap() {
     ConfigType<typeof deadLetterNotificationServiceConfig>
   >(deadLetterNotificationServiceConfig.KEY);
 
-  app.connectMicroservice<RmqOptions>(
-    {
-      transport: Transport.RMQ,
-      options: {
-        // Explicit acknowledgement of messages is required.
-        noAck: false,
-        urls: [RABBITMQ_URI],
-        queue: NOTIFICATION_DLQ,
-      },
+  app.connectMicroservice<RmqOptions>({
+    transport: Transport.RMQ,
+    options: {
+      // Explicit acknowledgement of messages is required.
+      noAck: false,
+      urls: [RABBITMQ_URI],
+      queue: NOTIFICATION_DLQ,
     },
-    { inheritAppConfig: true },
-  );
+  });
   app.useLogger(app.get(Logger));
-  app.useGlobalPipes(
-    new ValidationPipe({
-      errorHttpStatusCode: 400,
-      whitelist: true,
-      transform: true,
-      validateCustomDecorators: true,
-    }),
-  );
 
   await app.startAllMicroservices();
 }

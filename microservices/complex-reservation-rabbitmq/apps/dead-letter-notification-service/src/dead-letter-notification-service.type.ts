@@ -1,5 +1,6 @@
 export interface DeadLetterNotificationServiceConfig {
   NOTIFICATION_QUEUE: string;
+  NOTIFICATION_TTL: number;
   NOTIFICATION_DLQ: string;
   RABBITMQ_URI: string;
   MAX_RETRY_COUNT: number;

@@ -16,6 +16,13 @@ async function bootstrap() {
   } = app.get<ConfigType<typeof notificationServiceConfig>>(
     notificationServiceConfig.KEY,
   );
+  const queueOptions = getNotificationOptions({
+    url: RABBITMQ_URI,
+    dlq: NOTIFICATION_DLQ,
+    queue: NOTIFICATION_QUEUE,
+    messageTtl: NOTIFICATION_TTL,
+  });
+
   app.connectMicroservice<RmqOptions>({
     transport: Transport.RMQ,
     options: {
@@ -23,12 +30,7 @@ async function bootstrap() {
       noAck: false,
       urls: [RABBITMQ_URI],
       queue: NOTIFICATION_QUEUE,
-      queueOptions: getNotificationOptions({
-        url: RABBITMQ_URI,
-        dlq: NOTIFICATION_DLQ,
-        queue: NOTIFICATION_QUEUE,
-        messageTtl: NOTIFICATION_TTL,
-      }),
+      queueOptions,
     },
   });
   app.useLogger(app.get(Logger));

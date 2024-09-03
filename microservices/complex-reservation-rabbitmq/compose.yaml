@@ -35,6 +35,10 @@ services:
         condition: service_healthy
       message-brocker:
         condition: service_healthy
+      notification-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
     env_file:
       - .env
       - apps/reservation-service/.env

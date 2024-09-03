@@ -1,3 +1,4 @@
+import { getNotificationOptions } from '@app/common';
 import { Inject } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import {
@@ -18,16 +19,22 @@ export class NotificationClientsModuleConfig
   ) {}
 
   createClientOptions(): Promise<ClientProvider> | ClientProvider {
+    const {
+      RABBITMQ_URI,
+      NOTIFICATION_DLQ,
+      NOTIFICATION_QUEUE,
+      NOTIFICATION_TTL,
+    } = this.deadLetterNotificationServiceConfigs;
+    const options = getNotificationOptions({
+      url: RABBITMQ_URI,
+      dlq: NOTIFICATION_DLQ,
+      queue: NOTIFICATION_QUEUE,
+      messageTtl: NOTIFICATION_TTL,
+    });
+
     return {
       transport: Transport.RMQ,
-      options: {
-        urls: [
-          this.deadLetterNotificationServiceConfigs.RABBITMQ_URI,
-        ],
-        queue:
-          this.deadLetterNotificationServiceConfigs
-            .NOTIFICATION_QUEUE,
-      },
+      options,
     };
   }
 }

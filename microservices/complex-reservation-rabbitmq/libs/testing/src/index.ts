@@ -1,3 +1,4 @@
+export * from './drivers/mailcatcher.driver';
 export * from './drivers/mock-server.driver';
 export * from './drivers/rabbitmq.driver';
 export * from './mock-data/temp-user.mock-data';
