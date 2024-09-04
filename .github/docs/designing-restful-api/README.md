@@ -704,8 +704,18 @@ If they match, it means the resource has not changed, and the server can respond
   - **DO NOT** put it as part of the URL path.
     - The purpose of URL path is to distinguishes resources from each other.
     - And it is not like this that we have different version of resources, but rather different behaviors.
+  - E.g. `Accept-version: 2022-12-12`
+  - or `?api-version=v2.1.2`
 - Famous patterns: `v1`, `2012-12-12`.
   - You can add `-preview` suffix to differentiate the features that ain't stabilized but published.
+  - But in general it can be:
+    - Dates.
+    - Seasons.
+    - Project names.
+- Breaking changes include:
+  - A change in the format of the response data for one or more calls.
+  - A change in the request or response type (i.e. changing an integer to a float).
+  - Removing any part of the API.
 
 ## Considerations before introducing a new version
 
