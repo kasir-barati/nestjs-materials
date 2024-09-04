@@ -112,6 +112,7 @@ An endpoint is idempotent when retrying a request has the same intended affect, 
 - We have resources which are usually our database tables/collections.
   - They're nouns and not behaviors.
   - The only behaviors are: `Create`, `Read`, `Update`, and `Delete`.
+- Learn more about REST [here](https://github.com/kasir-barati/you-say/tree/main/.github/docs/REST#restful-apis).
 
 ## CRUD
 
