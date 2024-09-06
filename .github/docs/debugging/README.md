@@ -1,6 +1,6 @@
 # How to debug your app
 
-1. Pay close attention to the bug itself and try think why it is happening.
+1. <a id="rabbitmqBugForQueueOptions" href="#rabbitmqBugForQueueOptions">#</a> Pay close attention to the bug itself and try think why it is happening.
 
    E.g. I had this weird looking issue with my code. I was configuring my RabbitMQ client and server using a helper function to generate `queueOptions` thus having same options. You know that your client app and server should use same queue options in order to be able to see each other and send messages to each other.
 
