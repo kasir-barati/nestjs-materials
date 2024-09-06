@@ -16,6 +16,7 @@ import {
   Param,
   Patch,
   Put,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -26,17 +27,15 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Observable } from 'rxjs';
-import { CreateReservationDto } from './dto/create-reservation.dto';
+import { Response } from 'express';
+import { CreateOrUpdateReservationDto } from './dto/create-reservation.dto';
 import { ReplaceReservationDto } from './dto/replace-reservation.dto';
 import {
-  CreatedReservationDto,
-  PatchedReservationDto,
+  CreatedOrUpdatedReservationDto,
   ReadReservationDto,
   ReadReservationsDto,
   ReplacedReservationDto,
 } from './dto/response.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationService } from './reservation.service';
 
 @ApiTags('Reservation service')
@@ -45,32 +44,6 @@ export class ReservationController {
   constructor(
     private readonly reservationService: ReservationService,
   ) {}
-
-  @ApiOperation({
-    summary: 'Create a new reservation',
-    description:
-      'Create a new reservation based on the request body.',
-  })
-  @ApiCreatedResponse({
-    type: CreatedReservationDto,
-    description: 'Returns created reservation.',
-  })
-  @ApiBadRequestResponse({
-    type: BadRequestException,
-    description: 'Bad request.',
-  })
-  @ApiInternalServerErrorResponse({
-    type: InternalServerErrorException,
-    description: 'Server error.',
-  })
-  @UseGuards(JwtAuthGuard)
-  @Put()
-  create(
-    @GetUser() user: AttachedUserToTheRequest,
-    @Body() createReservationDto: CreateReservationDto,
-  ): Observable<Promise<CreatedReservationDto>> {
-    return this.reservationService.create(user, createReservationDto);
-  }
 
   @ApiOperation({
     summary: 'Fetch reservations.',
@@ -119,13 +92,17 @@ export class ReservationController {
   }
 
   @ApiOperation({
-    summary: 'Patch a reservation.',
+    summary: 'Create or update a reservation resource.',
     description:
-      "Patch a reservation by id. You need to specify the 'content-type' header to 'application/merge-patch+json'. Note: since all the fields for reservation are required you cannot possibly send null to remove a field.",
+      "Create or update a reservation by id. You need to specify the 'content-type' header to 'application/merge-patch+json'. Note: since all the fields for reservation are required you cannot possibly send null to remove a field.",
   })
   @ApiOkResponse({
-    type: PatchedReservationDto,
-    description: 'Returns the updated version.',
+    type: CreatedOrUpdatedReservationDto,
+    description: 'Returns the updated reservation resource.',
+  })
+  @ApiCreatedResponse({
+    type: CreatedOrUpdatedReservationDto,
+    description: 'Returns created reservation resource.',
   })
   @ApiBadRequestResponse({
     type: BadRequestException,
@@ -137,12 +114,22 @@ export class ReservationController {
   })
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(
+  async createOrUpdate(
     @Param('id', MongoIdPipe) id: string,
-    @Body() updateReservationDto: UpdateReservationDto,
+    @GetUser() user: AttachedUserToTheRequest,
+    @Body()
+    createOrUpdateReservationDto: CreateOrUpdateReservationDto,
     @GetHeader() _: PatchContentTypeDto,
-  ): Promise<PatchedReservationDto> {
-    return this.reservationService.update(id, updateReservationDto);
+    @Res() response: Response,
+  ) {
+    const { status, data } =
+      await this.reservationService.createOrUpdate({
+        id,
+        user,
+        createOrUpdateReservationDto,
+      });
+
+    response.status(status === 'created' ? 201 : 200).send(data);
   }
 
   @ApiOperation({
@@ -188,7 +175,17 @@ export class ReservationController {
   })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  delete(@Param('id', MongoIdPipe) id: string): Promise<void> {
-    return this.reservationService.delete(id);
+  async delete(
+    @Param('id', MongoIdPipe) id: string,
+    @Res() response: Response,
+  ): Promise<void> {
+    const isDeleted = await this.reservationService.delete(id);
+
+    if (isDeleted) {
+      response.status(200).send();
+      return;
+    }
+
+    response.status(204).send();
   }
 }

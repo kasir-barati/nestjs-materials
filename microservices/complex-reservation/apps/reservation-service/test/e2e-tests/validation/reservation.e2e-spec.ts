@@ -1,13 +1,13 @@
 import { getTempUser, login } from '@app/common';
 import {
-  CreateReservationDto,
+  CreateOrUpdateReservationDto,
   ReplaceReservationDto,
   ReservationServiceApi,
 } from '../../../api-client';
 
 describe('Reservation service (e2e - validation)', () => {
   let reservationServiceApi: ReservationServiceApi;
-  const createReservationDto: CreateReservationDto = {
+  const createReservationDto: CreateOrUpdateReservationDto = {
     end: new Date().toISOString(),
     start: new Date().toISOString(),
     locationId: '66be17356d013c36717843e9',
@@ -43,16 +43,18 @@ describe('Reservation service (e2e - validation)', () => {
     },
   ])(
     'should throw error on creating a new reservation with garbage data: %p',
-    async (createReservationDto: CreateReservationDto) => {
+    async (createOrUpdateReservationDto) => {
       const authenticationJwtCookie = await login(
         user.email,
         user.password,
       );
 
       const { status } =
-        await reservationServiceApi.reservationControllerCreate(
+        await reservationServiceApi.reservationControllerCreateOrUpdate(
           {
-            createReservationDto,
+            id: '66d9ec359023bee1b95d5a90',
+            createOrUpdateReservationDto:
+              createOrUpdateReservationDto as CreateOrUpdateReservationDto,
           },
           {
             headers: {
@@ -99,10 +101,10 @@ describe('Reservation service (e2e - validation)', () => {
     );
 
     const { status } =
-      await reservationServiceApi.reservationControllerUpdate(
+      await reservationServiceApi.reservationControllerCreateOrUpdate(
         {
           id: true as unknown as string,
-          updateReservationDto: {
+          createOrUpdateReservationDto: {
             start: 123 as unknown as string,
           },
         },

@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 export interface DatabaseConfig {
   DATABASE_URL: string;
   MONGO_INITDB_DATABASE: string;
@@ -24,4 +26,7 @@ export class DuplicationError extends Error {
   ) {
     super(message);
   }
+}
+export interface PartialId {
+  _id?: Types.ObjectId;
 }

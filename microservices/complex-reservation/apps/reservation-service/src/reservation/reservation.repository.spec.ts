@@ -1,5 +1,5 @@
 import { SinonMock, SinonMockType } from '@app/common';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { Reservation } from './entities/reservation.entity';
 import { ReservationRepository } from './reservation.repository';
 
@@ -12,7 +12,20 @@ describe('ReservationRepository', () => {
     repository = new ReservationRepository(model);
   });
 
-  it('should be defined', () => {
-    expect(repository).toBeDefined();
+  it.each<FilterQuery<Reservation>>([
+    { userId: 'user id' },
+    { invoiceId: 'some stripe id' },
+  ])('should findOne', async (filter) => {
+    model.findOne.withArgs(filter).resolves({
+      toObject: jest.fn(
+        () => ({ _id: 'object id' as any } as Partial<Reservation>),
+      ),
+    });
+
+    const reservation = await repository.findOne(filter);
+
+    expect(reservation).toStrictEqual({
+      _id: 'object id',
+    });
   });
 });

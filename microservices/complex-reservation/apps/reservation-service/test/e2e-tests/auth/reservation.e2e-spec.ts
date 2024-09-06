@@ -10,9 +10,10 @@ describe('Reservation service (e2e - auth)', () => {
 
   it('should throw 403 on creating a new reservation', async () => {
     const { data, status } =
-      await reservationServiceApi.reservationControllerCreate(
+      await reservationServiceApi.reservationControllerCreateOrUpdate(
         {
-          createReservationDto: SinonMock.with({}),
+          createOrUpdateReservationDto: SinonMock.with({}),
+          id: '66d9eb2535b94fc77e3dfdff',
         },
         {
           validateStatus(status) {
@@ -68,10 +69,10 @@ describe('Reservation service (e2e - auth)', () => {
 
   it('should throw 403 on updating reservation', async () => {
     const { data, status } =
-      await reservationServiceApi.reservationControllerUpdate(
+      await reservationServiceApi.reservationControllerCreateOrUpdate(
         {
           id: '66c3719cb46e2b353af77d41',
-          updateReservationDto: {
+          createOrUpdateReservationDto: {
             start: new Date().toString(),
           },
         },

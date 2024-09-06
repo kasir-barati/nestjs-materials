@@ -4,9 +4,10 @@ import {
   SinonMock,
   SinonMockType,
 } from '@app/common';
-import { CreateReservationDto } from './dto/create-reservation.dto';
+import { Response } from 'express';
+import { CreateOrUpdateReservationDto } from './dto/create-reservation.dto';
 import { ReplaceReservationDto } from './dto/replace-reservation.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { CreatedOrUpdatedReservationDto } from './dto/response.dto';
 import { Reservation } from './entities/reservation.entity';
 import { ReservationController } from './reservation.controller';
 import { ReservationService } from './reservation.service';
@@ -21,34 +22,60 @@ describe('ReservationController', () => {
   });
 
   it('should create a reservation', async () => {
-    const requestBody: CreateReservationDto = {
+    const requestBody: CreateOrUpdateReservationDto = {
       end: new Date().toISOString(),
       start: new Date().toISOString(),
       locationId: 'object id',
       amount: 12312312,
-      card: {
-        cvc: '123',
-        expMonth: 12,
-        expYear: 2026,
-        number: '2223000048410010',
-      },
+      token: 'tok_123',
     };
-    service.create.withArgs('user id', requestBody).resolves({
-      ...requestBody,
-      userId: 'user id',
-      _id: 'object id',
+    const user = SinonMock.with<AttachedUserToTheRequest>({
+      _id: 'user id',
     });
+    const mockSend = jest.fn();
+    const mockStatus = jest.fn(() => ({ send: mockSend }));
+    const response = SinonMock.with<Response>({ status: mockStatus });
+    service.createOrUpdate
+      .withArgs({
+        id: 'object id',
+        user,
+        createOrUpdateReservationDto: requestBody,
+      })
+      .resolves(
+        SinonMock.with<
+          Awaited<ReturnType<ReservationService['createOrUpdate']>>
+        >({
+          status: 'created',
+          data: {
+            userId: 'user id',
+            _id: 'object id' as any,
+            invoiceId: 'invoice id from stripe',
+            locationId: requestBody.locationId,
+            end: requestBody.end as any,
+            start: requestBody.start as any,
+          } as CreatedOrUpdatedReservationDto,
+        }),
+      );
 
-    const reservation = await controller.create(
-      SinonMock.with<AttachedUserToTheRequest>({ _id: 'user id' }),
+    await controller.createOrUpdate(
+      'object id',
+      user,
       requestBody,
+      { 'content-type': 'application/merge-patch+json' },
+      response,
     );
 
-    expect(reservation).toStrictEqual({
-      ...requestBody,
-      userId: 'user id',
-      _id: 'object id',
-    });
+    expect(mockStatus).toHaveBeenCalledWith(201);
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        invoiceId: 'invoice id from stripe',
+        locationId: requestBody.locationId,
+        start: requestBody.start,
+        end: requestBody.end,
+        userId: 'user id',
+        _id: 'object id',
+      }),
+    );
   });
 
   it('should read reservations', async () => {
@@ -81,40 +108,57 @@ describe('ReservationController', () => {
     },
   );
 
-  it.each<{ id: string; updateReservationDto: UpdateReservationDto }>(
-    [
-      {
-        id: 'object id 1',
-        updateReservationDto: { end: new Date().toISOString() },
+  it.each<{
+    id: string;
+    createOrUpdateReservationDto: CreateOrUpdateReservationDto;
+  }>([
+    {
+      id: 'object id 1',
+      createOrUpdateReservationDto: { end: new Date().toISOString() },
+    },
+    {
+      id: 'object id 2',
+      createOrUpdateReservationDto: {
+        start: new Date('2022').toISOString(),
+        end: new Date('2023').toISOString(),
       },
-      {
-        id: 'object id 2',
-        updateReservationDto: {
-          start: new Date('2022').toISOString(),
-          end: new Date('2023').toISOString(),
-        },
-      },
-    ],
-  )(
+    },
+  ])(
     'should patch reservation: %p',
-    async ({ id, updateReservationDto }) => {
-      const { start, end, ...rest } = updateReservationDto;
-      service.update.withArgs(id, updateReservationDto).resolves(
-        SinonMock.with<Reservation>({
-          _id: id,
-          ...rest,
-          ...(end ? { end: new Date(end) } : {}),
-          ...(start ? { start: new Date(start) } : {}),
-        }),
-      );
+    async ({ id, createOrUpdateReservationDto }) => {
+      const { start, end, ...rest } = createOrUpdateReservationDto;
+      const mockSend = jest.fn();
+      const mockStatus = jest.fn(() => ({ send: mockSend }));
+      const response = SinonMock.with<Response>({
+        status: mockStatus,
+      });
+      const user = SinonMock.with<AttachedUserToTheRequest>({});
+      service.createOrUpdate
+        .withArgs({ id, user, createOrUpdateReservationDto })
+        .resolves(
+          SinonMock.with<
+            Awaited<ReturnType<ReservationService['createOrUpdate']>>
+          >({
+            status: 'updated',
+            data: {
+              _id: id as any,
+              ...rest,
+              ...(end ? { end: new Date(end) } : {}),
+              ...(start ? { start: new Date(start) } : {}),
+            } as CreatedOrUpdatedReservationDto,
+          }),
+        );
 
-      const reservation = await controller.update(
+      await controller.createOrUpdate(
         id,
-        updateReservationDto,
+        user,
+        createOrUpdateReservationDto,
         { 'content-type': 'application/merge-patch+json' },
+        response,
       );
 
-      expect({ ...reservation }).toStrictEqual({
+      expect(mockStatus).toHaveBeenCalledWith(200);
+      expect(mockSend).toHaveBeenCalledWith({
         _id: id,
         ...rest,
         ...(end ? { end: new Date(end) } : {}),
@@ -155,10 +199,26 @@ describe('ReservationController', () => {
   });
 
   it('should delete reservation', async () => {
-    service.delete.resolves();
+    service.delete.resolves(true);
+    const mockStatus = jest.fn(() => ({ send: jest.fn() }));
+    const response = SinonMock.with<Response>({
+      status: mockStatus,
+    });
 
-    const result = await controller.delete('object id');
+    await controller.delete('object id', response);
 
-    expect(result).toBeUndefined();
+    expect(mockStatus).toHaveBeenCalledWith(200);
+  });
+
+  it('should could not find the reservation to delete it', async () => {
+    service.delete.resolves(false);
+    const mockStatus = jest.fn(() => ({ send: jest.fn() }));
+    const response = SinonMock.with<Response>({
+      status: mockStatus,
+    });
+
+    await controller.delete('object id', response);
+
+    expect(mockStatus).toHaveBeenCalledWith(204);
   });
 });

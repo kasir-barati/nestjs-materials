@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { Reservation } from '../entities/reservation.entity';
 
-export class CreatedReservationDto implements Reservation {
+export class CreatedOrUpdatedReservationDto implements Reservation {
   @ApiProperty({
     type: String,
     example: new Date().toISOString(),
@@ -61,7 +61,7 @@ export class CreatedReservationDto implements Reservation {
   updatedAt: Date;
 }
 
-export class ReadReservationDto extends CreatedReservationDto {}
+export class ReadReservationDto extends CreatedOrUpdatedReservationDto {}
 
 export class ReadReservationsDto implements Pagination<Reservation> {
   @ApiProperty({
@@ -108,6 +108,4 @@ export class ReadReservationsDto implements Pagination<Reservation> {
   data: ReadReservationDto[];
 }
 
-export class PatchedReservationDto extends CreatedReservationDto {}
-
-export class ReplacedReservationDto extends CreatedReservationDto {}
+export class ReplacedReservationDto extends CreatedOrUpdatedReservationDto {}

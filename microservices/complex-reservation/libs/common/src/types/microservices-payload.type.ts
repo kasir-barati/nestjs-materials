@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsInt, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { AttachedUserToTheRequest } from './attached-user-to-the-request.type';
 
 export interface AuthenticateMicroservicesPayload {
@@ -25,6 +30,29 @@ export class ChargeMicroservicesPayload {
   })
   @IsInt()
   amount: number;
+}
+
+export class PartialChargeMicroservicesPayload {
+  @ApiProperty({
+    type: String,
+    required: false,
+    description:
+      'Token generated in the client-side app from the credit card info.',
+    example: 'tok_someId',
+  })
+  @IsString()
+  @IsOptional()
+  token?: string;
+
+  @ApiProperty({
+    type: Number,
+    required: false,
+    example: 1231231,
+    description: 'Cost of reservation.',
+  })
+  @IsInt()
+  @IsOptional()
+  amount?: number;
 }
 
 export class EmailNotificationMicroservicesPayload {

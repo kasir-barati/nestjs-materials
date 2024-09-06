@@ -18,21 +18,11 @@ describe('PaymentServiceController', () => {
   it.each<ChargeMicroservicesPayload>([
     {
       amount: 1000,
-      card: {
-        cvc: '737',
-        expMonth: 5,
-        expYear: 2026,
-        number: '374245455400122',
-      },
+      token: 'pm_visa_debit',
     },
     {
       amount: 9000,
-      card: {
-        cvc: '737',
-        expMonth: 10,
-        expYear: 2030,
-        number: '8171999927660000',
-      },
+      token: 'tok_123',
     },
   ])('should charge', async (data) => {
     service.charge.resolves();

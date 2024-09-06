@@ -5,6 +5,7 @@ import {
   DuplicationError,
   MongoError,
   Pagination,
+  PartialId,
 } from './database.type';
 
 export class AbstractRepository<Document extends AbstractDocument> {
@@ -17,7 +18,8 @@ export class AbstractRepository<Document extends AbstractDocument> {
 
   // #region Create
   async create(
-    data: Omit<Document, '_id' | 'createdAt' | 'updatedAt'>,
+    data: Omit<Document, '_id' | 'createdAt' | 'updatedAt'> &
+      PartialId,
   ): Promise<Document> {
     const createdDocument = await this.model
       .create(data)
@@ -118,13 +120,7 @@ export class AbstractRepository<Document extends AbstractDocument> {
   async delete(id: string) {
     const result = await this.model.deleteOne({ _id: id });
 
-    if (result.deletedCount === 0) {
-      this.logger.warn({
-        id,
-        message: 'Could not find the document with the given id.',
-      });
-      throw new NotFoundException();
-    }
+    return result.deletedCount === 1;
   }
   // #endregion
 }

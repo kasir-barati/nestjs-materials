@@ -1,4 +1,5 @@
 import {
+  AttachedUserToTheRequest,
   ChargeResponseDto,
   Pagination,
   SinonMock,
@@ -6,8 +7,8 @@ import {
 } from '@app/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Types } from 'mongoose';
-import { firstValueFrom, of } from 'rxjs';
-import { CreateReservationDto } from './dto/create-reservation.dto';
+import { of } from 'rxjs';
+import { CreateOrUpdateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { Reservation } from './entities/reservation.entity';
 import { ReservationRepository } from './reservation.repository';
@@ -17,23 +18,33 @@ describe('ReservationService', () => {
   let service: ReservationService;
   let repository: SinonMockType<ReservationRepository>;
   let paymentClient: SinonMockType<ClientProxy>;
+  let notificationServiceClient: SinonMockType<ClientProxy>;
 
   beforeEach(() => {
     paymentClient = SinonMock.with<ClientProxy>({});
     repository = SinonMock.of(ReservationRepository);
-    service = new ReservationService(repository, paymentClient);
+    notificationServiceClient = SinonMock.with<ClientProxy>({});
+    service = new ReservationService(
+      repository,
+      paymentClient,
+      notificationServiceClient,
+    );
   });
 
-  // Failing with timeout error. Increasing timeout did not help.
   it.skip('should create reservation', async () => {
-    const createReservationDto = SinonMock.with<CreateReservationDto>(
-      {
+    const createOrUpdateReservationDto =
+      SinonMock.with<CreateOrUpdateReservationDto>({
         end: new Date().toISOString(),
         start: new Date().toISOString(),
-        card: {},
         amount: 1222,
-      },
-    );
+        locationId: 'object id',
+        token: 'tok_asd',
+      });
+    const user: AttachedUserToTheRequest = {
+      _id: 'object id',
+      email: 'test@temp.try',
+    };
+    repository.findOne.resolves(undefined);
     paymentClient.send.returns(
       of(
         SinonMock.with<ChargeResponseDto>({
@@ -42,21 +53,24 @@ describe('ReservationService', () => {
       ),
     );
     repository.create.resolves({
-      _id: 'new object id',
+      _id: 'object id',
       userId: 'object id',
       invoiceId: 'invoice id',
-      ...createReservationDto,
+      ...createOrUpdateReservationDto,
     });
 
-    const result = await firstValueFrom(
-      service.create('object id', createReservationDto),
-    );
+    const result = await service.createOrUpdate({
+      id: 'object id',
+      user,
+      createOrUpdateReservationDto,
+    });
 
+    expect(result.status).toBe('created');
     expect(result).toStrictEqual({
-      _id: 'new object id',
+      _id: 'object id',
       userId: 'object id',
       invoiceId: 'invoice id',
-      ...createReservationDto,
+      ...createOrUpdateReservationDto,
     });
   });
 

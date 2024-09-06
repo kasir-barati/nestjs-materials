@@ -1,10 +1,18 @@
-import { getTempUser, login } from '@app/common';
 import {
-  CreateReservationDto,
+  generateRandomString,
+  getMail,
+  getTempUser,
+  login,
+} from '@app/common';
+import { Types } from 'mongoose';
+import {
+  CreateOrUpdateReservationDto,
   ReplaceReservationDto,
   ReservationServiceApi,
 } from '../../../api-client';
 import { ReservationBuilder } from '../../builders/reservation.builder';
+import { UserBuilder } from '../../builders/user.builder';
+import { ReservationDestroyer } from '../../destroyers/reservation.destroyer';
 
 describe('Reservation service (e2e - business logic)', () => {
   let reservationServiceApi: ReservationServiceApi;
@@ -15,11 +23,15 @@ describe('Reservation service (e2e - business logic)', () => {
   });
 
   it('should create a new reservation', async () => {
-    const authenticationJwtCookie = await login(
-      user.email,
-      user.password,
-    );
-    const createReservationDto: CreateReservationDto = {
+    const email = generateRandomString() + '@cnr.com';
+    const password = 'alkm12ASpo@#';
+    const userId = await new UserBuilder()
+      .setEmail(email)
+      .setPassword(password)
+      .build();
+    const authenticationJwtCookie = await login(email, password);
+    const reservationId = new Types.ObjectId().toString();
+    const createReservationDto: CreateOrUpdateReservationDto = {
       end: new Date().toISOString(),
       start: new Date().toISOString(),
       locationId: '66be17356d013c36717843e9',
@@ -27,14 +39,71 @@ describe('Reservation service (e2e - business logic)', () => {
       token: 'pm_card_visa',
     };
 
-    const { data: reservation } =
-      await reservationServiceApi.reservationControllerCreate(
+    const { data: reservation, status } =
+      await reservationServiceApi.reservationControllerCreateOrUpdate(
         {
-          createReservationDto,
+          id: reservationId,
+          createOrUpdateReservationDto: createReservationDto,
         },
         {
           headers: {
-            Cookie: authenticationJwtCookie,
+            'Cookie': authenticationJwtCookie,
+            'Content-Type': 'application/merge-patch+json',
+          },
+        },
+      );
+
+    expect(reservation).toStrictEqual({
+      __v: expect.any(Number),
+      _id: reservationId,
+      userId,
+      invoiceId: expect.any(String),
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+      end: createReservationDto.end,
+      start: createReservationDto.start,
+      locationId: createReservationDto.locationId,
+    });
+    expect(status).toBe(201);
+    expect(await getMail(email)).toBeDefined();
+  }, 20000);
+
+  it('should NOT recreate an already existing reservation but just update it', async () => {
+    const email = generateRandomString() + '@cnr.com';
+    const password = 'alkm12ASpo@#';
+    await new UserBuilder()
+      .setEmail(email)
+      .setPassword(password)
+      .build();
+    const authenticationJwtCookie = await login(email, password);
+    const reservationId = new Types.ObjectId().toString();
+    const createOrUpdateReservationDto: CreateOrUpdateReservationDto =
+      {
+        end: new Date().toISOString(),
+        start: new Date().toISOString(),
+        locationId: '66be17356d013c36717843e9',
+        amount: 12312312,
+        token: 'pm_card_visa',
+      };
+    await new ReservationBuilder()
+      .setId(reservationId)
+      .setEnd(createOrUpdateReservationDto.end)
+      .setStart(createOrUpdateReservationDto.start)
+      .setToken(createOrUpdateReservationDto.token)
+      .setAmount(createOrUpdateReservationDto.amount)
+      .setLocationId(createOrUpdateReservationDto.locationId)
+      .build();
+
+    const { data: reservation, status } =
+      await reservationServiceApi.reservationControllerCreateOrUpdate(
+        {
+          id: reservationId,
+          createOrUpdateReservationDto,
+        },
+        {
+          headers: {
+            'Cookie': authenticationJwtCookie,
+            'Content-Type': 'application/merge-patch+json',
           },
         },
       );
@@ -46,10 +115,12 @@ describe('Reservation service (e2e - business logic)', () => {
       invoiceId: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-      end: createReservationDto.end,
-      start: createReservationDto.start,
-      locationId: createReservationDto.locationId,
+      end: createOrUpdateReservationDto.end,
+      start: createOrUpdateReservationDto.start,
+      locationId: createOrUpdateReservationDto.locationId,
     });
+    expect(status).toBe(200);
+    expect(await getMail(email)).toBeUndefined();
   });
 
   it('should read all reservations', async () => {
@@ -102,10 +173,10 @@ describe('Reservation service (e2e - business logic)', () => {
     const newStart = new Date('2010').toISOString();
 
     const { data: reservation, config } =
-      await reservationServiceApi.reservationControllerUpdate(
+      await reservationServiceApi.reservationControllerCreateOrUpdate(
         {
           id,
-          updateReservationDto: {
+          createOrUpdateReservationDto: {
             start: newStart,
           },
         },
@@ -174,5 +245,28 @@ describe('Reservation service (e2e - business logic)', () => {
       );
 
     expect(status).toBe(200);
+  });
+
+  it('should return 204 on deleting non-existing reservation', async () => {
+    const authenticationJwtCookie = await login(
+      user.email,
+      user.password,
+    );
+    const id = await new ReservationBuilder().build();
+    await new ReservationDestroyer(id).destroy();
+
+    const { status } =
+      await reservationServiceApi.reservationControllerDelete(
+        {
+          id,
+        },
+        {
+          headers: {
+            Cookie: authenticationJwtCookie,
+          },
+        },
+      );
+
+    expect(status).toBe(204);
   });
 });

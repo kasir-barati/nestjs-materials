@@ -1,7 +1,9 @@
 import { getTempUser, login } from '@app/common';
+import { Types } from 'mongoose';
 import { ReservationServiceApi } from '../../api-client';
 
 export class ReservationBuilder {
+  private id: string;
   private end: string;
   private start: string;
   private amount: number;
@@ -10,6 +12,7 @@ export class ReservationBuilder {
   private reservationServiceApi: ReservationServiceApi;
 
   constructor() {
+    this.id = new Types.ObjectId().toString();
     this.end = new Date().toISOString();
     this.start = new Date().toISOString();
     this.amount = 1231231;
@@ -18,6 +21,10 @@ export class ReservationBuilder {
     this.reservationServiceApi = new ReservationServiceApi();
   }
 
+  setId(value: string) {
+    this.id = value;
+    return this;
+  }
   setEnd(value: string | Date) {
     this.end =
       typeof value === 'string' ? value : value.toISOString();
@@ -47,9 +54,10 @@ export class ReservationBuilder {
       user.password,
     );
     const { data } =
-      await this.reservationServiceApi.reservationControllerCreate(
+      await this.reservationServiceApi.reservationControllerCreateOrUpdate(
         {
-          createReservationDto: {
+          id: this.id,
+          createOrUpdateReservationDto: {
             end: this.end,
             token: this.token,
             start: this.start,
@@ -59,7 +67,8 @@ export class ReservationBuilder {
         },
         {
           headers: {
-            Cookie: authenticationJwtCookie,
+            'Cookie': authenticationJwtCookie,
+            'Content-Type': 'application/merge-patch+json',
           },
         },
       );

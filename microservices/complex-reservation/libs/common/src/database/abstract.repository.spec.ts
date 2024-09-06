@@ -283,17 +283,15 @@ describe('AbstractRepository', () => {
     expect(mockedDeleteOne).toHaveBeenCalledWith({
       _id: 'OBJECT ID',
     });
-    expect(result).toBeUndefined();
+    expect(result).toBeTruthy();
   });
 
   it('should throw not found exception on deleting non-existing id', async () => {
     mockedDeleteOne.mockResolvedValue({ deletedCount: 0 });
 
-    const result = repository.delete('non-existing OBJECT ID');
+    const result = await repository.delete('non-existing OBJECT ID');
 
-    await expect(result).rejects.toThrowError(
-      new NotFoundException(),
-    );
+    expect(result).toBeFalsy();
   });
 
   it('should propagate exceptions occurred in delete method', async () => {
