@@ -89,10 +89,11 @@ The routing algorithm used depends on the exchange type and bindings.
     - Default one.
     - Route a message to a queue by just looking at its _routing key_.
     - It has one special property that makes it very useful for simple applications: every queue that is created is automatically bound to it with a routing key which is the same as the queue name.
+      - Default one does not have a name (empty string) or amq.direct.
     - **NOTE**: `bind`/`unbind` operations ain't allowed.
     - Ideal for the unicast routing of messages, though it can be used for multicast routing as well.
 
-    Here in this example we are saying that a customer asks for their favorite driver and that taxi has a queue. So we push the message to its respected queue.
+    Here is a little example: we are assuming that a customer asks to register as a driver in our "No Taxi No Fun" platform, so to verify them we are gonna have publish a message to the `deriver.verification.request`. Learn about its implementation details [here](../../../microservices/no-taxi-no-fun/README.md#direct-exchange-scenario).
 
     ![Direct exchange](./direct-exchange.png)
 
