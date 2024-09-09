@@ -8,3 +8,7 @@
 4. `pnpm apiclient:gennerate`
 5. `docker compose up --build -d`.
 6. `pnpm test:e2e`.
+
+## Does not work
+
+https://github.com/GO-DIE/mongoose-transaction-decorator/issues/1
