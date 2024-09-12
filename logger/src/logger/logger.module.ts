@@ -13,7 +13,7 @@ const level = getLevel();
     PinoLoggerModule.forRoot({
       pinoHttp: {
         genReqId,
-        ...(level === 'info'
+        ...(level === 'debug'
           ? {
               transport: {
                 level,
@@ -29,13 +29,17 @@ const level = getLevel();
         serializers: {
           req: serializeRequest,
         },
-        stream: pino.destination({
-          dest: './logs',
-          minLength: 4096,
-          sync: false,
-          append: true,
-          contentMode: 'utf8',
-        }),
+        ...(level === 'info'
+          ? {
+              stream: pino.destination({
+                dest: './logs',
+                minLength: 4096,
+                sync: false,
+                append: true,
+                contentMode: 'utf8',
+              }),
+            }
+          : {}),
       },
     }),
   ],
