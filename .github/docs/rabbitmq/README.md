@@ -229,3 +229,4 @@ The routing algorithm used depends on the exchange type and bindings.
 
 - [AMQP 0-9-1 Model Explained](https://www.rabbitmq.com/tutorials/amqp-concepts).
 - [RabbitMQ Explained - Exchanges](https://youtu.be/o8eU5WiO8fw?si=bi50jN9kUIrjrKIa).
+- [My own doc for Microservices](https://github.com/kasir-barati/you-say/blob/main/.github/docs/microservices/README.md)

@@ -2,7 +2,9 @@
 
 Here I'll try to examine and put into practice microservices.
 
-- [A complete NestJS app](./complex-reservation/README.md).
+- [Complex Reservation with TCP](./complex-reservation/README.md).
+- [Complex Reservation with RabbitMQ](./complex-reservation-rabbitmq/README.md).
+- [No Taxi No Fun with RabbitMQ](./no-taxi-no-fun/README.md).
 
 ## Its concept
 
@@ -25,7 +27,13 @@ Microservices are small programs, each with a specific and narrow scope, that ar
 | gRPC       | Allows services to call methods or procedures on remote services as if they were local. High-performance communication using protocol buffers and HTTP/2.       |
 | TCP        | Reliable, connection-oriented communication channel between microservices. Useful for when you're communicating within docker network or microservices cluster. |
 
-#### Why request-response messaging style?
+#### `@MessagePattern` Versus `@EventPattern`
+
+|           | `@MessagePattern`                                                                                       | `@EventPattern`                                                                                                                                                                                                                                                                                                       |
+| --------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AKA       | Request-response pattern.                                                                               | Event-based pattern.                                                                                                                                                                                                                                                                                                  |
+| Upsides   | Simple to work with, and easy to debug.                                                                 | Register multiple event handlers for the same event (they will all fire in parallel). Asynchronous by default, the connection after sending the request is closed immediately. Thus more flexibility, as they offer the opportunity to create complex architectures that scale more easily and are highly responsive. |
+| Downsides | Connection to the other service being locked until it sends back a response(Potential time out errors). | Harder time to debug issues.                                                                                                                                                                                                                                                                                          |
 
 - No need to implement a message ACK protocol.
 - Exchange messages between various external services.
@@ -40,4 +48,5 @@ Microservices are small programs, each with a specific and narrow scope, that ar
 
 # RabbitMQ
 
+- Learn more about [RabbitMQ and its role in microservices](../.github/docs/rabbitmq/README.md).
 - Although `connectMicroservice` only connects to a queue (or create it if needed. it performs `assertQueue` operation ([ref](https://stackoverflow.com/a/68935959/8784518)) you can always extend `ServerRmq` class, learn more [here](https://github.com/nestjs/nest/issues/3981#issuecomment-581126236).
