@@ -83,7 +83,7 @@ export class RabbitmqService {
       if (retryCount > 0) {
         await this.amqpConnection.publish<DriverVerificationRequestCompensatePayload>(
           DIRECT_EXCHANGE,
-          DRIVER_VERIFICATION_REQ_RES_QUEUE,
+          DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
           {
             ...rest,
             retryCount: retryCount - 1,
@@ -94,7 +94,7 @@ export class RabbitmqService {
           message: 'Could not compensate',
           payload,
           exchange: DIRECT_EXCHANGE,
-          queue: DRIVER_VERIFICATION_REQ_RES_QUEUE,
+          queue: DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
         } as RabbitmqErrorLogger);
       }
 
