@@ -11,8 +11,6 @@ export interface SerializedRequest {
 }
 
 export interface SerializedResponse {
-  id: string;
+  requestId: string;
   statusCode: number;
-  headers: Record<string, string>;
-  responseTime: number;
 }
