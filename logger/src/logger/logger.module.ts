@@ -5,6 +5,7 @@ import { PrettyOptions } from 'pino-pretty';
 import { genReqId } from './utils/generate-request-id.util';
 import { getLevel } from './utils/level.util';
 import { serializeRequest } from './utils/request-serializer.util';
+import { serializeResponse } from './utils/response-serializer.util';
 
 const level = getLevel();
 
@@ -19,7 +20,7 @@ const level = getLevel();
                 level,
                 target: 'pino-pretty',
                 options: {
-                  singleLine: true,
+                  // singleLine: true,
                   colorize: true,
                   crlf: true,
                 } as PrettyOptions,
@@ -28,6 +29,7 @@ const level = getLevel();
           : {}),
         serializers: {
           req: serializeRequest,
+          res: serializeResponse,
         },
         ...(level === 'info'
           ? {

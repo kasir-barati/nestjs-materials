@@ -9,3 +9,10 @@ export interface SerializedRequest {
   remotePort: number;
   remoteAddress: string;
 }
+
+export interface SerializedResponse {
+  id: string;
+  statusCode: number;
+  headers: Record<string, string>;
+  responseTime: number;
+}

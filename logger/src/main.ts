@@ -9,6 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const PORT = 3000;
   const appUrl = `http://localhost:${PORT}/`;
+  const logger = app.get(Logger);
 
   app.use(bodyParser.json({ type: ['json', '+json'] }));
   app.useGlobalPipes(
@@ -17,7 +18,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  app.useLogger(app.get(Logger));
+  app.useLogger(logger);
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
   createSwaggerConfiguration({
     app,
@@ -26,6 +27,8 @@ async function bootstrap() {
     title: 'Test nestjs-pino.',
     description: 'Test nestjs-pino.',
   });
+
+  logger.log(`Server is accessible on ${appUrl}`);
 
   await app.listen(PORT);
 }
