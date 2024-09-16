@@ -1,3 +1,5 @@
+import { Response } from 'express';
+
 export interface SerializedRequest {
   id: string;
   url: string;
@@ -13,4 +15,9 @@ export interface SerializedRequest {
 export interface SerializedResponse {
   requestId: string;
   statusCode: number;
+}
+
+export interface UnserializedResponse {
+  statusCode: number;
+  raw: Response;
 }

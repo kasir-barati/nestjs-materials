@@ -3,10 +3,14 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
 export function genReqId(req: Request, res: Response): string {
-  const existingID = req.id ?? req.headers['x-request-id'];
+  const existingRequestId = req.id ?? req.headers['x-request-id'];
 
-  if (existingID && isUUID(existingID)) {
-    return existingID.toString();
+  if (existingRequestId && isUUID(existingRequestId)) {
+    if (!res.getHeader('x-request-id')) {
+      res.setHeader('x-request-id', existingRequestId as string);
+    }
+
+    return existingRequestId as string;
   }
 
   const id = randomUUID();
