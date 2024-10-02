@@ -1,0 +1,189 @@
+services:
+  audit-log:
+    image: audit-log
+    container_name: audit-log-container
+    ports:
+      - ${AUDIT_LOG_API_PORT}:${AUDIT_LOG_API_PORT}
+    build:
+      context: .
+      dockerfile: ./apps/audit-log/Dockerfile
+      args:
+        AUDIT_LOG_API_PORT: ${AUDIT_LOG_API_PORT}
+        MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
+    depends_on:
+      audit-log-db:
+        condition: service_healthy
+      kafka-manager:
+        condition: service_started
+    env_file:
+      - .env
+      - apps/audit-log/.env
+
+  auth:
+    image: auth
+    container_name: auth-container
+    ports:
+      - ${AUTH_API_PORT}:${AUTH_API_PORT}
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      args:
+        AUTH_API_PORT: ${AUTH_API_PORT}
+        MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
+    depends_on:
+      auth-db:
+        condition: service_healthy
+      kafka-manager:
+        condition: service_started
+    env_file:
+      - .env
+      - apps/auth/.env
+
+  auth-db:
+    image: mongo:8.0.0-rc17-noble
+    container_name: auth-database
+    ports:
+      - 27018:27017
+    entrypoint:
+      - bash
+      - -c
+      - |
+        openssl rand -base64 756 > /data/replica.key
+        chmod 400 /data/replica.key
+        chown 999:999 /data/replica.key
+        exec docker-entrypoint.sh $$@
+    command: mongod --replSet rs0 --keyFile /data/replica.key
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  audit-log-db:
+    image: mongo:8.0.0-rc17-noble
+    container_name: audit-log-database
+    ports:
+      - 27019:27017
+    entrypoint:
+      - bash
+      - -c
+      - |
+        openssl rand -base64 756 > /data/replica.key
+        chmod 400 /data/replica.key
+        chown 999:999 /data/replica.key
+        exec docker-entrypoint.sh $$@
+    command: mongod --replSet rs0 --keyFile /data/replica.key
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  auth-db-init:
+    image: mongo:8.0.0-rc17-noble
+    container_name: auth-db-init-container
+    restart: no
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    env_file: .env
+    command: >
+      mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD} --host auth-db:27017 --eval
+      '
+      rs.initiate( {
+         _id : "rs0",
+         members: [
+            { _id: 0, host: "auth-db:27017" }
+         ]
+      })
+      '
+
+  audit-log-db-init:
+    image: mongo:8.0.0-rc17-noble
+    container_name: audit-log-db-init-container
+    restart: no
+    depends_on:
+      audit-log-db:
+        condition: service_healthy
+    env_file: .env
+    command: >
+      mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD} --host audit-log-db:27017 --eval
+      '
+      rs.initiate( {
+         _id : "rs0",
+         members: [
+            { _id: 0, host: "audit-log-db:27017" }
+         ]
+      })
+      '
+
+  kafka:
+    image: wurstmeister/kafka:2.13-2.8.1
+    container_name: kafka-container
+    ports:
+      - 9092:9092
+    depends_on:
+      zookeeper:
+        condition: service_started
+    environment:
+      KAFKA_ADVERTISED_HOST: kafka
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: SASL_PLAINTEXT://:9092
+      KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256,SCRAM-SHA-512
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_PLAINTEXT:SASL_PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: SASL_PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka:9092
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-256
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/app/config/jaas.conf"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./kafka/jaas.conf:/app/config/jaas.conf
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "kafka-topics.sh",
+          "--list",
+          "--zookeeper",
+          "zookeeper:2181",
+        ]
+      interval: 30s
+      timeout: 30s
+      retries: 4
+
+  # TODO: Get rid of zookeeper and how it is initiailized ASAP
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper-container
+    hostname: zookeeper
+    ports:
+      - 2181:2181
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test: ["CMD-SHELL", "echo OK | nc -w 2 zookeeper 2181"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  kafka-manager:
+    container_name: kafka-manager-kafka
+    build:
+      context: .
+      dockerfile: ./kafka/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+      zookeeper:
+        condition: service_healthy
