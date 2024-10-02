@@ -1,11 +1,10 @@
 import { Logger, NotFoundException } from '@nestjs/common';
 import {
   ClientSession,
-  CreateOptions,
   FilterQuery,
   Model,
   QueryOptions,
-  UpdateQuery,
+  UpdateQuery
 } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 import {
@@ -31,10 +30,10 @@ export class AbstractRepository<Document extends AbstractDocument> {
   async create(
     data: Omit<Document, '_id' | 'createdAt' | 'updatedAt'> &
       PartialId,
-    createOptions?: CreateOptions,
+    session?: ClientSession,
   ): Promise<Document> {
     const createdDocument = await this.model
-      .create([data], createOptions)
+      .insertMany([data], { session })
       .catch((error: MongoError) => {
         if (error.code === 11000) {
           const field = Object.keys(error.keyValue)[0];
@@ -85,11 +84,9 @@ export class AbstractRepository<Document extends AbstractDocument> {
     id: string,
     queryOptions?: QueryOptions<Document>,
   ): Promise<Document> {
-    const document = await this.model.findById(
-      id,
-      null,
-      queryOptions,
-    );
+    const document = await this.model
+      .findById(id, null, queryOptions)
+      .exec();
 
     if (!document) {
       this.logger.warn({

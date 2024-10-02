@@ -30,14 +30,7 @@ export class DatabaseConfig implements MongooseOptionsFactory {
         'NestApplication',
       );
 
-      set('debug', (collectionName, method, query, doc) => {
-        this.logger.debug({
-          collectionName,
-          method,
-          query,
-          doc,
-        });
-      });
+      set('debug', true);
     }
 
     return {

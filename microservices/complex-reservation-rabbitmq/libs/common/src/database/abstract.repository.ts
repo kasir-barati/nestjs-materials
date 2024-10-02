@@ -64,7 +64,7 @@ export class AbstractRepository<Document extends AbstractDocument> {
   }
 
   async findById(id: string): Promise<Document> {
-    const document = await this.model.findById(id);
+    const document = await this.model.findById(id).exec();
 
     if (!document) {
       this.logger.warn({
