@@ -35,15 +35,22 @@
 
 1. Pub/sub pattern.
 2. Storing streams of events durably and reliably.
+
+   > [!NOTE]
+   >
+   > Kafka's performance is <span title="Might not be absolutely constant!">effectively</span> constant with respect to data size, so storing data for a long time is perfectly fine.
+
 3. Live or retrospective processing.
 
-## How it works infographic
+## How it works
 
-- A distributed system consisting of [servers](./README.md#serverDefinition) and clients.
+- A distributed system consisting of [servers](#serverDefinition) and clients.
   - **Client**: SDK that read, write, and process streams of events.
 - Communicates via a high-performance TCP network protocol.
 
 ![How Kafka works infographic](./how-it-works.png)
+
+- Producers and consumers are fully decoupled and agnostic of each other, resulting high scalability.
 
 ### Glossary
 
@@ -52,17 +59,48 @@
     <a href="#topicDefinition">#</a>
     Topic:
   </dt>
-  <dd>A channel for categorizing data/events.</dd>
+  <dd>A channel for categorizing events.</dd>
+  <dd>A topic is similar to a folder in a filesystem.</dd>
+  <dd>Multi-producer and multi-subscriber.</dd>
+  <dd>
+    Every topic can be replicated, even across geo-regions or datacenters, so that there are always multiple brokers that have a copy of the data. <b>A common production setting is a replication factor of 3</b>, i.e., there will always be three copies of your data.
+  </dd>
+  <dt id="eventDefinition">
+    <a href="#eventDefinition">#</a>
+    Event:
+  </dt>
+  <dd>AKA record or message.</dd>
+  <dd>
+    Usually has a
+    <b>key</b>,
+    <b>value</b>,
+    <b>timestamp</b>,
+    and optional <b>metadata headers</b>.
+    Here's an example event.
+  </dd>
+  <dd>Similar to the files in a folder (topic).</dd>
+  <dd>
+    Can be read as often as needed (but can also guarantee to process events exactly-once).
+  </dd>
+  <dt id="partitioningDefinition">
+    <a href="#partitioningDefinition">#</a>
+    Partitioning:
+  </dt>
+  <dd>Topics are partitioned.</dd>
+  <dd>A topic is spread over a number of "buckets" located on different Kafka brokers.</dd>
+  <dd>
+    Important for scalability, because it allows client apps to read/write data from/to many brokers at the same time.
+  </dd>
   <dt id="producerDefinition">
     <a href="#producerDefinition">#</a>
     Producer:
   </dt>
-  <dd>Software that sends data to Kafka topics.</dd>
+  <dd>Client apps that send data to our Kafka topics.</dd>
   <dt id="consumerDefinition">
     <a href="#consumerDefinition">#</a>
     Consumer:
   </dt>
-  <dd>Software that receive data from Kafka topics.</dd>
+  <dd>Client apps that receive data from Kafka topics by subscribing to the events.</dd>
   <dt id=serverDefinition">
     <a href="#serverDefinition">#</a>
     Server:
@@ -70,9 +108,6 @@
   <dd>A cluster of one or more servers that can span multiple datacenters or cloud regions.</dd>
   <dd>Some of these servers form the storage layer, called the <b>brokers</b>.</dd>
   <dd>Some manages data distribution.</dd>
-  <dt id="">
-    <a href="#">#</a></dt>
-  <dd></dd>
 </dl>
 
 ## [Docker `wurstmeister/kafka`](https://github.com/wurstmeister/kafka-docker)
