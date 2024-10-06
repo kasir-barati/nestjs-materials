@@ -1,7 +1,7 @@
 import { FactoryProvider } from '@nestjs/common';
 import { Kafka } from 'kafkajs';
 import {
-  KAFKA_INSTANCE,
+  KAFKA_CLIENT,
   MESSAGE_PRODUCER,
 } from '../messaging.constants';
 import { MessageProducerService } from '../services/message-producer.service';
@@ -16,5 +16,5 @@ export const messageProducerFactory: FactoryProvider<MessageProducerService> =
 
       return new MessageProducerService(producer);
     },
-    inject: [KAFKA_INSTANCE],
+    inject: [KAFKA_CLIENT],
   };

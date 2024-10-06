@@ -2,13 +2,13 @@ import { FactoryProvider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Kafka } from 'kafkajs';
 import {
-  KAFKA_INSTANCE,
+  KAFKA_CLIENT,
   MESSAGING_MODULE_OPTIONS,
 } from '../messaging.constants';
 import { MessagingModuleOptions } from '../types/messaging.type';
 
-export const kafkaFactory: FactoryProvider<Kafka> = {
-  provide: KAFKA_INSTANCE,
+export const kafkaClientFactory: FactoryProvider<Kafka> = {
+  provide: KAFKA_CLIENT,
   useFactory(
     options: MessagingModuleOptions,
     configService: ConfigService,

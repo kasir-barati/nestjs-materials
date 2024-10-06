@@ -13,8 +13,8 @@ services:
     depends_on:
       audit-log-db:
         condition: service_healthy
-      kafka-manager:
-        condition: service_started
+      config-kafka:
+        condition: service_completed_successfully
     env_file:
       - .env
       - apps/audit-log/.env
@@ -33,8 +33,8 @@ services:
     depends_on:
       auth-db:
         condition: service_healthy
-      kafka-manager:
-        condition: service_started
+      config-kafka:
+        condition: service_completed_successfully
     env_file:
       - .env
       - apps/auth/.env
@@ -132,8 +132,11 @@ services:
       - 9092:9092
     depends_on:
       zookeeper:
-        condition: service_started
+        condition: service_healthy
     environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_CREATE_TOPICS: "users:3:1"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_ADVERTISED_HOST: kafka
       KAFKA_ADVERTISED_PORT: 9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -177,8 +180,9 @@ services:
       timeout: 10s
       retries: 3
 
-  kafka-manager:
-    container_name: kafka-manager-kafka
+  config-kafka:
+    container_name: config-kafka-container
+    restart: no
     build:
       context: .
       dockerfile: ./kafka/Dockerfile

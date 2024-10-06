@@ -1,7 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { kafkaClientFactory } from './factory-providers/kafka-client.factory-provider';
 import { kafkaConsumerFactory } from './factory-providers/kafka-consumer.factory-provider';
-import { kafkaFactory } from './factory-providers/kafka-instance.factory-provider';
 import { messageConsumerFactory } from './factory-providers/message-consumer.factory-provider';
 import { messageProducerFactory } from './factory-providers/message-producer.factory-provider';
 import messagingConfig from './messaging.config';
@@ -20,7 +20,7 @@ export class MessagingModule {
     return {
       module: MessagingModule,
       providers: [
-        kafkaFactory,
+        kafkaClientFactory,
         kafkaConsumerFactory,
         messageConsumerFactory,
         messageProducerFactory,

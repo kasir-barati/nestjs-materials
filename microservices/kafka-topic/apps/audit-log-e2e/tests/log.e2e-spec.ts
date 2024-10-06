@@ -19,20 +19,18 @@ describe('Log API (e2e)', () => {
     // Act
     const { data, status } = await logApi.auditLogControllerRead();
 
-    console.dir(data, { depth: null });
-
     // Assert
     expect(status).toBe(200);
     expect(data.data).toBeArray();
     expect(data.data).toEqual(
-      expect.arrayContaining(
+      expect.arrayContaining([
         expect.objectContaining({
           afterEvent: expect.objectContaining({
             _id: userId,
             email: userEmail,
           }),
         }),
-      ),
+      ]),
     );
   });
 });

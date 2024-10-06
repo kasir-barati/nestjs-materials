@@ -6,7 +6,7 @@ export class Log extends AbstractDocument {
   @Prop({ immutable: true })
   requestId: string;
 
-  @Prop({ type: String, array: true, immutable: true })
+  @Prop({ type: [String], immutable: true })
   tags: string[];
 
   @Prop({ immutable: true })

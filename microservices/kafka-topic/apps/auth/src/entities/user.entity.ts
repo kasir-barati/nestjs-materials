@@ -1,6 +1,7 @@
 import { AbstractDocument } from '@app/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { isEmail, isStrongPassword } from 'class-validator';
+import { strongPasswordConf } from '../constants/password.constant';
 
 @Schema({ timestamps: true })
 export class User extends AbstractDocument {
@@ -22,11 +23,7 @@ export class User extends AbstractDocument {
     required: true,
     validate: {
       validator(value: string) {
-        return isStrongPassword(value, {
-          minLength: 8,
-          minNumbers: 1,
-          minLowercase: 1,
-        });
+        return isStrongPassword(value, strongPasswordConf);
       },
       message({ value }) {
         return `${value} is not a valid password!`;
