@@ -20,3 +20,8 @@ Here I will try to implement Direct exchange type explained [here](../../.github
 ![First step is pushing verification request message into its respective queue](./assets/direct-exchange-first.png)
 
 ![Second step is pushing verification result message into its respective queue](./assets/direct-exchange-second.png)
+
+## Topic exchange scenario
+
+1. When a new driver is created I will log it in the audit-log service
+2. When verification state changes.
