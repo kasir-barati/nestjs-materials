@@ -39,7 +39,7 @@
 
 ## How it works infographic
 
-- A distributed system consisting of [servers](#serverDefinition) and clients.
+- A distributed system consisting of [servers](./README.md#serverDefinition) and clients.
   - **Client**: SDK that read, write, and process streams of events.
 - Communicates via a high-performance TCP network protocol.
 
