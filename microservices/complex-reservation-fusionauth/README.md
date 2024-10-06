@@ -1,3 +1,0 @@
-# NOT implemented yet.
-
-Coming soon...
