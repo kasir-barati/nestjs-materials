@@ -15,7 +15,6 @@ if [ "$BUILD" == true ]; then
     DOCKER_BUILDKIT=0 docker-compose build --no-cache
 fi
 docker compose up -d
-# endregion
 
 ./scripts/create-openapi.sh
 ./scripts/generate-api-client.sh
