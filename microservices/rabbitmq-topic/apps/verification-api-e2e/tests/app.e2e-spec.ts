@@ -1,5 +1,5 @@
 import { isArray } from 'class-validator';
-import { VerificationApi } from './api-client';
+import { VerificationApi } from '../api-client';
 
 describe('Verification API (e2e)', () => {
   let verificationApi: VerificationApi;

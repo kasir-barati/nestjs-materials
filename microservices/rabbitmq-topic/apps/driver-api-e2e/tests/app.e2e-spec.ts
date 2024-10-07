@@ -1,7 +1,7 @@
 import { sleep } from '@app/testing';
 import { isMongoId } from 'class-validator';
 import { Types } from 'mongoose';
-import { DriverApi } from './api-client';
+import { DriverApi } from '../api-client';
 
 describe('Driver API (e2e)', () => {
   let driverApi: DriverApi;

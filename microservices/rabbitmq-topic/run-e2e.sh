@@ -26,8 +26,9 @@ npx ts-node --transpile-only -r tsconfig-paths/register apps/verification-api/te
 echo ""
 echo "Generate api-client..."
 echo ""
-npx openapi-generator-cli generate -i /local/apps/driver-api/openApi.json -o /local/apps/driver-api/test/api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true
-npx openapi-generator-cli generate -i /local/apps/verification-api/openApi.json -o /local/apps/verification-api/test/api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true
+npx openapi-generator-cli generate -i /local/apps/driver-api/openApi.json -o /local/apps/audit-log-e2e/api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true
+npx openapi-generator-cli generate -i /local/apps/driver-api/openApi.json -o /local/apps/driver-api-e2e/api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true
+npx openapi-generator-cli generate -i /local/apps/verification-api/openApi.json -o /local/apps/verification-api-e2e/api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true
 
 echo ""
 echo "Run tests..."

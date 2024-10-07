@@ -5,10 +5,10 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { join } from 'path';
 import * as Sinon from 'sinon';
-import driverApiConfig from '../../src/configs/driver-api.config';
-import { DriverController } from '../../src/driver/driver.controller';
-import { DriverSanitizer } from '../../src/driver/driver.sanitizer';
-import { DriverService } from '../../src/driver/driver.service';
+import verificationApiConfig from '../../verification-api/src/configs/verification-api.config';
+import { VerificationController } from '../../verification-api/src/verification/verification.controller';
+import { VerificationSanitizer } from '../../verification-api/src/verification/verification.sanitizer';
+import { VerificationService } from '../../verification-api/src/verification/verification.service';
 
 @Module({
   imports: [
@@ -17,20 +17,20 @@ import { DriverService } from '../../src/driver/driver.service';
         join(process.cwd(), '.env'),
         join(process.cwd(), 'apps', 'driver-api', '.env'),
       ],
-      load: [driverApiConfig],
+      load: [verificationApiConfig],
       isGlobal: true,
       cache: true,
     }),
   ],
-  controllers: [DriverController],
+  controllers: [VerificationController],
   providers: [
     {
-      provide: DriverService,
-      useValue: Sinon.stub(DriverService),
+      provide: VerificationService,
+      useValue: Sinon.stub(VerificationService),
     },
     {
-      provide: DriverSanitizer,
-      useValue: Sinon.stub(DriverSanitizer),
+      provide: VerificationSanitizer,
+      useValue: Sinon.stub(VerificationSanitizer),
     },
   ],
 })
@@ -38,20 +38,20 @@ class OpenApiModule {}
 
 async function createOpenApi() {
   const app = await NestFactory.create(OpenApiModule);
-  const { SWAGGER_PATH, DRIVER_API_PORT } = app.get<
-    ConfigType<typeof driverApiConfig>
-  >(driverApiConfig.KEY);
+  const { SWAGGER_PATH, VERIFICATION_API_PORT } = app.get<
+    ConfigType<typeof verificationApiConfig>
+  >(verificationApiConfig.KEY);
   const document = createSwaggerConfiguration({
     app,
     swaggerPath: SWAGGER_PATH,
     title: 'The auth RESTful API.',
-    appUrl: `http://localhost:${DRIVER_API_PORT}`,
+    appUrl: `http://localhost:${VERIFICATION_API_PORT}`,
     description: 'The auth RESTful API.',
   });
   const openApiOutputDirectory = join(
     process.cwd(),
     'apps',
-    'driver-api',
+    'verification-api',
   );
   const openApiFilePath = writeOpenApi(
     document,
