@@ -21,7 +21,7 @@ import { LogSubscriberService } from './services/log-subscriber.service';
     ConfigModule.forRoot({
       envFilePath: [
         join(process.cwd(), '.env'),
-        join(process.cwd(), 'apps', 'auth', '.env'),
+        join(process.cwd(), 'apps', 'audit-log', '.env'),
       ],
       load: [auditLogConfig],
       isGlobal: true,
