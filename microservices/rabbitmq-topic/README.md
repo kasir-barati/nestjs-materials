@@ -2,6 +2,10 @@
 
 Here I will try to implement Direct exchange type explained [here](../../.github/docs/rabbitmq/README.md#topicExchangeType). So to implement that scenario I need to have these microservices:
 
+> [!IMPORTANT]
+>
+> If your message does have a validation issue, the you're message will be rejected by the class-validator. But the funny part is that you won't see any error in terminal on the receiver part, neither you'll get an error on the sender side :grin:.
+
 ## Topic exchange scenario
 
 1. When driver changes.
