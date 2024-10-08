@@ -19,12 +19,12 @@ describe('Verification API (e2e)', () => {
     expect(rest).toStrictEqual(
       expect.objectContaining({
         page: expect.any(Number),
-        prev: expect.anything(),
-        next: expect.anything(),
         limit: expect.any(Number),
         total: expect.any(Number),
         lastPage: expect.any(Number),
       }),
     );
+    expect(rest.next).toBeOneOf([expect.any(Number), null]);
+    expect(rest.prev).toBeOneOf([expect.any(Number), null]);
   });
 });

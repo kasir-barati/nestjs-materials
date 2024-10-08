@@ -1,6 +1,7 @@
 import { axiosErrorHandler } from '@app/testing';
 import axios from 'axios';
 import { config } from 'dotenv';
+import * as matchers from 'jest-extended';
 import { join } from 'path';
 
 config({
@@ -14,3 +15,5 @@ axios.interceptors.response.use(
   (response) => response,
   axiosErrorHandler,
 );
+
+expect.extend(matchers);
