@@ -1,104 +1,43 @@
 import {
-  DIRECT_EXCHANGE,
-  DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
-  DRIVER_VERIFICATION_REQ_RES_QUEUE,
-  DriverVerificationRequestCompensatePayload,
-  DriverVerificationRequestResponsePayload,
-  RabbitmqErrorLogger,
+  AUDIT_LOG_QUEUE,
+  CREATED_ROUTING_KEY,
+  DELETED_ROUTING_KEY,
+  Event,
   rabbitmqValidationPipe,
+  TOPIC_EXCHANGE,
+  UPDATED_ROUTING_KEY,
 } from '@app/common';
 import {
-  AmqpConnection,
   RabbitPayload,
-  RabbitRPC,
+  RabbitSubscribe,
 } from '@golevelup/nestjs-rabbitmq';
 import { Injectable, Logger, UsePipes } from '@nestjs/common';
-import { DriverRepository } from '../driver/repository/driver.repository';
+import { LogRepository } from '../repository/log.repository';
 
 @Injectable()
 export class RabbitmqService {
   private readonly logger = new Logger(
-    'Driver' + RabbitmqService.name,
+    'AuditLog' + RabbitmqService.name,
   );
 
-  constructor(
-    private readonly driverRepository: DriverRepository,
-    private readonly amqpConnection: AmqpConnection,
-  ) {}
+  constructor(private readonly logRepository: LogRepository) {}
 
   @UsePipes(rabbitmqValidationPipe)
-  @RabbitRPC({
-    exchange: DIRECT_EXCHANGE,
-    queue: DRIVER_VERIFICATION_REQ_RES_QUEUE,
-    routingKey: DRIVER_VERIFICATION_REQ_RES_QUEUE,
+  @RabbitSubscribe({
+    exchange: TOPIC_EXCHANGE,
+    queue: AUDIT_LOG_QUEUE,
+    routingKey: [
+      CREATED_ROUTING_KEY,
+      UPDATED_ROUTING_KEY,
+      DELETED_ROUTING_KEY,
+    ],
   })
-  async driverVerificationReqResponse(
-    @RabbitPayload()
-    payload: DriverVerificationRequestResponsePayload,
-  ) {
-    try {
-      await this.driverRepository.update(payload.driverId, {
-        verificationId: payload.verificationId,
-      });
-    } catch (error) {
-      const { retryCount = 4, ...rest } = payload;
+  async log(@RabbitPayload() payload: Event<any, any>) {
+    const { timestamp, ...rest } = payload;
 
-      if (retryCount > 0) {
-        await this.amqpConnection.publish<DriverVerificationRequestResponsePayload>(
-          DIRECT_EXCHANGE,
-          DRIVER_VERIFICATION_REQ_RES_QUEUE,
-          {
-            ...rest,
-            retryCount: retryCount - 1,
-          },
-        );
-      } else {
-        this.logger.error({
-          message: 'Could not process verification request response',
-          payload,
-          exchange: DIRECT_EXCHANGE,
-          queue: DRIVER_VERIFICATION_REQ_RES_QUEUE,
-        } as RabbitmqErrorLogger);
-      }
-
-      throw error;
-    }
-  }
-
-  @UsePipes(rabbitmqValidationPipe)
-  @RabbitRPC({
-    exchange: DIRECT_EXCHANGE,
-    queue: DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
-    routingKey: DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
-  })
-  async driverVerificationReqCompensate(
-    @RabbitPayload()
-    payload: DriverVerificationRequestCompensatePayload,
-  ) {
-    try {
-      await this.driverRepository.delete(payload.driverId);
-    } catch (error) {
-      const { retryCount = 4, ...rest } = payload;
-
-      if (retryCount > 0) {
-        await this.amqpConnection.publish<DriverVerificationRequestCompensatePayload>(
-          DIRECT_EXCHANGE,
-          DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
-          {
-            ...rest,
-            retryCount: retryCount - 1,
-          },
-        );
-      } else {
-        this.logger.error({
-          message: 'Could not compensate',
-          payload,
-          exchange: DIRECT_EXCHANGE,
-          queue: DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
-        } as RabbitmqErrorLogger);
-      }
-
-      throw error;
-    }
+    await this.logRepository.create({
+      ...rest,
+      timestamp: new Date(timestamp),
+    });
   }
 }

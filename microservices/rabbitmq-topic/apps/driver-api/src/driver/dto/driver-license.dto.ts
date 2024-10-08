@@ -44,7 +44,7 @@ export class DriverLicenseDto {
     example:
       'https://example-uploads.s3.amazonaws.com/uploads/drivers-license/123sdv42.png',
   })
-  @IsDateString()
+  @IsString()
   @IsOptional()
   picture?: string;
 }

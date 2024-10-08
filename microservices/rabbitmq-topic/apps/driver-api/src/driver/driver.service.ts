@@ -1,9 +1,10 @@
 import {
   containsNull,
-  DIRECT_EXCHANGE,
-  DRIVER_VERIFICATION_REQ_QUEUE,
-  DriverVerificationRequestPayload,
+  DRIVER_CREATED_ROUTING_KEY,
+  DRIVER_UPDATED_ROUTING_KEY,
+  Event,
   NullFieldError,
+  TOPIC_EXCHANGE,
 } from '@app/common';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
@@ -18,14 +19,20 @@ export class DriverService {
     private readonly amqpConnection: AmqpConnection,
   ) {}
 
-  async createOrUpdate(
-    id: string,
-    createOrUpdateDriverDto: CreateOrUpdateDriverDto,
-  ): Promise<{
+  async createOrUpdate({
+    id,
+    createOrUpdateDriverDto,
+    requestId,
+  }: {
+    id: string;
+    createOrUpdateDriverDto: CreateOrUpdateDriverDto;
+    requestId: string;
+  }): Promise<{
     status: 'created' | 'updated';
     data: Driver;
   }> {
     const session = await this.driverRepository.startSession();
+
     session.startTransaction();
 
     try {
@@ -43,6 +50,19 @@ export class DriverService {
           session,
         );
 
+        await this.amqpConnection.publish<Event<Driver, Driver>>(
+          TOPIC_EXCHANGE,
+          DRIVER_UPDATED_ROUTING_KEY,
+          {
+            afterEvent: data,
+            beforeEvent: driver,
+            eventType: 'update',
+            requestId,
+            tags: ['driver'],
+            timestamp: new Date().toISOString(),
+            userId: 'req.user.id',
+          },
+        );
         await session.commitTransaction();
         await session.endSession();
 
@@ -59,16 +79,20 @@ export class DriverService {
           _id: id,
           ...(createOrUpdateDriverDto as unknown as Driver),
         },
-        {
-          session,
-        },
+        session,
       );
 
-      await this.amqpConnection.publish<DriverVerificationRequestPayload>(
-        DIRECT_EXCHANGE,
-        DRIVER_VERIFICATION_REQ_QUEUE,
+      await this.amqpConnection.publish<Event<undefined, Driver>>(
+        TOPIC_EXCHANGE,
+        DRIVER_CREATED_ROUTING_KEY,
         {
-          driverId: id,
+          beforeEvent: undefined,
+          afterEvent: data,
+          eventType: 'created',
+          requestId,
+          tags: ['driver'],
+          timestamp: new Date().toISOString(),
+          userId: 'req.user.id',
         },
       );
       await session.commitTransaction();

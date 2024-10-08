@@ -9,22 +9,24 @@ describe('Verification API (e2e)', () => {
   });
 
   it('should read all verifications', async () => {
+    // Act
     const {
       data: { data, ...rest },
       status,
     } = await verificationApi.verificationControllerRead();
 
+    // Assert
     expect(isArray(data)).toBeTruthy();
     expect(status).toBe(200);
     expect(rest).toStrictEqual(
       expect.objectContaining({
         page: expect.any(Number),
-        prev: expect.anything(),
-        next: expect.anything(),
         limit: expect.any(Number),
         total: expect.any(Number),
         lastPage: expect.any(Number),
       }),
     );
+    expect(rest.next).toBeOneOf([expect.any(Number), null]);
+    expect(rest.prev).toBeOneOf([expect.any(Number), null]);
   });
 });

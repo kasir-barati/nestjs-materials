@@ -34,7 +34,7 @@ export class VehicleDto {
     required: false,
     example: 'P688CC',
   })
-  @IsDateString()
+  @IsString()
   @IsOptional()
   licensePlateNumber?: string;
 
@@ -43,7 +43,7 @@ export class VehicleDto {
     required: false,
     example: '1HGBH41JXMN109186',
   })
-  @IsDateString()
+  @IsString()
   @IsOptional()
   vehicleIdentificationNumber: string;
 
@@ -52,7 +52,7 @@ export class VehicleDto {
     required: false,
     example: 'A123456780',
   })
-  @IsDateString()
+  @IsString()
   @IsOptional()
   insuranceId: string;
 
@@ -71,7 +71,7 @@ export class VehicleDto {
     example:
       'https://example-uploads.s3.amazonaws.com/uploads/drivers-insurance/sdv412.png',
   })
-  @IsDateString()
+  @IsString()
   @IsOptional()
   insurancePicture: string;
 }

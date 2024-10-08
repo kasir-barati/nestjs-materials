@@ -51,7 +51,7 @@ async function createOpenApi() {
   const openApiOutputDirectory = join(
     process.cwd(),
     'apps',
-    'driver-api',
+    'driver-api-e2e',
   );
   const openApiFilePath = writeOpenApi(
     document,

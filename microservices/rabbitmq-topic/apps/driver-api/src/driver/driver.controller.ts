@@ -11,6 +11,7 @@ import {
   InternalServerErrorException,
   Param,
   Patch,
+  Req,
   Res,
 } from '@nestjs/common';
 import {
@@ -22,7 +23,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { DriverSanitizer } from './driver.sanitizer';
 import { DriverService } from './driver.service';
 import { CreateOrUpdateDriverDto } from './dto/create-or-update-driver.dto';
@@ -71,11 +72,13 @@ export class DriverController {
     @Body() createOrUpdateDriverDto: CreateOrUpdateDriverDto,
     @GetHeader() _: PatchContentTypeDto,
     @Res() response: Response,
+    @Req() request: Request,
   ) {
-    const { data, status } = await this.driverService.createOrUpdate(
+    const { data, status } = await this.driverService.createOrUpdate({
       id,
       createOrUpdateDriverDto,
-    );
+      requestId: request.id.toString(),
+    });
     const sanitizedData =
       this.driverSanitizer.toCreatedOrUpdatedDriver(data);
 

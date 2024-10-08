@@ -1,7 +1,9 @@
 import {
-  DIRECT_EXCHANGE,
-  DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
-  DRIVER_VERIFICATION_REQ_RES_QUEUE,
+  AUDIT_LOG_QUEUE,
+  CREATED_ROUTING_KEY,
+  DELETED_ROUTING_KEY,
+  TOPIC_EXCHANGE,
+  UPDATED_ROUTING_KEY,
 } from '@app/common';
 import { ModuleConfigFactory } from '@golevelup/nestjs-modules';
 import { RabbitMQConfig } from '@golevelup/nestjs-rabbitmq';
@@ -26,19 +28,18 @@ export class RabbitmqModuleConfig
       uri: RABBITMQ_URL,
       exchanges: [
         {
-          name: DIRECT_EXCHANGE,
+          name: TOPIC_EXCHANGE,
           type: 'topic',
         },
       ],
       queues: [
         {
-          name: DRIVER_VERIFICATION_REQ_RES_QUEUE,
-          routingKey: DRIVER_VERIFICATION_REQ_RES_QUEUE,
-          createQueueIfNotExists: true,
-        },
-        {
-          name: DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
-          routingKey: DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
+          name: AUDIT_LOG_QUEUE,
+          routingKey: [
+            CREATED_ROUTING_KEY,
+            UPDATED_ROUTING_KEY,
+            DELETED_ROUTING_KEY,
+          ],
           createQueueIfNotExists: true,
         },
       ],

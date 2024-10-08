@@ -3,4 +3,5 @@ export interface RabbitmqErrorLogger {
   message: string;
   exchange: string;
   payload: unknown;
+  routingKey?: string;
 }

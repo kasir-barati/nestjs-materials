@@ -1,6 +1,6 @@
 import { Pagination } from '@app/common';
-import { ReadLogDto } from '../dto/read-log.dto';
-import { Log } from '../entities/log.entity';
+import { ReadLogDto } from './dto/read-log.dto';
+import { Log } from './entities/log.entity';
 
 export class AuditLogSerializer {
   toRead(unserialized: Pagination<Log>): Pagination<ReadLogDto> {

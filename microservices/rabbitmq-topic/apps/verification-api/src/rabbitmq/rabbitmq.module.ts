@@ -15,5 +15,6 @@ import { RabbitmqService } from './rabbitmq.service';
     VerificationRepositoryModule,
   ],
   providers: [RabbitmqService],
+  exports: [RabbitMQModule],
 })
 export class RabbitmqModule {}

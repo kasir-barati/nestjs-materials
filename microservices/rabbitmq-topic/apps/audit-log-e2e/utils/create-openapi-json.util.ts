@@ -6,9 +6,9 @@ import { NestFactory } from '@nestjs/core';
 import { join } from 'path';
 import * as Sinon from 'sinon';
 import { AuditLogController } from '../../audit-log/src/audit-log.controller';
+import { AuditLogSerializer } from '../../audit-log/src/audit-log.serializer';
+import { AuditLogService } from '../../audit-log/src/audit-log.service';
 import auditLogApiConfig from '../../audit-log/src/configs/audit-log.config';
-import { AuditLogSerializer } from '../../audit-log/src/services/audit-log-serializer.service';
-import { AuditLogService } from '../../audit-log/src/services/audit-log.service';
 
 @Module({
   imports: [
@@ -51,7 +51,7 @@ async function createOpenApi() {
   const openApiOutputDirectory = join(
     process.cwd(),
     'apps',
-    'audit-log',
+    'audit-log-e2e',
   );
   const openApiFilePath = writeOpenApi(
     document,

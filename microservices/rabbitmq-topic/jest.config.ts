@@ -22,4 +22,5 @@ export default {
     '^@app/common(|/.*)$': appCommon,
     '^@app/testing(|/.*)$': appTesting,
   },
+  setupFilesAfterEnv: ['./jest-setup.ts'],
 } satisfies Config;

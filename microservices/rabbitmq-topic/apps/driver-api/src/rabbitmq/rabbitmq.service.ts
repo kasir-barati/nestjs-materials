@@ -1,16 +1,17 @@
 import {
-  DIRECT_EXCHANGE,
   DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
-  DRIVER_VERIFICATION_REQ_RES_QUEUE,
-  DriverVerificationRequestCompensatePayload,
-  DriverVerificationRequestResponsePayload,
+  DRIVER_VERIFICATION_RES_QUEUE,
+  Event,
   RabbitmqErrorLogger,
   rabbitmqValidationPipe,
+  TOPIC_EXCHANGE,
+  VERIFICATION_CREATED_ROUTING_KEY,
+  VERIFICATION_DELETED_ROUTING_KEY,
 } from '@app/common';
 import {
   AmqpConnection,
   RabbitPayload,
-  RabbitRPC,
+  RabbitSubscribe,
 } from '@golevelup/nestjs-rabbitmq';
 import { Injectable, Logger, UsePipes } from '@nestjs/common';
 import { DriverRepository } from '../driver/repository/driver.repository';
@@ -27,37 +28,40 @@ export class RabbitmqService {
   ) {}
 
   @UsePipes(rabbitmqValidationPipe)
-  @RabbitRPC({
-    exchange: DIRECT_EXCHANGE,
-    queue: DRIVER_VERIFICATION_REQ_RES_QUEUE,
-    routingKey: DRIVER_VERIFICATION_REQ_RES_QUEUE,
+  @RabbitSubscribe({
+    exchange: TOPIC_EXCHANGE,
+    queue: DRIVER_VERIFICATION_RES_QUEUE,
+    routingKey: VERIFICATION_CREATED_ROUTING_KEY,
   })
   async driverVerificationReqResponse(
-    @RabbitPayload()
-    payload: DriverVerificationRequestResponsePayload,
+    @RabbitPayload() payload: Event<undefined, any>,
   ) {
     try {
-      await this.driverRepository.update(payload.driverId, {
-        verificationId: payload.verificationId,
-      });
+      await this.driverRepository.update(
+        payload.afterEvent.driverId,
+        {
+          verificationId: payload.afterEvent._id,
+        },
+      );
     } catch (error) {
-      const { retryCount = 4, ...rest } = payload;
+      const { retryCount = 0, ...rest } = payload;
 
-      if (retryCount > 0) {
-        await this.amqpConnection.publish<DriverVerificationRequestResponsePayload>(
-          DIRECT_EXCHANGE,
-          DRIVER_VERIFICATION_REQ_RES_QUEUE,
+      if (retryCount < 4) {
+        await this.amqpConnection.publish<Event<undefined, any>>(
+          TOPIC_EXCHANGE,
+          VERIFICATION_CREATED_ROUTING_KEY,
           {
             ...rest,
-            retryCount: retryCount - 1,
+            retryCount: retryCount + 1,
           },
         );
       } else {
         this.logger.error({
           message: 'Could not process verification request response',
           payload,
-          exchange: DIRECT_EXCHANGE,
-          queue: DRIVER_VERIFICATION_REQ_RES_QUEUE,
+          exchange: TOPIC_EXCHANGE,
+          queue: DRIVER_VERIFICATION_RES_QUEUE,
+          routingKey: VERIFICATION_CREATED_ROUTING_KEY,
         } as RabbitmqErrorLogger);
       }
 
@@ -66,35 +70,37 @@ export class RabbitmqService {
   }
 
   @UsePipes(rabbitmqValidationPipe)
-  @RabbitRPC({
-    exchange: DIRECT_EXCHANGE,
+  @RabbitSubscribe({
+    exchange: TOPIC_EXCHANGE,
     queue: DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
-    routingKey: DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
+    routingKey: VERIFICATION_DELETED_ROUTING_KEY,
   })
   async driverVerificationReqCompensate(
-    @RabbitPayload()
-    payload: DriverVerificationRequestCompensatePayload,
+    @RabbitPayload() payload: Event<any, undefined>,
   ) {
     try {
-      await this.driverRepository.delete(payload.driverId);
+      await this.driverRepository.delete(
+        payload.beforeEvent.driverId,
+      );
     } catch (error) {
-      const { retryCount = 4, ...rest } = payload;
+      const { retryCount = 0, ...rest } = payload;
 
-      if (retryCount > 0) {
-        await this.amqpConnection.publish<DriverVerificationRequestCompensatePayload>(
-          DIRECT_EXCHANGE,
-          DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
+      if (retryCount < 4) {
+        await this.amqpConnection.publish<Event<any, undefined>>(
+          TOPIC_EXCHANGE,
+          VERIFICATION_DELETED_ROUTING_KEY,
           {
             ...rest,
-            retryCount: retryCount - 1,
+            retryCount: retryCount + 1,
           },
         );
       } else {
         this.logger.error({
           message: 'Could not compensate',
           payload,
-          exchange: DIRECT_EXCHANGE,
+          exchange: TOPIC_EXCHANGE,
           queue: DRIVER_VERIFICATION_REQ_COMPENSATE_QUEUE,
+          routingKey: VERIFICATION_DELETED_ROUTING_KEY,
         } as RabbitmqErrorLogger);
       }
 

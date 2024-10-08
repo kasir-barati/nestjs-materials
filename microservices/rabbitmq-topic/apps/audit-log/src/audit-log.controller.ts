@@ -12,9 +12,9 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuditLogSerializer } from './audit-log.serializer';
+import { AuditLogService } from './audit-log.service';
 import { ReadLogDto } from './dto/read-log.dto';
-import { AuditLogSerializer } from './services/audit-log-serializer.service';
-import { AuditLogService } from './services/audit-log.service';
 
 @ApiTags('Log')
 @Controller('logs')

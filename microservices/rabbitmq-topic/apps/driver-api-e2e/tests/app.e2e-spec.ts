@@ -11,9 +11,11 @@ describe('Driver API (e2e)', () => {
   });
 
   it('should create a driver', async () => {
+    // Arrange
     const id = new Types.ObjectId().toString();
     const birthday = new Date().toISOString();
 
+    // Act
     const { data } = await driverApi.driverControllerCreateOrUpdate(
       {
         id,
@@ -37,6 +39,7 @@ describe('Driver API (e2e)', () => {
       id,
     });
 
+    // Assert
     expect(data).toEqual(
       expect.objectContaining({
         _id: id,

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsIBAN, IsOptional, IsString } from 'class-validator';
 
 export class BankingInformationDto {
   @ApiProperty({
@@ -26,7 +26,7 @@ export class BankingInformationDto {
     required: false,
     example: 'MA49179349523164295672421449',
   })
-  @IsDateString()
+  @IsIBAN()
   @IsOptional()
   iban: string;
 }

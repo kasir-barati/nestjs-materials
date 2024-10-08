@@ -1,4 +1,24 @@
 services:
+  audit-log:
+    image: audit-log
+    container_name: audit-log-container
+    ports:
+      - ${AUDIT_LOG_API_PORT}:${AUDIT_LOG_API_PORT}
+    build:
+      context: .
+      dockerfile: ./apps/audit-log/Dockerfile
+      args:
+        AUDIT_LOG_API_PORT: ${AUDIT_LOG_API_PORT}
+        MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
+    depends_on:
+      audit-log-db:
+        condition: service_healthy
+      message-broker:
+        condition: service_healthy
+    env_file:
+      - .env
+      - apps/audit-log/.env
+
   driver-api:
     image: driver-api
     container_name: driver-api-container
@@ -13,7 +33,7 @@ services:
     depends_on:
       driver-api-db:
         condition: service_healthy
-      message-brocker:
+      message-broker:
         condition: service_healthy
     env_file:
       - .env
@@ -33,11 +53,35 @@ services:
     depends_on:
       verification-api-db:
         condition: service_healthy
-      message-brocker:
+      message-broker:
         condition: service_healthy
     env_file:
       - .env
       - apps/verification-api/.env
+
+  audit-log-db:
+    image: mongo:8.0.0-rc17-noble
+    container_name: audit-log-database
+    ports:
+      - 27020:27017
+    entrypoint:
+      - bash
+      - -c
+      - |
+        openssl rand -base64 756 > /data/replica.key
+        chmod 400 /data/replica.key
+        chown 999:999 /data/replica.key
+        exec docker-entrypoint.sh $$@
+    command: mongod --replSet rs0 --keyFile /data/replica.key
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   driver-api-db:
     image: mongo:8.0.0-rc17-noble
@@ -87,8 +131,9 @@ services:
       retries: 3
       start_period: 5s
 
-  message-brocker:
+  message-broker:
     image: rabbitmq:4.0-rc-management-alpine
+    container_name: message-broker-container
     ports:
       - 5672:5672
       - 15672:15672
@@ -101,6 +146,24 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
+
+  audit-log-db-init:
+    image: mongo:8.0.0-rc17-noble
+    restart: "no"
+    depends_on:
+      audit-log-db:
+        condition: service_healthy
+    env_file: .env
+    command: >
+      mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD} --host audit-log-db:27017 --eval
+      '
+      rs.initiate( {
+         _id : "rs0",
+         members: [
+            { _id: 0, host: "audit-log-db:27017" }
+         ]
+      })
+      '
 
   driver-api-db-init:
     image: mongo:8.0.0-rc17-noble

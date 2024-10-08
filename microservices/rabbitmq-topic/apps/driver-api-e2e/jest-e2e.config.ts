@@ -5,14 +5,12 @@ const appCommonPath = join(
   __dirname,
   '..',
   '..',
-  '..',
   'libs',
   'common',
   'src$1',
 );
 const appTestingPath = join(
   __dirname,
-  '..',
   '..',
   '..',
   'libs',
