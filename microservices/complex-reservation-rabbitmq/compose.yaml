@@ -13,7 +13,7 @@ services:
     depends_on:
       auth-db:
         condition: service_healthy
-      message-brocker:
+      message-broker:
         condition: service_healthy
     env_file:
       - .env
@@ -33,7 +33,7 @@ services:
     depends_on:
       reservation-db:
         condition: service_healthy
-      message-brocker:
+      message-broker:
         condition: service_healthy
       notification-service:
         condition: service_started
@@ -52,7 +52,7 @@ services:
       args:
         MICROSERVICES_WORKDIR: ${MICROSERVICES_WORKDIR}
     depends_on:
-      message-brocker:
+      message-broker:
         condition: service_healthy
     env_file:
       - .env
@@ -69,7 +69,7 @@ services:
     depends_on:
       mailcatcher:
         condition: service_started
-      message-brocker:
+      message-broker:
         condition: service_healthy
     env_file:
       - .env
@@ -86,7 +86,7 @@ services:
     depends_on:
       mailcatcher:
         condition: service_started
-      message-brocker:
+      message-broker:
         condition: service_healthy
       dead-letter-notification-db:
         condition: service_healthy
@@ -139,7 +139,7 @@ services:
       retries: 3
       start_period: 5s
 
-  message-brocker:
+  message-broker:
     image: rabbitmq:4.0-rc-management-alpine
     ports:
       - 5672:5672

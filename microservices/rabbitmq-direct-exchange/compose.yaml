@@ -13,7 +13,7 @@ services:
     depends_on:
       driver-api-db:
         condition: service_healthy
-      message-brocker:
+      message-broker:
         condition: service_healthy
     env_file:
       - .env
@@ -33,7 +33,7 @@ services:
     depends_on:
       verification-api-db:
         condition: service_healthy
-      message-brocker:
+      message-broker:
         condition: service_healthy
     env_file:
       - .env
@@ -87,7 +87,7 @@ services:
       retries: 3
       start_period: 5s
 
-  message-brocker:
+  message-broker:
     image: rabbitmq:4.0-rc-management-alpine
     ports:
       - 5672:5672
