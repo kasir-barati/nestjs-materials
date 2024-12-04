@@ -228,7 +228,7 @@ An endpoint is idempotent when retrying a request has the same intended affect, 
 
    We have 3 kinds of pagination:
 
-   1. Server-driven pagination (cursor-based pagination):
+   1. <a href="#cursorBasedPagination" id="cursorBasedPagination">#</a> Server-driven pagination (cursor-based pagination):
       - This gives our server more control and can be utilized where we are serving different clients and server is not up to the task of dealing with pagination on top of other tasks it has to complete.
       - In the example above the `nextLink` is URL to the next page, it can contains query strings as well.
       - No `nextField` means that we've reach the end of the road.
