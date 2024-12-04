@@ -8,7 +8,7 @@
   - Get feedbacks frequently on what you're building.
   - Approach the subject from the customers perspective.
 
-  ![Lookout for customers perspective and feedbacks](./customer-first-principle.png)
+  ![Lookout for customers perspective and feedbacks](./assets/customer-first-principle.png)
 
 ## Hero scenarios
 
@@ -118,12 +118,12 @@ An endpoint is idempotent when retrying a request has the same intended affect, 
 
 - Dissecting an endpoint:
 
-  ![Dissecting an endpoint](./dissecting-an-endpoint.png)
+  ![Dissecting an endpoint](./assets/dissecting-an-endpoint.png)
 
 - Body: holds the resource state.
 - <a id="httpMethods" href="#httpMethods">#</a> HTTP methods:
 
-  ![HTTP methods](./http-methods.png)
+  ![HTTP methods](./assets/http-methods.png)
 
 ## A complete example for `airports` resource.
 
@@ -226,49 +226,9 @@ An endpoint is idempotent when retrying a request has the same intended affect, 
 
    **Note**: While we are paginating our resources for a specific client, another client might add or remove something. That's why it is crucial that our client is programmed robustly enough so it can handle skipped, or duplicated data.
 
-   We have 3 kinds of pagination:
-
-   1. <a href="#cursorBasedPagination" id="cursorBasedPagination">#</a> Server-driven pagination (cursor-based pagination):
-      - This gives our server more control and can be utilized where we are serving different clients and server is not up to the task of dealing with pagination on top of other tasks it has to complete.
-      - In the example above the `nextLink` is URL to the next page,
-        - It can contains query strings.
-        - It can be the ID of next element, or `offset`.
-      - Note: It is best to keep the cursor opaque:
-        - Cursor's internal representation or meaning is hidden and not meant to be understood or relied upon by clients..
-        - Encode the cursor with a base64 algorithm.
-      - No `nextField` means that we've reach the end of the road.
-      - You can see how it is done in GraphQL [here](https://github.com/kasir-barati/graphql/tree/main/docs/best-practices/pagination.md).
-   2. Client-driven pagination (offset-based pagination): enables our client to have a finer grasp over what is being returned. Good for when we have a very tight requirements in our client app.
-   3. Or we can use both.
-
-   **Filtering, sorting, and paginating**:
-
-   TBF I am not sure if I have ever though this way.
-
-   1. Server must evaluate the filtering first (so we have applied filters).
-   2. We need to apply `order by`s specified by client.
-      - **Caution**: Order by is supper expensive. So you might wanna consider to not implement it.
-   3. We can skip part of it.
-   4. Lastly we wanna return the page that user have asked for it.
-
-   I am not totally sold on the idea that these SQL/MongoDB queries but nonetheless I thought it would be really helpful:
-
-   ```sql
-   SELECT *
-   FROM users
-   WHERE status = 'active'
-   ORDER BY created_at DESC, username ASC
-   LIMIT 10
-   OFFSET 20;
-   ```
-
-   ```js
-   db.collection("users")
-     .find({ status: "active" })
-     .sort({ created_at: -1, username: 1 })
-     .skip(20)
-     .limit(10);
-   ```
+   > [!IMPORTANT]
+   >
+   > Learn more about pagination [here](./pagination.md).
 
    **Delete**
 
@@ -545,7 +505,7 @@ Up until now we've kinda briefly touched this topic for the response body:
 - Identify resources through an immutable and stable identity.
 - E.g. you can have a slug for your posts, or a username for user but these ain't the identifier of those resources. Take a look at Stackoverflow. We have slugs in the browser's address bar. But when I click on the share button it will gimme a unique identifier for that answer or question.
 
-  ![Stackoverflow share button and unique identifier](./stackoverflow.png)
+  ![Stackoverflow share button and unique identifier](./assets/stackoverflow.png)
 
 - <a id="applicationMergePatchJson" href="#applicationMergePatchJson">#</a> Update a resource with `application/merge-patch+json`:
 
@@ -657,7 +617,7 @@ If they match, it means the resource has not changed, and the server can respond
 - `POST` according to HTTP spec does not need to be idempotent but in cloud env we have to make it idempotent.
 - You do not wanna charge customer for the same thing twice, right?
 
-![POST HTTP method](./post-http-method.png)
+![POST HTTP method](./assets/post-http-method.png)
 
 # Throttling client request
 

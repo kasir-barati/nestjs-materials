@@ -1,0 +1,20 @@
+title: NestJS materials
+email: kasir.barati@gmail.com
+description: >- # this means to ignore newlines until "baseurl:"
+  Write an awesome doc for NestJS tips, tricks, notes, things which are not in the doc (or are but not really obvious) and experimented to figure them out and use them.
+baseurl: "/nestjs-materials" # the repository name
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: kasir_barati
+github_username: kasir-barati
+plugins:
+  - jekyll-relative-links
+  - jekyll-remote-theme # add this line to the plugins list if you already have one
+relative_links:
+  enabled: true
+  collections: true
+remote_theme: pages-themes/hacker@v0.2.0
+kramdown:
+  math_engine: mathjax
+  syntax_highlighter: rouge
+include:
+  - .github
