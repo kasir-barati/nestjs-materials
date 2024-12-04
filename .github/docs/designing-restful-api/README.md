@@ -230,8 +230,14 @@ An endpoint is idempotent when retrying a request has the same intended affect, 
 
    1. <a href="#cursorBasedPagination" id="cursorBasedPagination">#</a> Server-driven pagination (cursor-based pagination):
       - This gives our server more control and can be utilized where we are serving different clients and server is not up to the task of dealing with pagination on top of other tasks it has to complete.
-      - In the example above the `nextLink` is URL to the next page, it can contains query strings as well.
+      - In the example above the `nextLink` is URL to the next page,
+        - It can contains query strings.
+        - It can be the ID of next element, or `offset`.
+      - Note: It is best to keep the cursor opaque:
+        - Cursor's internal representation or meaning is hidden and not meant to be understood or relied upon by clients..
+        - Encode the cursor with a base64 algorithm.
       - No `nextField` means that we've reach the end of the road.
+      - You can see how it is done in GraphQL [here](https://github.com/kasir-barati/graphql/tree/main/docs/best-practices/pagination.md).
    2. Client-driven pagination (offset-based pagination): enables our client to have a finer grasp over what is being returned. Good for when we have a very tight requirements in our client app.
    3. Or we can use both.
 
