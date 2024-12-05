@@ -29,6 +29,7 @@
 
   - New pages will be added too fast, thus it does not make sense to number them.
   - Most common.
+  - Great for social media apps.
 
 - Infinite scroll pagination:
 
@@ -38,6 +39,7 @@
   - Page is not important.
   - Scroll to get more info.
   - Most common.
+  - Great for social media apps.
 
 ## 3 kinds of pagination from a technical point of view
 
