@@ -52,7 +52,7 @@
       - Cursor's internal representation or meaning is hidden and not meant to be understood or relied upon by clients..
       - Encode the cursor with a base64 algorithm.
     - No `nextField` means that we've reach the end of the road.
-    - You can see how it is done in GraphQL [here](https://github.com/kasir-barati/graphql/tree/main/docs/best-practices/pagination.md).
+    - You can see how it is done in GraphQL [here](https://github.com/kasir-barati/graphql-js-ts/tree/main/docs/best-practices/pagination.md).
 2.  Client-driven pagination (offset-based pagination): enables our client to have a finer grasp over what is being returned. Good for when we have a very tight requirements in our client app.
 3.  Or we can use both.
 
@@ -116,7 +116,7 @@ Again read [this doc](https://github.com/kasir-barati/sql/blob/main/.github/docs
 
 ### Relay pagination
 
-For this you can learn more [here](https://github.com/kasir-barati/graphql/blob/main/docs/best-practices/pagination.md).
+For this you can learn more [here](https://github.com/kasir-barati/graphql-js-ts/blob/main/docs/best-practices/pagination.md).
 
 ## Ref
 
