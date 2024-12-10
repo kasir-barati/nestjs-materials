@@ -1,0 +1,35 @@
+{
+  "name": "old",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/old/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "old:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "old:build:development"
+        },
+        "production": {
+          "buildTarget": "old:build:production"
+        }
+      }
+    },
+    "test:integration": {
+      "command": "./run-integration-tests.sh"
+    },
+    "openapi:generate": {
+      "command": "openapi-generator-cli generate -i /local/openApi.json -o /local/src/api-client -g typescript-axios --additional-properties=useSingleRequestParameter=true"
+    },
+    "openapi:create": {
+      "command": "ts-node --project tsconfig.json --transpile-only -r tsconfig-paths/register src/utils/create-openapi-json.util.ts"
+    }
+  }
+}

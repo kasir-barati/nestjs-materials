@@ -1,0 +1,26 @@
+{
+  "name": "botprobe-nest",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/botprobe-nest/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "botprobe-nest:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "botprobe-nest:build:development"
+        },
+        "production": {
+          "buildTarget": "botprobe-nest:build:production"
+        }
+      }
+    }
+  }
+}
