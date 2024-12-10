@@ -1,0 +1,26 @@
+import { Module } from '@nestjs/common';
+import { NestjsQueryGraphQLModule } from '@ptc-org/nestjs-query-graphql';
+import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
+import { AlertTypeResolver } from './alert-type.resolver';
+import { AlertTypeService } from './alert-type.service';
+import { CreateAlertTypeInput } from './dto/create-alert-type.input';
+import { AlertType } from './entities/alert-type.entity';
+
+@Module({
+  imports: [
+    // TypeOrmModule.forFeature([AlertType]),
+    NestjsQueryGraphQLModule.forFeature({
+      // NestjsQueryTypeOrmModule will register the entity with typeorm. It provides a QueryService too.
+      imports: [NestjsQueryTypeOrmModule.forFeature([AlertType])],
+      resolvers: [
+        {
+          EntityClass: AlertType,
+          DTOClass: AlertType,
+          CreateDTOClass: CreateAlertTypeInput,
+        },
+      ],
+    }),
+  ],
+  providers: [AlertTypeResolver, AlertTypeService],
+})
+export class AlertTypeModule {}

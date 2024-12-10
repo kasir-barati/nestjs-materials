@@ -5,10 +5,38 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "compose:up": {
+      "executor": "nx:run-commands",
+      "parallelism": false,
+      "cache": false,
+      "options": {
+        "commands": [
+          {
+            "command": "docker compose up -d",
+            "forwardAllArgs": true
+          }
+        ],
+        "cwd": "{projectRoot}"
+      }
+    },
+    "compose:down": {
+      "executor": "nx:run-commands",
+      "parallelism": false,
+      "cache": false,
+      "options": {
+        "commands": [
+          {
+            "command": "docker compose down",
+            "forwardAllArgs": true
+          }
+        ],
+        "cwd": "{projectRoot}"
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+      "dependsOn": ["build", "compose:up"],
       "options": {
         "buildTarget": "botprobe-nest:build",
         "runBuildTargetDependencies": false

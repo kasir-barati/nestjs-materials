@@ -12,5 +12,6 @@
   ],
   "compilerOptions": {
     "esModuleInterop": true,
+    "module": "NodeNext",
   },
 }

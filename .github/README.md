@@ -13,3 +13,4 @@ NestJS tips, tricks, Notes, Things which are not in doc and I used to figure the
 - [MockServer and mocking 3rd-party HTTP/S calls](../docs/mockserver/README.md).
 - [Kafka intro](../docs/kafka/README.md).
 - [RabbitMQ intro](../docs/rabbitmq/README.md).
+- [NestJS and GraphQL with `nestjs-query`](../docs/nestjs-query/README.md)

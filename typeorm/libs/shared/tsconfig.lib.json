@@ -2,10 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
+    "declaration": true,
     "module": "NodeNext",
-    "types": ["node"],
-    "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"],
   "exclude": [

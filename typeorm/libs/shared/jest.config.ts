@@ -1,7 +1,5 @@
-import type { Config } from 'jest';
-
 export default {
-  displayName: 'botprobe-nest',
+  displayName: 'shared',
   preset: '../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
@@ -11,5 +9,5 @@ export default {
     ],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/botprobe-nest',
-} satisfies Config;
+  coverageDirectory: '../../coverage/libs/shared',
+};
