@@ -62,3 +62,24 @@
    - `GraphQLModule`.
    - `AlertModule`.
    - `AlertTypeModule`.
+9. Generate migration for TypeORM:
+
+   ```shell
+   nx migration:gen botprobe-nest --name init
+   ```
+
+10. Run the generated migrations:
+
+    ```shell
+    nx migration:run botprobe-nest
+    ```
+
+> [!TIP]
+>
+> Create new empty migration with:
+>
+> ```shell
+> nx migration:create botprobe-nest  --name init
+> ```
+
+BTW I have written [a post for migration in TypeORM in dev.to here]().

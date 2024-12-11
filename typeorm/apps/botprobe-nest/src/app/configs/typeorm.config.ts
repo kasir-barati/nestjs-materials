@@ -4,7 +4,6 @@ import {
   TypeOrmModuleOptions,
   TypeOrmOptionsFactory,
 } from '@nestjs/typeorm';
-import { join } from 'path';
 import appConfig from './app.config';
 
 export class TypeOrmConfig implements TypeOrmOptionsFactory {
@@ -22,15 +21,7 @@ export class TypeOrmConfig implements TypeOrmOptionsFactory {
       type: 'postgres',
       url: this.appConfigs.DATABASE_URL,
       entities: [],
-      migrations: [
-        join(
-          __dirname,
-          '..',
-          '..',
-          'migrations',
-          '*.migration{.ts,.js}',
-        ),
-      ],
+      migrations: [],
       logging: isNotProduction,
       synchronize: isNotProduction,
       autoLoadEntities: isNotProduction,

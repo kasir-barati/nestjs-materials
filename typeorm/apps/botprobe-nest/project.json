@@ -33,6 +33,29 @@
         "cwd": "{projectRoot}"
       }
     },
+    "migration:create": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "../../node_modules/.bin/typeorm migration:create src/migrations/{args.name}",
+        "forwardAllArgs": true,
+        "cwd": "{projectRoot}"
+      }
+    },
+    "migration:gen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node --project tsconfig.app.json ../../node_modules/typeorm/cli migration:generate src/migrations/{args.name} --pretty -d src/data-source.ts",
+        "forwardAllArgs": true,
+        "cwd": "{projectRoot}"
+      }
+    },
+    "migration:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node --project tsconfig.app.json ../../node_modules/typeorm/cli migration:run -d src/data-source.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
