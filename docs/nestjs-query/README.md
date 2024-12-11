@@ -82,4 +82,4 @@
 > nx migration:create botprobe-nest  --name init
 > ```
 
-BTW I have written [a post for migration in TypeORM in dev.to here]().
+BTW I have written [a post for migration in TypeORM in dev.to here](https://dev.to/kasir-barati/nx-typeorm-nestjs-migrations-53an).
