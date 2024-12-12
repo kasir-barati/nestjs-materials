@@ -24,19 +24,10 @@ export class AlertSeeder extends Seeder<Alert> {
       return Promise.resolve();
     }
 
-    // Not gonna work because we can have at max 65535 "query parameters".
-    // https://www.postgresql.org/docs/current/limits.html
+    // Not gonna work because we can have at max 65535 "query parameters". Learn more here: https://github.com/kasir-barati/sql/tree/main/docs/insert/
     // await this.getRepository().insert(alerts)
 
-    /**
-     * Solution #1:
-     * INSERT INTO table_name (field_name1, field_name2, field_name3)
-     * VALUES (UNNEST(ARRAY[1, 2, 3]),
-     *         UNNEST(ARRAY[100, 200, 300]),
-     *         UNNEST(ARRAY['a', 'b', 'c'])
-     * );
-     */
-
+    // NOTE: here all the records will end up having same creation and update date due to how I wrote this SQL query.
     await this.getRepository().query(
       `INSERT INTO alert(id, title, description, "userId", "alertTypeId", "createdAt", "updatedAt")
        SELECT
