@@ -35,6 +35,7 @@
     },
     "migration:create": {
       "executor": "nx:run-commands",
+      "parallelism": false,
       "options": {
         "command": "../../node_modules/.bin/typeorm migration:create src/migrations/{args.name}",
         "forwardAllArgs": true,
@@ -43,6 +44,7 @@
     },
     "migration:gen": {
       "executor": "nx:run-commands",
+      "parallelism": false,
       "options": {
         "command": "ts-node --project tsconfig.app.json ../../node_modules/typeorm/cli migration:generate src/migrations/{args.name} --pretty -d src/data-source.ts",
         "forwardAllArgs": true,
@@ -51,8 +53,19 @@
     },
     "migration:run": {
       "executor": "nx:run-commands",
+      "dependsOn": ["compose:up"],
+      "parallelism": false,
       "options": {
         "command": "ts-node --project tsconfig.app.json ../../node_modules/typeorm/cli migration:run -d src/data-source.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "parallelism": false,
+      "dependsOn": ["migration:run"],
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register --project tsconfig.app.json src/seeds/index.ts",
         "cwd": "{projectRoot}"
       }
     },

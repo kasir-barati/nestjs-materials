@@ -31,6 +31,11 @@ export class Alert {
   @FilterableField()
   userId: string;
 
+  @Column('uuid', { nullable: true })
+  @Field({ description: 'To which alert type this alert belongs' })
+  @FilterableField()
+  alertTypeId: string | null;
+
   @ManyToOne(() => AlertType, { nullable: true })
   @JoinColumn()
   alertType: AlertType | null;
