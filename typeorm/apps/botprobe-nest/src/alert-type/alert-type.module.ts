@@ -4,6 +4,7 @@ import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
 import { AlertTypeResolver } from './alert-type.resolver';
 import { AlertTypeService } from './alert-type.service';
 import { CreateAlertTypeInput } from './dto/create-alert-type.input';
+import { UpdateAlertTypeInput } from './dto/update-alert-type.input';
 import { AlertType } from './entities/alert-type.entity';
 
 @Module({
@@ -17,6 +18,7 @@ import { AlertType } from './entities/alert-type.entity';
           EntityClass: AlertType,
           DTOClass: AlertType,
           CreateDTOClass: CreateAlertTypeInput,
+          UpdateDTOClass: UpdateAlertTypeInput,
         },
       ],
     }),

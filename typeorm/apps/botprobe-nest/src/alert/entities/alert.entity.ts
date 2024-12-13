@@ -43,6 +43,10 @@ export class Alert {
 
   @ManyToOne(() => AlertType, { nullable: true })
   @JoinColumn()
+  @Field(() => AlertType, {
+    description: 'Alert type of the alert',
+    nullable: true,
+  })
   alertType: AlertType | null;
 
   @CreateDateColumn()

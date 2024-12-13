@@ -37,7 +37,13 @@ export class AlertType {
   @OneToMany((type) => Alert, (photo) => photo.alertType, {
     onDelete: 'SET NULL',
   })
-  alerts: Alert[];
+  // If I uncomment the following code my app crashes!
+  // @Field((type) => [Alert], {
+  //   description: 'Alerts of this alert type',
+  //   nullable: true,
+  // })
+  // @FilterableField()
+  alerts: Alert[] | null;
 
   @CreateDateColumn()
   @Field(() => GraphQLISODateTime, {
