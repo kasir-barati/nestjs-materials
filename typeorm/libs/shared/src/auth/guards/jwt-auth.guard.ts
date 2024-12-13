@@ -15,7 +15,10 @@ export class GraphqlJwtAuthGuard
   override getRequest(context: ExecutionContext): Request {
     const graphqlExecutionContext =
       GqlExecutionContext.create(context);
+    const request = graphqlExecutionContext.getContext<{
+      req: Request;
+    }>().req;
 
-    return graphqlExecutionContext.getContext<{ req: Request }>().req;
+    return request;
   }
 }

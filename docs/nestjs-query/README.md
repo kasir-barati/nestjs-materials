@@ -127,3 +127,7 @@ BTW I have written [a post for migration in TypeORM in dev.to here](https://dev.
    https://github.com/kasir-barati/nestjs-materials/blob/main/typeorm/apps/botprobe-nest/src/alert/hooks/before-create-alert.hook.ts
 
    This hook will be executed before the request reaching resolver. Thus we can inside it easily access context and extract user ID from it, and finally attach it to the `input`.
+
+#### Request Flow from Auth to Resolver
+
+![Request flow from auth to hooks to resolver](./assets/request-flow-from-auth-to-hooks-to-resolver.png)

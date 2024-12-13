@@ -17,7 +17,7 @@ export class BeforeCreateAlertHook<T extends UserId>
     instance: CreateOneInputType<T>,
     context: GraphqlContext,
   ): CreateOneInputType<T> | Promise<CreateOneInputType<T>> {
-    instance.input.userId = context.user;
+    instance.input.userId = context.req.user;
 
     return instance;
   }

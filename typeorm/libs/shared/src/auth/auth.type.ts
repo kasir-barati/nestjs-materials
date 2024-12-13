@@ -3,10 +3,9 @@ export interface AuthConfig {
   JWT_EXPIRATION: string;
 }
 export interface GraphqlContext {
-  user: string;
-}
-export interface UserContext {
-  req: GraphqlContext;
+  req: {
+    user: string;
+  };
 }
 export interface UserInfo {
   id: string;
@@ -14,4 +13,6 @@ export interface UserInfo {
 }
 export type JwtPayload = {
   sub: string;
+  iat: number;
+  exp: number;
 } & Omit<UserInfo, 'id'>;

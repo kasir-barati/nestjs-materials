@@ -11,7 +11,7 @@ export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
 
   async getJwtTokens(user: UserInfo): Promise<GetJwtTokens> {
-    const payload: JwtPayload = {
+    const payload: Omit<JwtPayload, 'iat' | 'exp'> = {
       sub: user.id,
       email: user.email,
     };
