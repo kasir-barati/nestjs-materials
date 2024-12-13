@@ -83,3 +83,47 @@
 > ```
 
 BTW I have written [a post for migration in TypeORM in dev.to here](https://dev.to/kasir-barati/nx-typeorm-nestjs-migrations-53an).
+
+### Extracting User ID off of the Decoded JWT Token
+
+1. Create `AuthModule`:
+
+   ```shell
+   nest g module auth
+   nest g service auth
+   nest g guard auth
+   nest g decorator auth
+   ```
+
+   - Rename the newly created decorator to `get-user.decorator.ts` and move it to a `decorators` directory.
+   - Rename the guard to `jwt-auth.guard.ts` and move it to a `guards` folder.
+   - Same for service, rename it to `auth.service.ts` and move it to `services` directory.
+   - Create a new directory called `strategies` and inside it create a file called `jwt.strategy.ts`.
+
+2. We need to config JWT and Auth module. thus we're gonna create configs:
+
+   - `auth.config.ts`.
+   - `jwt-module.config.ts`.
+
+3. Add the guard globally to a module if you need to protect the every resolver in that module:
+
+   ```diff
+   @Module({
+     imports: [
+       NestjsQueryGraphQLModule.forFeature({
+         resolvers: [
+           {
+   +         guards: [GraphqlJwtAuthGuard],
+           },
+         ],
+       }),
+     ],
+   })
+   export class AlertModule {}
+   ```
+
+4. Create a new hook `apps/botprobe-nest/src/alert/hooks/before-create-alert.hook.ts`:
+
+   https://github.com/kasir-barati/nestjs-materials/blob/main/typeorm/apps/botprobe-nest/src/alert/hooks/before-create-alert.hook.ts
+
+   This hook will be executed before the request reaching resolver. Thus we can inside it easily access context and extract user ID from it, and finally attach it to the `input`.
