@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { NestjsQueryGraphQLModule } from '@ptc-org/nestjs-query-graphql';
 import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
+import { GraphqlJwtAuthGuard } from 'shared';
 import { AlertResolver } from './alert.resolver';
 import { AlertService } from './alert.service';
 import { CreateAlertInput } from './dto/create-alert.input';
+import { UpdateAlertInput } from './dto/update-alert.input';
 import { Alert } from './entities/alert.entity';
 
 @Module({
@@ -17,6 +19,8 @@ import { Alert } from './entities/alert.entity';
           EntityClass: Alert,
           DTOClass: Alert,
           CreateDTOClass: CreateAlertInput,
+          UpdateDTOClass: UpdateAlertInput,
+          guards: [GraphqlJwtAuthGuard],
         },
       ],
     }),

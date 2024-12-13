@@ -1,5 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { FilterableField } from '@ptc-org/nestjs-query-graphql';
+import {
+  BeforeCreateOne,
+  FilterableField,
+} from '@ptc-org/nestjs-query-graphql';
 import {
   Column,
   CreateDateColumn,
@@ -9,8 +12,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AlertType } from '../../alert-type/entities/alert-type.entity';
+import { BeforeCreateAlertHook } from '../hooks/before-create-alert.hook';
 
 @ObjectType()
+@BeforeCreateOne(BeforeCreateAlertHook)
 @Entity()
 export class Alert {
   @PrimaryGeneratedColumn('uuid')

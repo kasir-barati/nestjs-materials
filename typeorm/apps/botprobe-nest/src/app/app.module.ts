@@ -4,10 +4,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
+import { AuthModule } from 'shared';
 import { AlertTypeModule } from '../alert-type/alert-type.module';
 import { AlertModule } from '../alert/alert.module';
 import appConfig from './configs/app.config';
-import { GraphQLConfig } from './configs/graphqo.config';
+import { GraphQLConfig } from './configs/graphql.config';
 import { TypeOrmConfig } from './configs/typeorm.config';
 
 @Module({
@@ -29,6 +30,7 @@ import { TypeOrmConfig } from './configs/typeorm.config';
       inject: [ConfigService],
       useClass: GraphQLConfig,
     }),
+    AuthModule,
     AlertModule,
     AlertTypeModule,
   ],
