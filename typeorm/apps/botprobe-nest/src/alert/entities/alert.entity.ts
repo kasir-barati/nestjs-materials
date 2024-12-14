@@ -2,6 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import {
   BeforeCreateOne,
   FilterableField,
+  FilterableRelation,
 } from '@ptc-org/nestjs-query-graphql';
 import {
   Column,
@@ -16,6 +17,9 @@ import { BeforeCreateAlertHook } from '../hooks/before-create-alert.hook';
 
 @ObjectType()
 @BeforeCreateOne(BeforeCreateAlertHook)
+@FilterableRelation('alertType', () => AlertType, {
+  update: { enabled: true },
+})
 @Entity()
 export class Alert {
   @PrimaryGeneratedColumn('uuid')
@@ -37,16 +41,15 @@ export class Alert {
   userId: string;
 
   @Column('uuid', { nullable: true })
-  @Field({ description: 'To which alert type this alert belongs' })
+  @Field({
+    description: 'To which alert type this alert belongs',
+    nullable: true,
+  })
   @FilterableField()
   alertTypeId: string | null;
 
   @ManyToOne(() => AlertType, { nullable: true })
   @JoinColumn()
-  @Field(() => AlertType, {
-    description: 'Alert type of the alert',
-    nullable: true,
-  })
   alertType: AlertType | null;
 
   @CreateDateColumn()

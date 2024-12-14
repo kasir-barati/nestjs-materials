@@ -5,6 +5,7 @@ import {
   ObjectType,
 } from '@nestjs/graphql';
 import {
+  CursorConnection,
   FilterableField,
   IDField,
 } from '@ptc-org/nestjs-query-graphql';
@@ -18,6 +19,9 @@ import {
 import { Alert } from '../../alert/entities/alert.entity';
 
 @ObjectType('AlertType')
+@CursorConnection('alerts', () => Alert, {
+  update: { enabled: true },
+})
 @Entity()
 export class AlertType {
   @PrimaryGeneratedColumn('uuid')
@@ -37,12 +41,6 @@ export class AlertType {
   @OneToMany((type) => Alert, (photo) => photo.alertType, {
     onDelete: 'SET NULL',
   })
-  // If I uncomment the following code my app crashes!
-  // @Field((type) => [Alert], {
-  //   description: 'Alerts of this alert type',
-  //   nullable: true,
-  // })
-  // @FilterableField()
   alerts: Alert[] | null;
 
   @CreateDateColumn()
