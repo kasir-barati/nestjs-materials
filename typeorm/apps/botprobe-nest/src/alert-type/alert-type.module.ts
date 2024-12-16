@@ -3,6 +3,7 @@ import { NestjsQueryGraphQLModule } from '@ptc-org/nestjs-query-graphql';
 import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
 import { AlertTypeResolver } from './alert-type.resolver';
 import { AlertTypeService } from './alert-type.service';
+import { AlertTypeDto } from './dto/alert-type.dto';
 import { CreateAlertTypeInput } from './dto/create-alert-type.input';
 import { UpdateAlertTypeInput } from './dto/update-alert-type.input';
 import { AlertType } from './entities/alert-type.entity';
@@ -16,7 +17,7 @@ import { AlertType } from './entities/alert-type.entity';
       resolvers: [
         {
           EntityClass: AlertType,
-          DTOClass: AlertType,
+          DTOClass: AlertTypeDto,
           CreateDTOClass: CreateAlertTypeInput,
           UpdateDTOClass: UpdateAlertTypeInput,
         },

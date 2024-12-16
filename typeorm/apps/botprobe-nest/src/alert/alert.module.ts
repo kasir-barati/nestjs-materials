@@ -4,6 +4,7 @@ import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
 import { GraphqlJwtAuthGuard } from 'shared';
 import { AlertResolver } from './alert.resolver';
 import { AlertService } from './alert.service';
+import { AlertDto } from './dto/alert.dto';
 import { CreateAlertInput } from './dto/create-alert.input';
 import { UpdateAlertInput } from './dto/update-alert.input';
 import { Alert } from './entities/alert.entity';
@@ -17,7 +18,7 @@ import { Alert } from './entities/alert.entity';
       resolvers: [
         {
           EntityClass: Alert,
-          DTOClass: Alert,
+          DTOClass: AlertDto,
           CreateDTOClass: CreateAlertInput,
           UpdateDTOClass: UpdateAlertInput,
           guards: [GraphqlJwtAuthGuard],

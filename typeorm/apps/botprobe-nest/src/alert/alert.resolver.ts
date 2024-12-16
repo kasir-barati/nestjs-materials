@@ -1,8 +1,8 @@
 import { Resolver } from '@nestjs/graphql';
 import { AlertService } from './alert.service';
-import { Alert } from './entities/alert.entity';
+import { AlertDto } from './dto/alert.dto';
 
-@Resolver(() => Alert)
+@Resolver(() => AlertDto)
 export class AlertResolver {
   constructor(private readonly alertService: AlertService) {}
 }
