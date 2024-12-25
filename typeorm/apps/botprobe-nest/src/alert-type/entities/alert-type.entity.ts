@@ -4,6 +4,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Alert } from '../../alert/entities/alert.entity';
 
@@ -26,6 +27,6 @@ export class AlertType {
   @CreateDateColumn()
   createdAt: Date;
 
-  @CreateDateColumn()
+  @UpdateDateColumn()
   updatedAt: Date;
 }
