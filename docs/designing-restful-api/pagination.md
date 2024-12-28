@@ -10,7 +10,7 @@
 
 > [!IMPORTANT]
 >
-> Here I did not go into details about pagination in SQL and what kind of issues you need to be aware of in SQL since I have written an extensive comprehensible doc [here](https://github.com/kasir-barati/sql/blob/main/.github/docs/select/pagination.md) for it.
+> Here I did not go into details about pagination in SQL and what kind of issues you need to be aware of in SQL since I have written an extensive comprehensible doc [here](https://github.com/kasir-barati/sql/blob/main/docs/select/pagination.md) for it.
 
 ## Pagination from a user's perspective
 
@@ -48,9 +48,10 @@
     - In the example above the `nextLink` is URL to the next page,
       - It can contains query strings.
       - It can be the ID of next element, or `offset`.
-    - Note: It is best to keep the cursor opaque:
+    - Note: It is best to **keep the cursor opaque**:
       - Cursor's internal representation or meaning is hidden and not meant to be understood or relied upon by clients..
       - Encode the cursor with a base64 algorithm.
+      - Learn more about cursor-based pagination [here](#cursor-based-pagination).
     - No `nextField` means that we've reach the end of the road.
     - You can see how it is done in GraphQL [here](https://github.com/kasir-barati/graphql-js-ts/tree/main/docs/best-practices/pagination.md).
 2.  Client-driven pagination (offset-based pagination): enables our client to have a finer grasp over what is being returned. Good for when we have a very tight requirements in our client app.
@@ -104,6 +105,10 @@ Page info:
 
 ### Cursor-based pagination
 
+#### What is Cursor
+
+- A tool that helps you navigate through rows of data in database.
+- A marker that moves row by row through a table.
 - We just specify the place in the list we want to begin, and then how many items we want to fetch?
 - We have a constant pointer to the specific spot where we left off. This pointer is called a cursor.
 
@@ -112,7 +117,7 @@ https://www.reddit.com/
 https://www.reddit.com/?count=25&after=t3_49i88b
 ```
 
-Again read [this doc](https://github.com/kasir-barati/sql/blob/main/.github/docs/select/pagination.md) for an in-depth explanation.
+Again read [this doc](https://github.com/kasir-barati/sql/blob/main/docs/select/pagination.md) for an in-depth explanation.
 
 ### Relay pagination
 

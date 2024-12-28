@@ -42,7 +42,10 @@ export class AlertSeeder extends Seeder<Alert> {
            FROM generate_series(1, 1000000)
          )),
          UNNEST($3::UUID[]),
-         NOW(),
+         UNNEST(ARRAY(
+           SELECT TIMESTAMP '2020-01-01' + (random() * (TIMESTAMP '2024-12-31' - TIMESTAMP '2020-01-01')) 
+           FROM generate_series(1, 1000000)
+         )),
          NOW();
       `,
       [titles, descriptions, alertTypeIds],
