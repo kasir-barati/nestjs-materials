@@ -8,7 +8,7 @@ NestJS tips, tricks, Notes, Things which are not in doc and I used to figure the
 
 - [Microservices](../microservices/README.md)
 - [How to debug your code and flaky tests](../docs/debugging/README.md).
-  - [A Crude Debug Mode For a Dockerized NestJS App](./docker/vscode-dev-mode/README.md).
+  - [A Crude Debug Mode For a Dockerized NestJS App](../docker/vscode-dev-mode/README.md).
 - [Designing and versioning RESTful APIs](../docs/designing-restful-api/README.md).
   - [Pagination](../docs/designing-restful-api/pagination.md).
 - [MockServer and mocking 3rd-party HTTP/S calls](../docs/mockserver/README.md).
