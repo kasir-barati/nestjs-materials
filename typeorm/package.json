@@ -7,7 +7,7 @@
   "description": "",
   "author": "kasir-barati",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "format": "prettier -w . -u"
   },

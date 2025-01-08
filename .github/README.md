@@ -1,6 +1,6 @@
 > [!IMPORTANT]
 >
-> Keep this file with [`index.md`](../index.md)
+> Keep this file synchronized with [`index.md`](../index.md).
 
 # nestjs-materials
 

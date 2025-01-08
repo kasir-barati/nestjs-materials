@@ -15,7 +15,7 @@
     "class-transformer"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@nestjs/common": "^10.3.10",
     "class-transformer": "^0.5.1",
