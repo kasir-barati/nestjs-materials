@@ -4,6 +4,7 @@ import {
   FilterableField,
   FilterableRelation,
 } from '@ptc-org/nestjs-query-graphql';
+import { SharedAlert } from 'shared';
 import { AlertTypeDto } from '../../alert-type/dto/alert-type.dto';
 import { BeforeCreateAlertHook } from '../hooks/before-create-alert.hook';
 
@@ -14,7 +15,7 @@ import { BeforeCreateAlertHook } from '../hooks/before-create-alert.hook';
 @FilterableRelation('alertType', () => AlertTypeDto, {
   update: { enabled: true },
 })
-export class AlertDto {
+export class AlertDto implements Omit<SharedAlert, 'alertType'> {
   @Field({ description: 'ID of the alert' })
   id: string;
 

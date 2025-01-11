@@ -9,13 +9,14 @@ import {
   FilterableField,
   IDField,
 } from '@ptc-org/nestjs-query-graphql';
+import { SharedAlertType } from 'shared';
 import { AlertDto } from '../../alert/dto/alert.dto';
 
 @ObjectType('AlertType')
 @CursorConnection('alerts', () => AlertDto, {
   update: { enabled: true },
 })
-export class AlertTypeDto {
+export class AlertTypeDto implements SharedAlertType {
   @IDField(() => ID, { description: 'ID of the alert type' })
   @FilterableField()
   id: string;

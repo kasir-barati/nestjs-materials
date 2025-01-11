@@ -1,3 +1,4 @@
+import { SharedAlert } from 'shared';
 import {
   Column,
   CreateDateColumn,
@@ -9,7 +10,7 @@ import {
 import { AlertType } from '../../alert-type/entities/alert-type.entity';
 
 @Entity()
-export class Alert {
+export class Alert implements SharedAlert {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

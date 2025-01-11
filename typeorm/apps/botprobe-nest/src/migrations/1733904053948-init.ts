@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class Init1733904053948 implements MigrationInterface {
-    name = 'Init1733904053948'
+  name = 'Init1733904053948';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             CREATE TABLE "alert" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "title" character varying(200) NOT NULL,
@@ -16,7 +16,7 @@ export class Init1733904053948 implements MigrationInterface {
                 CONSTRAINT "PK_ad91cad659a3536465d564a4b2f" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "alert_type" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" character varying(200) NOT NULL,
@@ -26,22 +26,21 @@ export class Init1733904053948 implements MigrationInterface {
                 CONSTRAINT "PK_34f04b83e501fb1bea31e237418" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "alert"
             ADD CONSTRAINT "FK_dedfe4a25d650a6780266ed6493" FOREIGN KEY ("alertTypeId") REFERENCES "alert_type"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             ALTER TABLE "alert" DROP CONSTRAINT "FK_dedfe4a25d650a6780266ed6493"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "alert_type"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "alert"
         `);
-    }
-
+  }
 }

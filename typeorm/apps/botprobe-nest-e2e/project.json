@@ -11,7 +11,11 @@
         "jestConfig": "apps/botprobe-nest-e2e/jest.config.ts",
         "passWithNoTests": true
       },
-      "dependsOn": ["botprobe-nest:build"]
+      "dependsOn": [
+        "botprobe-nest:build",
+        "botprobe-nest:seed",
+        "botprobe-nest:serve"
+      ]
     }
   }
 }
