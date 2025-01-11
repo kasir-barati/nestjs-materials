@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { SortDirection } from '@ptc-org/nestjs-query-core';
 import {
   BeforeCreateOne,
   FilterableField,
@@ -14,6 +15,10 @@ import { BeforeCreateAlertHook } from '../hooks/before-create-alert.hook';
 // E.g. I was using AlertType here mistakenly and my app was crashing...
 @FilterableRelation('alertType', () => AlertTypeDto, {
   update: { enabled: true },
+  defaultSort: [
+    { field: 'createdAt', direction: SortDirection.ASC },
+    { field: 'id', direction: SortDirection.ASC },
+  ],
 })
 export class AlertDto implements Omit<SharedAlert, 'alertType'> {
   @Field({ description: 'ID of the alert' })
