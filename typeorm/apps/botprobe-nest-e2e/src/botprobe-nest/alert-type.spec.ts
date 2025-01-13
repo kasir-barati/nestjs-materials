@@ -1,6 +1,7 @@
 import { Filter } from '@ptc-org/nestjs-query-core';
 import axios from 'axios';
 import { SharedAlertType } from 'shared';
+import { Client, createClient } from '../../__generated__';
 import { AlertTypesQueryBuilder } from '../support/builders/alert-type-query.builder';
 import { AlertTypeBuilder } from '../support/builders/alert-type.builder';
 import { AlertBuilder } from '../support/builders/alert.builder';
@@ -8,9 +9,14 @@ import {
   AlertTypesResponse,
   CreateOneAlertTypeResponse,
 } from '../support/types/alert-type.type';
-import { Auth } from '../support/utils/auth.util';
 
 describe('POST /graphql', () => {
+  let client: Client;
+
+  beforeAll(() => {
+    client = createClient();
+  });
+
   it('should return all the alarm types with the "leak" inside their name', async () => {
     const alertTypesQueryBuilder = new AlertTypesQueryBuilder();
     const { query, variables } = alertTypesQueryBuilder
@@ -130,6 +136,140 @@ describe('POST /graphql', () => {
     expect(alerts.pageInfo.endCursor).toBeString();
     expect(alerts.pageInfo.startCursor).toBeString();
   });
+
+  it('should return the alarm type & paginate through its alerts backward', async () => {
+    // Arrange
+    const alertTypeId = await new AlertTypeBuilder().build();
+    const firstAlertId = await new AlertBuilder()
+      .setAlertTypeId(alertTypeId)
+      .build();
+    const secondAlertId = await new AlertBuilder()
+      .setAlertTypeId(alertTypeId)
+      .build();
+    const thirdAlertId = await new AlertBuilder()
+      .setAlertTypeId(alertTypeId)
+      .build();
+    const forthAlertId = await new AlertBuilder()
+      .setAlertTypeId(alertTypeId)
+      .build();
+    const fifthAlertId = await new AlertBuilder()
+      .setAlertTypeId(alertTypeId)
+      .build();
+    const filter = { id: { eq: alertTypeId } };
+    const last = 2;
+    const firstTenAlertOfAlertType = await client.query({
+      alertTypes: {
+        __args: { filter },
+        edges: {
+          node: {
+            alerts: {
+              __args: {
+                paging: { first: 10 },
+              },
+              edges: {
+                cursor: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    const firstTenAlerts =
+      firstTenAlertOfAlertType.alertTypes.edges[0].node.alerts.edges;
+    const lastItemInFirstTenAlertCursor =
+      firstTenAlerts[firstTenAlerts.length - 1].cursor;
+
+    // Act
+    const data = await client.query({
+      alertTypes: {
+        __args: { filter },
+        edges: {
+          cursor: true,
+          node: {
+            id: true,
+            name: true,
+            alerts: {
+              __args: {
+                paging: {
+                  last,
+                  before: lastItemInFirstTenAlertCursor,
+                },
+              },
+              edges: {
+                cursor: true,
+                node: {
+                  id: true,
+                  title: true,
+                },
+              },
+              pageInfo: {
+                endCursor: true,
+                hasNextPage: true,
+                startCursor: true,
+                hasPreviousPage: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Assert
+    expect(
+      data.alertTypes.edges[0].node.alerts.edges.map(
+        (edge) => edge.node.id,
+      ),
+    ).toStrictEqual([thirdAlertId, forthAlertId]);
+
+    // Arrange
+    const before =
+      data.alertTypes.edges[0].node.alerts.edges[0].cursor;
+
+    // Act
+    const {
+      alertTypes: { edges: alertTypes },
+    } = await client.query({
+      alertTypes: {
+        __args: { filter },
+        edges: {
+          node: {
+            id: true,
+            name: true,
+            alerts: {
+              __args: { paging: { last, before } },
+              edges: {
+                cursor: true,
+                node: {
+                  id: true,
+                  title: true,
+                },
+              },
+              pageInfo: {
+                endCursor: true,
+                hasNextPage: true,
+                startCursor: true,
+                hasPreviousPage: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Assert
+    expect(
+      alertTypes[0].node.alerts.edges.map((edge) => edge.node.id),
+    ).toStrictEqual([firstAlertId, secondAlertId]);
+    expect(alertTypes[0].node.alerts.pageInfo.hasNextPage).toBeTrue();
+    expect(
+      alertTypes[0].node.alerts.pageInfo.hasPreviousPage,
+    ).toBeFalse();
+    expect(alertTypes[0].node.alerts.pageInfo.endCursor).toBeString();
+    expect(
+      alertTypes[0].node.alerts.pageInfo.startCursor,
+    ).toBeString();
+  });
+
 });
 
 async function queryAlertTypes(

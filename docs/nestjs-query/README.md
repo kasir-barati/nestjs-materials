@@ -5,16 +5,17 @@
 - No [n+1 problem](https://github.com/kasir-barati/graphql-js-ts/blob/main/docs/nestjs.md#shouldWeUseResolveField).
 - "[Connections](https://github.com/kasir-barati/graphql-js-ts/blob/main/docs/best-practices/pagination.md)" compliant pagination schema.
 
-## `nestjs-query` + TypeORM + ExpressJS + PostgreSQL
+## `nestjs-query` + TypeORM + NestJS + PostgreSQL
 
 1. ```shell
    pnpm add @ptc-org/nestjs-query-core @ptc-org/nestjs-query-graphql @ptc-org/nestjs-query-typeorm @nestjs/typeorm @nestjs/common @nestjs/graphql @nestjs/apollo @nestjs/config @apollo/server graphql graphql-subscriptions class-transformer class-validator dataloader typeorm pg
    ```
-2. ```shell
+2. ````shell
    cd typeorm/apps/borprobe-nest
    nest g resource alert-type
    nest g resource alert
-   ```
+   ```ExpressJS
+   ````
 3. Open your `*.entity.ts` and modify it to use TypeORM and acts as you `Object` type.
 
    > [!TIP]
@@ -128,6 +129,30 @@ BTW I have written [a post for migration in TypeORM in dev.to here](https://dev.
 
    This hook will be executed before the request reaching resolver. Thus we can inside it easily access context and extract user ID from it, and finally attach it to the `input`.
 
+> [!NOTE]
+>
+> I've added a dummy login endpoint as well ([resolver](../../typeorm/libs/shared/src/auth/auth.resolver.ts)), it does not do anything. You'll get an `accessToken` whenever you call it. I added it for the sake of my e2e tests :slightly_smiling_face:.
+
 #### Request Flow from Auth to Resolver
 
 ![Request flow from auth to hooks to resolver](./assets/request-flow-from-auth-to-hooks-to-resolver.png)
+
+### Writing E2E Tests -- Generating an SDK with [`genql`](https://genql.dev/)
+
+1. ```shell
+   npm i -g @genql/cli
+   ```
+2. ```shell
+   cd apps/botprobe-nest-e2e
+   genql --endpoint http://localhost:4000/graphql --output ./generated
+   ```
+3. And then you can use it like this:
+   ```ts
+   import { Client, createClient } from "../../__generated__";
+   const client = createClient();
+   client.query({
+     alerts: {
+       /*...*/
+     },
+   });
+   ```
