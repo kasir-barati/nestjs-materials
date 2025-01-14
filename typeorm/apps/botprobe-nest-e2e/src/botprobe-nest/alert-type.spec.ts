@@ -5,10 +5,7 @@ import { Client, createClient } from '../../__generated__';
 import { AlertTypesQueryBuilder } from '../support/builders/alert-type-query.builder';
 import { AlertTypeBuilder } from '../support/builders/alert-type.builder';
 import { AlertBuilder } from '../support/builders/alert.builder';
-import {
-  AlertTypesResponse,
-  CreateOneAlertTypeResponse,
-} from '../support/types/alert-type.type';
+import { AlertTypesResponse } from '../support/types/alert-type.type';
 
 describe('POST /graphql', () => {
   let client: Client;
@@ -270,6 +267,27 @@ describe('POST /graphql', () => {
     ).toBeString();
   });
 
+  it('should create an alarm type', async () => {
+    const {
+      createOneAlertType: { name, description },
+    } = await client.mutation({
+      createOneAlertType: {
+        __args: {
+          input: {
+            alertType: {
+              name: 'Random-Pandora-Axe',
+              description: 'Described alert type',
+            },
+          },
+        },
+        name: true,
+        description: true,
+      },
+    });
+
+    expect(name).toBe('Random-Pandora-Axe');
+    expect(description).toBe('Described alert type');
+  });
 });
 
 async function queryAlertTypes(
