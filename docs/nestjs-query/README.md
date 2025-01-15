@@ -142,9 +142,28 @@ BTW I have written [a post for migration in TypeORM in dev.to here](https://dev.
 1. ```shell
    npm i -g @genql/cli
    ```
-2. ```shell
-   cd apps/botprobe-nest-e2e
-   genql --endpoint http://localhost:4000/graphql --output ./generated
+2. Add a new script to your `apps/botprobe-nest-e2e`, and do not forget that you need to re-execute this script after each change you make to you API:
+   ```json
+   {
+     "targets": {
+       "genql-client": {
+         "executor": "nx:run-commands",
+         "options": {
+           "commands": [
+             {
+               "command": "[ -d './__generated__' ] && rm -rf ./__generated__",
+               "forwardAllArgs": false
+             },
+             {
+               "command": "genql --endpoint http://localhost:4000/graphql --output ./__generated__",
+               "forwardAllArgs": false
+             }
+           ],
+           "cwd": "{projectRoot}"
+         }
+       }
+     }
+   }
    ```
 3. And then you can use it like this:
    ```ts

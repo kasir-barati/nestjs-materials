@@ -16,6 +16,22 @@
         "botprobe-nest:seed",
         "botprobe-nest:serve"
       ]
+    },
+    "genql-client": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "[ -d './__generated__' ] && rm -rf ./__generated__",
+            "forwardAllArgs": false
+          },
+          {
+            "command": "genql --endpoint http://localhost:4000/graphql --output ./__generated__",
+            "forwardAllArgs": false
+          }
+        ],
+        "cwd": "{projectRoot}"
+      }
     }
   }
 }

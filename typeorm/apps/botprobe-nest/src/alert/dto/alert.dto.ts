@@ -22,6 +22,7 @@ import { BeforeCreateAlertHook } from '../hooks/before-create-alert.hook';
 })
 export class AlertDto implements Omit<SharedAlert, 'alertType'> {
   @Field({ description: 'ID of the alert' })
+  @FilterableField()
   id: string;
 
   @Field({ description: 'Name of the alert' })
@@ -29,6 +30,7 @@ export class AlertDto implements Omit<SharedAlert, 'alertType'> {
   title: string;
 
   @Field({ description: 'Description of the alert' })
+  @FilterableField()
   description: string;
 
   @Field({ description: "Who's the creator of this alert" })
