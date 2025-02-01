@@ -1,3 +1,5 @@
+import type { Config } from 'jest';
+
 export default {
   displayName: 'nestjs-client-e2e',
   preset: '../../jest.preset.js',
@@ -15,4 +17,4 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/nestjs-client-e2e',
-};
+} satisfies Config;
