@@ -1,6 +1,9 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import {
+  MicroserviceOptions,
+  Transport,
+} from '@nestjs/microservices';
 import { join } from 'path';
 
 import { AppModule } from './app/app.module';
@@ -14,7 +17,7 @@ async function bootstrap() {
     new ValidationPipe({
       forbidNonWhitelisted: true,
       validateCustomDecorators: true,
-    })
+    }),
   );
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
@@ -39,7 +42,7 @@ async function bootstrap() {
   await app.listen(port);
 
   Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
+    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
   );
 }
 

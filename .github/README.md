@@ -7,6 +7,8 @@
 NestJS tips, tricks, Notes, Things which are not in doc and I used to figure them out and use them
 
 - [Microservices](../microservices/README.md)
+  - [gRPC](../docs/grpc/README.md).
+  - [Protobuf](../docs/grpc/protobuf.md).
 - [How to debug your code and flaky tests](../docs/debugging/README.md).
   - [A Crude Debug Mode For a Dockerized NestJS App](../docker/vscode-dev-mode/README.md).
 - [Designing and versioning RESTful APIs](../docs/designing-restful-api/README.md).

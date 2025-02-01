@@ -1,6 +1,11 @@
 import { Metadata } from '@grpc/grpc-js';
-import { GrpcExceptionFilter } from '@grpc/shared';
-import { Controller, UseFilters } from '@nestjs/common';
+import { HttpToGrpcExceptionFilter } from '@grpc/shared';
+import {
+  Controller,
+  UseFilters,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Ctx, Payload } from '@nestjs/microservices';
 import { IsUUID } from 'class-validator';
 import { Observable } from 'rxjs';
@@ -18,12 +23,13 @@ class UserByIdDto implements UserById {
 }
 
 @Controller()
-@UseFilters(GrpcExceptionFilter)
+@UseFilters(HttpToGrpcExceptionFilter)
 @GrpcUserServiceControllerMethods()
 export class UserGrpcController implements GrpcUserServiceController {
+  @UsePipes(new ValidationPipe())
   findOne(
     @Payload() request: UserByIdDto,
-    @Ctx() metadata: Metadata
+    @Ctx() metadata: Metadata,
   ): Promise<User> | Observable<User> | User {
     console.log(metadata.toJSON());
 

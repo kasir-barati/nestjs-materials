@@ -48,6 +48,9 @@ importers:
       '@eslint/js':
         specifier: ^9.8.0
         version: 9.19.0
+      '@grpc/proto-loader':
+        specifier: ^0.7.13
+        version: 0.7.13
       '@nestjs/schematics':
         specifier: ^10.0.1
         version: 10.2.3(chokidar@3.6.0)(typescript@5.7.3)
