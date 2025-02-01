@@ -1,0 +1,98 @@
+{
+  "name": "nestjs-client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/nestjs-client/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "compose:up": {
+      "executor": "nx:run-commands",
+      "parallelism": false,
+      "cache": false,
+      "options": {
+        "commands": [
+          {
+            "command": "docker compose up -d",
+            "forwardAllArgs": true
+          }
+        ],
+        "cwd": "{projectRoot}"
+      }
+    },
+    "compose:down": {
+      "executor": "nx:run-commands",
+      "parallelism": false,
+      "cache": false,
+      "options": {
+        "commands": [
+          {
+            "command": "docker compose down",
+            "forwardAllArgs": true
+          }
+        ],
+        "cwd": "{projectRoot}"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "webpack-cli build",
+        "args": ["node-env=production"]
+      },
+      "configurations": {
+        "development": {
+          "args": ["node-env=development"]
+        }
+      },
+      "parallelism": false
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["grpc:gen", "build", "compose:up"],
+      "options": {
+        "buildTarget": "nestjs-client:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "nestjs-client:build:development"
+        },
+        "production": {
+          "buildTarget": "nestjs-client:build:production"
+        }
+      },
+      "parallelism": false
+    },
+    "grpc:gen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "rm -rf {projectRoot}/src/assets/interfaces",
+            "forwardAllArgs": false,
+            "description": "Cleaning up"
+          },
+          {
+            "command": "mkdir -p {projectRoot}/src/assets/interfaces",
+            "forwardAllArgs": false,
+            "description": "Recreating the directory"
+          },
+          {
+            "command": "npx protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_opt=fileSuffix=.interface --ts_proto_opt=nestJs=true --ts_proto_opt=addNestjsRestParameter=true --ts_proto_out={projectRoot}/src/assets/interfaces -I {projectRoot}/src/assets/ {projectRoot}/src/assets/*.proto",
+            "forwardAllArgs": true,
+            "description": "Generating the interfaces, and decorators out of protobuf files."
+          }
+        ],
+        "cwd": "{workspaceRoot}",
+        "parallel": false
+      },
+      "parallelism": false
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
+      }
+    }
+  }
+}

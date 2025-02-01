@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package user;
+
+service GrpcUserService {
+  rpc FindOne (UserById) returns (User) {}
+}
+
+message UserById {
+  string id = 1;
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+}

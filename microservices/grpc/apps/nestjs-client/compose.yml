@@ -1,0 +1,20 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.9.20-management-alpine
+    env_file:
+      - .env
+    ports:
+      - 5672:5672
+      - 15672:15672
+    restart: always
+    hostname: rabbitmq
+    volumes:
+      - rabbitmq:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:15672']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  rabbitmq:
