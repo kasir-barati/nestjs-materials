@@ -11,7 +11,7 @@ services:
     volumes:
       - rabbitmq:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:15672']
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
       interval: 30s
       timeout: 10s
       retries: 5
