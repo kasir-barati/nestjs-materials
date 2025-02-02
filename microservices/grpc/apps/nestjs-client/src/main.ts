@@ -7,6 +7,7 @@ import {
 import { join } from 'path';
 
 import { AppModule } from './app/app.module';
+import { USER_PACKAGE_NAME } from './assets/interfaces/user.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,7 +24,7 @@ async function bootstrap() {
     transport: Transport.GRPC,
     options: {
       url: `0.0.0.0:3000`,
-      package: 'user',
+      package: USER_PACKAGE_NAME,
       protoPath: [join(__dirname, 'assets', 'user.proto')],
       loader: {
         includeDirs: [join(__dirname, 'assets')],
