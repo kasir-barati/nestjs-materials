@@ -15,6 +15,7 @@ export type FindOneResolveType = [
   GrpcErrorResponse | null,
   User | null,
 ];
+/**@todo https://github.com/stephenh/ts-proto/issues/1159 */
 export interface LoadPackageDefinition {
   /**@description The name of our package which we wrote in our `user.proto` file. */
   user: {

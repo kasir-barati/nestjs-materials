@@ -36,17 +36,34 @@
 
 ## NestJS
 
-- Follow [the official documentation](https://docs.nestjs.com/microservices/grpc) opn how to bootstrap a NestJS app + gRPC.
-  ```bash
-  pnpx create-nx-workspace grpc --preset=nest --appName nestjs-client --bundler esbuild --packageManager pnpm --nxCloud skip
-  ```
-- I also love perfectionist for a good reason and that is the tidiness it gives you for little conf, so I highly recommend you take a look at it in their [official doc](https://perfectionist.dev/guide/getting-started).
+1. Follow [the official documentation](https://docs.nestjs.com/microservices/grpc) opn how to bootstrap a NestJS app + gRPC.
+   ```bash
+   pnpx create-nx-workspace grpc --preset=nest --appName nestjs-client --bundler esbuild --packageManager pnpm --nxCloud skip
+   ```
+2. I also love perfectionist for a good reason and that is the tidiness it gives you for little conf, so I highly recommend you take a look at it in their [official doc](https://perfectionist.dev/guide/getting-started).
 
-  **Or if you're looking for something on how to get up to speed I guess [this commit](https://github.com/kasir-barati/docker/commit/6855598149c21c985387fce674a4d1ce5f87ca5f) can be a real quick intro to how to use it. BTW I appreciate it if you give my repo a star in case it was helpful :slightly_smiling_face:.**
+   **Or if you're looking for something on how to get up to speed I guess [this commit](https://github.com/kasir-barati/docker/commit/6855598149c21c985387fce674a4d1ce5f87ca5f) can be a real quick intro to how to use it. BTW I appreciate it if you give my repo a star in case it was helpful :slightly_smiling_face:.**
 
-  ```bash
-  nx run-many -t lint --fix
-  ```
+   ```bash
+   nx run-many -t lint --fix
+   ```
+
+3. Write you're protobuf file like what I did [here at `user.proto`](../../microservices/grpc/apps/nestjs-client/src/assets/user.proto).
+4. Use the [`ts-proto`](https://github.com/stephenh/ts-proto) to auto generate the interfaces and decorators for your gRPC controller.
+
+   ```json
+   {
+     "scripts": {
+       "grpc:gen": "npx protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_opt=fileSuffix=.interface --ts_proto_opt=nestJs=true --ts_proto_opt=addNestjsRestParameter=true --ts_proto_out={projectRoot}/src/assets/interfaces -I {projectRoot}/src/assets/ {projectRoot}/src/assets/*.proto"
+     }
+   }
+   ```
+
+   **For the complete solution look at [this](../../microservices/grpc/apps/nestjs-client/project.json).**
+
+5. Now just run the `npm run grpc:gen` or if you're using Nx just run `nx grpc:gen projectName`.
+
+6. Congrats, you have your types and decorators. So let's [put them into use](../../microservices/grpc/apps/nestjs-client/src/user/user.grpc-controller.ts).
 
 > [!TIP]
 >
