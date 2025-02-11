@@ -42,7 +42,7 @@ describe('Upload file', () => {
       oneofs: true,
     });
     const {
-      user: { FileUploadService },
+      File: { FileUploadService },
     } = loadPackageDefinition(
       packageDefinition,
     ) as unknown as LoadPackageDefinition;

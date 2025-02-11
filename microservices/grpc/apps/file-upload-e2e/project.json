@@ -11,7 +11,7 @@
         "jestConfig": "apps/file-upload-e2e/jest.config.ts",
         "passWithNoTests": true
       },
-      "dependsOn": ["file-upload:build"]
+      "dependsOn": []
     }
   }
 }

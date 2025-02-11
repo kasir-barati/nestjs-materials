@@ -20,7 +20,7 @@ interface FileUploadService {
 }
 export interface LoadPackageDefinition {
   /**@description The name of our package which we wrote in our `file-upload.proto` file. */
-  user: {
+  File: {
     /**@description Comes from the name we gave to this service in our `file-upload.proto` file. */
     FileUploadService: FileUploadService;
   };
