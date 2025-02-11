@@ -1,0 +1,7 @@
+- WebRTC
+  - Configurations available:
+    - Mesh.
+    - MCU.
+    - SFU.
+- Kurento
+  - Uses **MCU** by default.

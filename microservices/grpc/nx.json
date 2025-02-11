@@ -36,7 +36,10 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/nestjs-client-e2e/**/*"]
+      "exclude": [
+        "apps/nestjs-client-e2e/**/*",
+        "apps/file-upload-e2e/**/*"
+      ]
     }
   ],
   "targetDefaults": {

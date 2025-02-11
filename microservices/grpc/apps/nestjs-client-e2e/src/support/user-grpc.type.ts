@@ -1,9 +1,9 @@
 import { ChannelCredentials } from '@grpc/grpc-js';
+import { GrpcErrorResponse } from '@grpc/shared';
 import {
   GrpcUserServiceClient,
   User,
 } from '../../../nestjs-client/src/assets/interfaces/user.interface';
-import { GrpcErrorResponse } from './shared.type';
 
 interface GrpcUserService {
   new (
