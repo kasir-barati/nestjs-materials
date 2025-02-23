@@ -15,6 +15,7 @@
     "@nestjs/microservices": "^11.0.7",
     "@nestjs/platform-express": "^10.0.2",
     "@types/express": "^5.0.0",
+    "aws-crt": "^1.25.3",
     "axios": "^1.6.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
