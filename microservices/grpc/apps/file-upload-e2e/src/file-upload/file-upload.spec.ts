@@ -5,18 +5,15 @@ import {
   Metadata,
 } from '@grpc/grpc-js';
 import { loadSync } from '@grpc/proto-loader';
+import { GrpcErrorResponse } from '@grpc/shared';
 import { createHash, randomUUID } from 'crypto';
 import { createReadStream } from 'fs';
 import { stat } from 'fs/promises';
 import { join } from 'path';
-import {
-  Chunk,
-  UploadResponse,
-} from '../../../file-upload/src/assets/interfaces/file-upload.interface';
+import { Chunk } from '../../../file-upload/src/assets/interfaces/file-upload.interface';
 import {
   FileUploadServiceClient,
   LoadPackageDefinition,
-  UploadResolveType,
 } from '../support/file-upload.type';
 
 const PROTO_PATH = join(
@@ -57,37 +54,32 @@ describe('Upload file', () => {
     // Arrange
     const metadata = new Metadata();
     const callHandler = client.upload(metadata);
-    const responses = [];
     const fileId = randomUUID();
     const fileName = 'upload-me.jpg';
     const filePath = join(__dirname, fileName);
     const { size: fileTotalSize } = await stat(filePath);
     const stream = createReadStream(filePath);
-    let partNumber = 1;
-    callHandler.on('data', (response: UploadResponse) =>
-      responses.push(response),
-    );
 
     // Act
-    const error = await new Promise<UploadResolveType>(
+    const error = await new Promise<GrpcErrorResponse | Error | null>(
       (resolve, _) => {
+        let partNumber = 1;
         const errorHandler = (error: Error) => {
-          if (error) {
-            return resolve(error);
+          if (!error) {
+            return;
           }
-          resolve(
-            new Error(
-              'Error was null but error handler was invoked!',
-            ),
-          );
+          resolve(error);
         };
         const endHandler = () => {
-          callHandler.end(() => {
-            // Close the stream to prevent failing test due to open streams.
-            stream.close();
-            resolve(null);
-          });
+          // Close the stream to prevent failing test due to open streams.
+          stream.close();
+          callHandler.end();
         };
+
+        callHandler
+          .on('data', console.log)
+          .on('error', errorHandler)
+          .on('end', resolve);
 
         stream
           .on('data', (chunk) => {
@@ -97,7 +89,6 @@ describe('Upload file', () => {
               .update(chunk.toString(), 'utf-8')
               .digest('hex');
 
-            callHandler.on('error', errorHandler);
             callHandler.write(
               {
                 data,
@@ -118,6 +109,8 @@ describe('Upload file', () => {
     );
 
     // Assert
-    expect(error).toBe(null);
+    expect(error['details']).toBe(
+      'partNumber must be an integer number, checksumAlgorithm must be one of the following values: CRC32, CRC32C, CRC64NVME, SHA1, SHA256, fileName must be a string, totalSize must be a number conforming to the specified constraints',
+    );
   });
 });

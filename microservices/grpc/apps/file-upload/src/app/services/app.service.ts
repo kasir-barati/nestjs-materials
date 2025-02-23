@@ -1,8 +1,5 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import {
-  CorrelationIdService,
-  UseCorrelationId,
-} from '@grpc/modules';
+import { CorrelationIdService } from '@grpc/modules';
 import { constraintsToString } from '@grpc/shared';
 import {
   Injectable,
@@ -34,8 +31,6 @@ export class AppService {
     const correlationId =
       this.correlationIdService.getCorrelationIdOrGenerate();
     let fileService: FileService | undefined;
-
-    subject.next({});
 
     observableChunk
       .pipe(
@@ -102,7 +97,7 @@ export class AppService {
       });
   }
 
-  @UseCorrelationId()
+  // @UseCorrelationId()
   private async validateIncomingData(
     correlationId: string,
     unvalidatedData: ChunkDto,
@@ -114,13 +109,13 @@ export class AppService {
 
     if (validationResult.length > 0) {
       const error = constraintsToString(validationResult);
-      throw error ?? 'Validation failed';
+      throw error?.join(', ') ?? 'Validation failed';
     }
 
     return data;
   }
 
-  @UseCorrelationId()
+  // @UseCorrelationId()
   private async startMultipartUpload(
     correlationId: string,
     args: {
@@ -143,7 +138,7 @@ export class AppService {
     return { fileService, data: args.data };
   }
 
-  @UseCorrelationId()
+  // @UseCorrelationId()
   private async uploadPart(
     correlationId: string,
     args: {
@@ -159,23 +154,25 @@ export class AppService {
     return args.data;
   }
 
-  @UseCorrelationId()
+  // @UseCorrelationId()
   private async handleError(
     correlationId: string,
     args: {
       error: any;
       subject: ReplaySubject<UploadResponse>;
-      fileService: FileService;
+      fileService?: FileService;
     },
   ) {
     this.logger.error(args.error);
 
-    await args.fileService.abortMultipartUpload();
+    if (args.fileService) {
+      await args.fileService.abortMultipartUpload();
+    }
 
     args.subject.error(new UnprocessableEntityException(args.error));
   }
 
-  @UseCorrelationId()
+  // @UseCorrelationId()
   private async completeMultipartUpload(
     correlationId: string,
     args: {

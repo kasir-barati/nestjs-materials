@@ -1,12 +1,10 @@
 import { ChannelCredentials, Metadata } from '@grpc/grpc-js';
 import { ClientDuplexStreamImpl } from '@grpc/grpc-js/build/src/call';
-import { GrpcErrorResponse } from '@grpc/shared';
 import {
   Chunk,
   UploadResponse,
 } from '../../../file-upload/src/assets/interfaces/file-upload.interface';
 
-export type UploadResolveType = GrpcErrorResponse | Error | null;
 export interface FileUploadServiceClient {
   upload(
     metadata: Metadata,

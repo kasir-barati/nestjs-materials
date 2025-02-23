@@ -1,4 +1,5 @@
-import { Controller } from '@nestjs/common';
+import { HttpToGrpcExceptionFilter } from '@grpc/shared';
+import { Controller, UseFilters } from '@nestjs/common';
 import { Payload } from '@nestjs/microservices';
 import { Observable, ReplaySubject } from 'rxjs';
 import {
@@ -10,14 +11,13 @@ import { ChunkDto } from './dtos/chunk.dto';
 import { AppService } from './services/app.service';
 
 @Controller()
+@UseFilters(HttpToGrpcExceptionFilter)
 @FileUploadServiceControllerMethods()
 export class AppGrpcController
   implements FileUploadServiceController
 {
   constructor(private readonly appService: AppService) {}
 
-  // TODO: Is this pipeline working?
-  // @UsePipes(StreamValidationPipe)
   upload(
     @Payload() chunk: Observable<ChunkDto>,
   ): Observable<UploadResponse> {
