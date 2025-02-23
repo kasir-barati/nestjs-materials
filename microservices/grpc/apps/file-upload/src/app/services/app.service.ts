@@ -125,7 +125,7 @@ export class AppService {
       totalSize: number;
     },
   ): Promise<{ fileService: FileService; data: ChunkDto }> {
-    const bucket = this.getBucket();
+    const bucket = 'some_bucket';
     const key = args.data.id + extname(args.data.fileName);
     const fileService = new FileService(this.s3Client);
 
@@ -185,9 +185,5 @@ export class AppService {
 
     args.subject.complete();
     return true;
-  }
-
-  getBucket() {
-    return 'some_bucket';
   }
 }
