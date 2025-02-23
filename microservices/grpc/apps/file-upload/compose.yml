@@ -6,9 +6,10 @@ services:
       - 9001:9001 # console
     volumes:
       - minio:/data
+    # TODO: MINIO_ACCESS_KEY and MINIO_SECRET_KEY are deprecated. Use MINIO_ROOT_USER and MINIO_ROOT_PASSWORD
     environment:
-      MINIO_ACCESS_KEY: $ACCESS_KEY
-      MINIO_SECRET_KEY: $SECRET_KEY
+      MINIO_ACCESS_KEY: $OBJECT_STORAGE_ACCESS_KEY
+      MINIO_SECRET_KEY: $OBJECT_STORAGE_SECRET_KEY
     command: server /data --console-address ":9001" --address ":9000"
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
@@ -25,7 +26,7 @@ services:
       /bin/sh -c "
       /usr/bin/mc alias set my_minio http://minio:9000 adminadmin adminadmin;
       /usr/bin/mc admin info my_minio;
-      /usr/bin/mc mb my_minio/some_bucket;
+      /usr/bin/mc mb my_minio/some-bucket;
       /usr/bin/mc admin trace --verbose my_minio;"
 
 volumes:
