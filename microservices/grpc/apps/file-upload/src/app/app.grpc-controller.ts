@@ -23,8 +23,6 @@ export class AppGrpcController
   ): Observable<UploadResponse> {
     const subject = new ReplaySubject<UploadResponse>(1);
 
-    // subject.next({});
-
     this.appService.upload(subject, chunk);
 
     return subject.asObservable();

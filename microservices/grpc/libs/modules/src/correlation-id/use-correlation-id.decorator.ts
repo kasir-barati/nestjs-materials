@@ -23,7 +23,7 @@ export function UseCorrelationId() {
         throw 'First parameter should be correlation ID';
       }
 
-      typedThis.correlationIdService.useCorrelationId(
+      return typedThis.correlationIdService.useCorrelationId(
         correlationId,
         () => originalMethod.apply(this, args),
       );

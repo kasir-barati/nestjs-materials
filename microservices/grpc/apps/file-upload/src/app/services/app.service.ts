@@ -1,3 +1,4 @@
+import { S3Client } from '@aws-sdk/client-s3';
 import {
   CorrelationIdService,
   UseCorrelationId,
@@ -8,7 +9,7 @@ import {
   Logger,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { extname } from 'path';
 import { mergeMap, Observable, ReplaySubject } from 'rxjs';
@@ -22,7 +23,7 @@ export class AppService {
 
   constructor(
     private readonly correlationIdService: CorrelationIdService,
-    private readonly fileService: FileService,
+    private readonly s3Client: S3Client,
   ) {}
 
   upload(
@@ -30,82 +31,93 @@ export class AppService {
     observableChunk: Observable<ChunkDto>,
   ) {
     let once = true;
-    let receivedSize = 0;
-    let totalSize = 0;
-    let uploadId: string | undefined;
-    let fileId: string | undefined;
-    let fileName: string | undefined;
-    const etags: string[] = [];
     const correlationId =
       this.correlationIdService.getCorrelationIdOrGenerate();
+    let fileService: FileService | undefined;
+
+    subject.next({});
 
     observableChunk
       .pipe(
+        mergeMap((unvalidatedData) => {
+          return this.validateIncomingData(
+            correlationId,
+            unvalidatedData,
+          );
+        }),
         mergeMap((data) => {
-          fileId = data.id;
-          fileName = data.fileName;
-
-          if (once) {
-            return this.startMultipartUpload(correlationId, {
-              data,
-              subject,
-              totalSize,
-              receivedSize,
-            });
+          if (!once) {
+            return Promise.resolve({ fileService, data });
           }
 
-          if (!uploadId) {
-            throw 'Upload ID does not exists!';
+          return this.startMultipartUpload(correlationId, {
+            data,
+            subject,
+            totalSize: data.totalSize,
+            receivedSize: data.data.length,
+          });
+        }),
+        mergeMap(async ({ data, fileService }) => {
+          if (!fileService) {
+            fileService = fileService;
           }
 
           return this.uploadPart(correlationId, {
             data,
-            receivedSize,
-            uploadId,
+            fileService,
+          });
+        }),
+        mergeMap((data) => {
+          if (!data.checksum) {
+            return Promise.resolve(false);
+          }
+
+          return this.completeMultipartUpload(correlationId, {
+            subject,
+            fileService,
+            checksum: data.checksum,
           });
         }),
       )
       .subscribe({
-        next: (result) => {
-          receivedSize = result.receivedSize;
-
-          if ('etag' in result) {
-            etags.push(result.etag);
-            return;
+        next: (hasCompleted) => {
+          if (once) {
+            once = false;
           }
 
-          once = false;
-          totalSize = result.totalSize;
-          uploadId = result.uploadId;
+          if (!hasCompleted) {
+            subject.next({});
+          }
         },
         complete: () => {
-          if (!fileId || !fileName || !uploadId) {
-            throw 'fileId/fileName/uploadId is missing!';
-          }
-
-          this.handleComplete(correlationId, {
-            subject,
-            totalSize,
-            receivedSize,
-            uploadId,
-            fileId,
-            fileName,
-          });
+          this.logger.log('Multipart upload was completed!');
         },
         error: (error) => {
-          if (!fileId || !fileName || !uploadId) {
-            throw 'fileId/fileName/uploadId is missing!';
-          }
-
           this.handleError(correlationId, {
             error,
             subject,
-            fileId,
-            fileName,
-            uploadId,
+            fileService,
           });
         },
       });
+  }
+
+  @UseCorrelationId()
+  private async validateIncomingData(
+    correlationId: string,
+    unvalidatedData: ChunkDto,
+  ): Promise<ChunkDto> {
+    const data = plainToInstance(ChunkDto, unvalidatedData, {
+      enableImplicitConversion: true,
+    });
+    const validationResult = await validate(data);
+
+    if (validationResult.length > 0) {
+      const error = constraintsToString(validationResult);
+      throw error ?? 'Validation failed';
+    }
+
+    return data;
   }
 
   @UseCorrelationId()
@@ -117,50 +129,18 @@ export class AppService {
       receivedSize: number;
       totalSize: number;
     },
-  ) {
-    let { data, subject, receivedSize, totalSize } = args;
-    let uploadId: string | undefined;
-    const unvalidatedChunk = plainToClass(ChunkDto, data);
-    const validationResult = await validate(unvalidatedChunk);
+  ): Promise<{ fileService: FileService; data: ChunkDto }> {
     const bucket = this.getBucket();
-    const key = this.getKey(data.id, data.fileName);
+    const key = args.data.id + extname(args.data.fileName);
+    const fileService = new FileService(this.s3Client);
 
-    // TODO: How I can get rid of this try catch?
-    try {
-      if (validationResult.length > 0) {
-        const error = constraintsToString(validationResult);
-        throw error ?? 'Validation failed';
-      }
+    await fileService.createMultipartUpload(
+      bucket,
+      key,
+      args.data.checksumAlgorithm,
+    );
 
-      uploadId = await this.fileService.createMultipartUpload(
-        bucket,
-        key,
-        data.checksumAlgorithm,
-      );
-
-      await this.fileService.uploadPart(
-        bucket,
-        key,
-        uploadId,
-        data.partNumber,
-        data.data,
-      );
-
-      receivedSize += data.data.length;
-      totalSize = data.totalSize;
-
-      this.logger.log(
-        `Received ${receivedSize} bytes of ${totalSize} bytes`,
-      );
-    } catch (error) {
-      this.logger.error(error);
-
-      subject.error(error);
-    } finally {
-      subject.next({});
-
-      return { receivedSize, uploadId, totalSize };
-    }
+    return { fileService, data: args.data };
   }
 
   @UseCorrelationId()
@@ -168,23 +148,15 @@ export class AppService {
     correlationId: string,
     args: {
       data: ChunkDto;
-      receivedSize: number;
-      uploadId: string;
+      fileService: FileService;
     },
   ) {
-    const { data, uploadId } = args;
-    const bucket = this.getBucket();
-    const key = this.getKey(data.id, data.fileName);
-    const etag = await this.fileService.uploadPart(
-      bucket,
-      key,
-      uploadId,
-      data.partNumber,
-      data.data,
+    await args.fileService.uploadPart(
+      args.data.partNumber,
+      args.data.data,
     );
-    const receivedSize = args.receivedSize + data.data.length;
 
-    return { receivedSize, etag };
+    return args.data;
   }
 
   @UseCorrelationId()
@@ -193,79 +165,32 @@ export class AppService {
     args: {
       error: any;
       subject: ReplaySubject<UploadResponse>;
-      uploadId: string;
-      fileId: string;
-      fileName: string;
+      fileService: FileService;
     },
   ) {
-    const { error, subject, fileId, fileName, uploadId } = args;
-    const bucket = this.getBucket();
-    const key = this.getKey(fileId, fileName);
+    this.logger.error(args.error);
 
-    this.logger.error(error);
+    await args.fileService.abortMultipartUpload();
 
-    await this.fileService.abortMultipartUpload(
-      bucket,
-      key,
-      uploadId,
-    );
-
-    // TODO: should I be doing this in a single place?
-    subject.error(new UnprocessableEntityException(error));
+    args.subject.error(new UnprocessableEntityException(args.error));
   }
 
   @UseCorrelationId()
-  private async handleComplete(
+  private async completeMultipartUpload(
     correlationId: string,
     args: {
       subject: ReplaySubject<UploadResponse>;
-      receivedSize: number;
-      totalSize: number;
-      fileId: string;
-      fileName: string;
-      uploadId: string;
+      fileService: FileService;
+      checksum: string;
     },
   ) {
-    const {
-      subject,
-      fileId,
-      fileName,
-      receivedSize,
-      totalSize,
-      uploadId,
-    } = args;
+    await args.fileService.completeMultipartUpload(args.checksum);
 
-    if (receivedSize !== totalSize) {
-      this.logger.error(
-        `Received size ${receivedSize} does not match total size ${totalSize}`,
-      );
-
-      // Throw error and handle it in the main function inside a catchError operator
-      subject.error(
-        new UnprocessableEntityException(
-          'Received size does not match the total size',
-        ),
-      );
-      return;
-    }
-
-    const bucket = this.getBucket();
-    const key = this.getKey(fileId, fileName);
-
-    await this.fileService.completeMultipartUpload(
-      bucket,
-      key,
-      uploadId,
-    );
-
-    subject.complete();
+    args.subject.complete();
+    return true;
   }
 
   getBucket() {
     return 'some_bucket';
-  }
-
-  getKey(id: string, filename: string) {
-    return id + extname(filename);
   }
 }

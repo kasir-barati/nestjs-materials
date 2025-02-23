@@ -5,7 +5,6 @@ import { AppGrpcController } from './app.grpc-controller';
 import appConfigs from './configs/app.config';
 import { s3ClientFactory } from './s3-client.factory';
 import { AppService } from './services/app.service';
-import { FileService } from './services/file.service';
 
 @Module({
   imports: [
@@ -13,6 +12,6 @@ import { FileService } from './services/file.service';
     ConfigModule.forRoot({ load: [appConfigs], cache: true }),
   ],
   controllers: [AppGrpcController],
-  providers: [AppService, FileService, s3ClientFactory],
+  providers: [AppService, s3ClientFactory],
 })
 export class AppModule {}

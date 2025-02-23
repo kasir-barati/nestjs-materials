@@ -1,18 +1,23 @@
 import {
   AbortMultipartUploadCommand,
   ChecksumAlgorithm,
+  CompletedPart,
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
   S3Client,
   UploadPartCommand,
 } from '@aws-sdk/client-s3';
-import {
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 
-@Injectable()
 export class FileService {
+  private fileId?: string;
+  private uploadId?: string;
+  private bucketName?: string;
+  private objectKey?: string;
+  private fileName?: string;
+  private checksumAlgorithm?: string;
+  private parts: CompletedPart[] = [];
+
   constructor(private readonly s3Client: S3Client) {}
 
   /**
@@ -21,13 +26,14 @@ export class FileService {
    */
   async createMultipartUpload(
     bucketName: string,
-    key: string,
+    objectKey: string,
     checksumAlgorithm: ChecksumAlgorithm,
-  ): Promise<string> {
+  ) {
     const command = new CreateMultipartUploadCommand({
       Bucket: bucketName,
-      Key: key,
+      Key: objectKey,
       ChecksumAlgorithm: checksumAlgorithm,
+      ChecksumType: 'FULL_OBJECT',
     });
     const response = await this.s3Client.send(command);
 
@@ -35,53 +41,46 @@ export class FileService {
       throw new InternalServerErrorException('UploadId is missing');
     }
 
-    return response.UploadId;
+    this.objectKey = objectKey;
+    this.bucketName = bucketName;
+    this.uploadId = response.UploadId;
+    this.checksumAlgorithm = checksumAlgorithm;
   }
 
-  /**@returns ETag for the uploaded part. Store them for later integrity check! */
-  async uploadPart(
-    bucketName: string,
-    key: string,
-    uploadId: string,
-    chunkPart: number,
-    data: Uint8Array,
-  ) {
+  async uploadPart(chunkPart: number, data: Uint8Array) {
+    if (!this.uploadId) {
+      throw 'Upload ID does not exists!';
+    }
+
     const command = new UploadPartCommand({
-      Bucket: bucketName,
-      Key: key,
-      UploadId: uploadId,
+      Bucket: this.bucketName,
+      Key: this.objectKey,
+      UploadId: this.uploadId,
       PartNumber: chunkPart,
       Body: data,
     });
     const response = await this.s3Client.send(command);
 
-    return response.ETag;
+    this.parts.push({ PartNumber: chunkPart, ETag: response.ETag });
   }
 
-  async completeMultipartUpload(
-    bucketName: string,
-    key: string,
-    uploadId: string,
-  ) {
+  async completeMultipartUpload(checksum: string) {
     const command = new CompleteMultipartUploadCommand({
-      Bucket: bucketName,
-      Key: key,
-      UploadId: uploadId,
+      Bucket: this.bucketName,
+      Key: this.objectKey,
+      UploadId: this.uploadId,
+      ChecksumType: 'FULL_OBJECT',
+      [`Checksum` + this.checksumAlgorithm]: checksum,
     });
-    const response = await this.s3Client.send(command);
 
-    return response.ETag;
+    await this.s3Client.send(command);
   }
 
-  async abortMultipartUpload(
-    bucketName: string,
-    key: string,
-    uploadId: string,
-  ) {
+  async abortMultipartUpload() {
     const command = new AbortMultipartUploadCommand({
-      Bucket: bucketName,
-      Key: key,
-      UploadId: uploadId,
+      Bucket: this.bucketName,
+      Key: this.objectKey,
+      UploadId: this.uploadId,
     });
 
     await this.s3Client.send(command);
