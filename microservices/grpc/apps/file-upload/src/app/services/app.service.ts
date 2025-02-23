@@ -45,6 +45,8 @@ export class AppService {
             return Promise.resolve({ fileService, data });
           }
 
+          once = false;
+
           return this.startMultipartUpload(correlationId, {
             data,
             subject,
@@ -52,7 +54,7 @@ export class AppService {
             receivedSize: data.data.length,
           });
         }),
-        mergeMap(async ({ data, fileService }) => {
+        mergeMap(({ data, fileService }) => {
           if (!fileService) {
             fileService = fileService;
           }
@@ -68,7 +70,6 @@ export class AppService {
           }
 
           return this.completeMultipartUpload(correlationId, {
-            subject,
             fileService,
             checksum: data.checksum,
           });
@@ -82,7 +83,10 @@ export class AppService {
 
           if (!hasCompleted) {
             subject.next({});
+            return;
           }
+
+          subject.complete();
         },
         complete: () => {
           this.logger.log('Multipart upload was completed!');
@@ -125,7 +129,7 @@ export class AppService {
       totalSize: number;
     },
   ): Promise<{ fileService: FileService; data: ChunkDto }> {
-    const bucket = 'some_bucket';
+    const bucket = 'some-bucket';
     const key = args.data.id + extname(args.data.fileName);
     const fileService = new FileService(this.s3Client);
 
@@ -176,14 +180,12 @@ export class AppService {
   private async completeMultipartUpload(
     correlationId: string,
     args: {
-      subject: ReplaySubject<UploadResponse>;
       fileService: FileService;
       checksum: string;
     },
   ) {
     await args.fileService.completeMultipartUpload(args.checksum);
 
-    args.subject.complete();
     return true;
   }
 }

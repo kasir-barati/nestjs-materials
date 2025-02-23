@@ -5,11 +5,12 @@ import {
   Metadata,
 } from '@grpc/grpc-js';
 import { loadSync } from '@grpc/proto-loader';
-import { GrpcErrorResponse } from '@grpc/shared';
-import { createHash, randomUUID } from 'crypto';
+import { generateChecksum, GrpcErrorResponse } from '@grpc/shared';
+import { randomUUID } from 'crypto';
 import { createReadStream } from 'fs';
-import { stat } from 'fs/promises';
+import { readFile, stat } from 'fs/promises';
 import { join } from 'path';
+import { Chunk } from '../../../file-upload/src/assets/interfaces/file-upload.interface';
 import {
   FileUploadServiceClient,
   LoadPackageDefinition,
@@ -53,8 +54,10 @@ describe('Upload file', () => {
     const fileId = randomUUID();
     const fileName = 'upload-me.jpg';
     const filePath = join(__dirname, fileName);
-    const { size: fileTotalSize } = await stat(filePath);
     const stream = createReadStream(filePath);
+    const checksumAlgorithm = ChecksumAlgorithm.SHA256;
+    const fileContent = await readFile(filePath);
+    const checksum = generateChecksum(fileContent, checksumAlgorithm);
 
     // Act
     const error = await new Promise<GrpcErrorResponse | Error | null>(
@@ -80,10 +83,6 @@ describe('Upload file', () => {
         stream
           .on('data', (chunk) => {
             const data = Uint8Array.from(Buffer.from(chunk));
-            const checksumAlgorithm = ChecksumAlgorithm.SHA256;
-            const checksum = createHash(checksumAlgorithm)
-              .update(chunk.toString(), 'utf-8')
-              .digest('hex');
 
             callHandler.write(
               {
@@ -104,5 +103,71 @@ describe('Upload file', () => {
     expect(error['details']).toBe(
       'partNumber must be an integer number',
     );
+  });
+
+  it('should upload the file', async () => {
+    // Arrange
+    const metadata = new Metadata();
+    const callHandler = client.upload(metadata);
+    const fileId = randomUUID();
+    const fileName = 'upload-me.jpg';
+    const filePath = join(__dirname, fileName);
+    const { size: fileTotalSize } = await stat(filePath);
+    const fileContent = await readFile(filePath);
+    const checksumAlgorithm = ChecksumAlgorithm.CRC32;
+    const checksum = generateChecksum(fileContent, checksumAlgorithm);
+    const stream = createReadStream(filePath);
+    let isFirstCall = true;
+
+    // Act
+    const error = await new Promise<GrpcErrorResponse | Error | null>(
+      (resolve, _) => {
+        let partNumber = 1;
+        const errorHandler = (error: Error) => {
+          if (!error) {
+            return;
+          }
+          resolve(error);
+        };
+        const endHandler = () => {
+          // Close the stream to prevent failing test due to open streams.
+          stream.close();
+          callHandler.end();
+        };
+
+        callHandler
+          .on('data', console.log)
+          .on('error', errorHandler)
+          .on('end', resolve);
+
+        stream
+          .on('data', (chunk) => {
+            const data = Uint8Array.from(Buffer.from(chunk));
+            let messagePayload: Chunk = {
+              data,
+              checksum,
+              partNumber: partNumber++,
+            };
+
+            if (isFirstCall) {
+              isFirstCall = false;
+              messagePayload = {
+                fileName,
+                checksumAlgorithm,
+                ...messagePayload,
+                id: fileId,
+                totalSize: fileTotalSize,
+              };
+            }
+
+            callHandler.write(messagePayload, 'utf-8', errorHandler);
+          })
+          .on('error', errorHandler)
+          .on('end', endHandler);
+      },
+    );
+
+    // Assert
+    expect(error['details']).toBe('');
   });
 });
