@@ -10,7 +10,6 @@ import { createHash, randomUUID } from 'crypto';
 import { createReadStream } from 'fs';
 import { stat } from 'fs/promises';
 import { join } from 'path';
-import { Chunk } from '../../../file-upload/src/assets/interfaces/file-upload.interface';
 import {
   FileUploadServiceClient,
   LoadPackageDefinition,
@@ -32,9 +31,6 @@ describe('Upload file', () => {
 
   beforeAll(() => {
     const packageDefinition = loadSync(PROTO_PATH, {
-      keepCase: true,
-      longs: String,
-      enums: String,
       defaults: true,
       oneofs: true,
     });
@@ -50,7 +46,7 @@ describe('Upload file', () => {
     );
   });
 
-  it('should throw error on invalid file', async () => {
+  it('should throw error on invalid data', async () => {
     // Arrange
     const metadata = new Metadata();
     const callHandler = client.upload(metadata);
@@ -92,13 +88,9 @@ describe('Upload file', () => {
             callHandler.write(
               {
                 data,
-                fileName,
                 checksum,
-                checksumAlgorithm,
                 id: fileId,
-                totalSize: fileTotalSize,
-                partNumber: partNumber++,
-              } satisfies Chunk,
+              },
               'utf-8',
               errorHandler,
             );
@@ -110,7 +102,7 @@ describe('Upload file', () => {
 
     // Assert
     expect(error['details']).toBe(
-      'partNumber must be an integer number, checksumAlgorithm must be one of the following values: CRC32, CRC32C, CRC64NVME, SHA1, SHA256, fileName must be a string, totalSize must be a number conforming to the specified constraints',
+      'partNumber must be an integer number',
     );
   });
 });

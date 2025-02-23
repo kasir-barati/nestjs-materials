@@ -3,12 +3,14 @@ syntax = "proto3";
 package File;
 
 message Chunk {
-  string file_name = 1;
-  float total_size = 2;
-  string checksum = 3;
+  optional string file_name = 1;
+  optional float total_size = 2;
+  // This will be sent with the last chunk of the file.
+  optional string checksum = 3;
   int32 part_number = 4;
-  string checksum_algorithm = 5;
-  string id = 6;
+  // CRC32 and CRC32C are the only supported algorithms for FULL_OBJECT checksum check.
+  optional string checksum_algorithm = 5;
+  optional string id = 6;
   bytes data = 7;
 }
 

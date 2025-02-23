@@ -4,30 +4,36 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
 import { Chunk } from '../../assets/interfaces/file-upload.interface';
 
 export class ChunkDto implements Chunk {
+  @IsOptional()
   @IsUUID()
-  id: string;
+  id?: string;
 
+  @IsOptional()
   @IsString()
-  checksum: string;
+  checksum?: string;
 
   @IsInt()
   partNumber: number;
 
+  @IsOptional()
   @IsEnum(ChecksumAlgorithm)
-  checksumAlgorithm: ChecksumAlgorithm;
+  checksumAlgorithm?: ChecksumAlgorithm;
 
+  @IsOptional()
   @IsString()
-  fileName: string;
+  fileName?: string;
 
   @IsNotEmpty()
   data: Uint8Array;
 
+  @IsOptional()
   @IsNumber()
-  totalSize: number;
+  totalSize?: number;
 }
