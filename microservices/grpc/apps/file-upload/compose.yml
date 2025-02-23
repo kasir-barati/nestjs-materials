@@ -6,8 +6,9 @@ services:
       - 9001:9001
     volumes:
       - minio:/data
-    env_file:
-      - .env
+    environment:
+      MINIO_ACCESS_KEY: $ACCESS_KEY
+      MINIO_SECRET_KEY: $SECRET_KEY
     command: server --console-address ":9001" /data
 
 volumes:

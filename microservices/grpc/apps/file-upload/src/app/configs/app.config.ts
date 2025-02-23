@@ -24,11 +24,11 @@ class EnvironmentVariables implements AppConfig {
   NODE_ENV: 'development' | 'test' | 'production' = 'development';
 
   @IsString()
-  AWS_REGION: string;
+  REGION: string;
 
   @IsString()
-  AWS_S3_ACCESS_KEY: string;
+  ACCESS_KEY: string;
 
   @IsString()
-  AWS_S3_SECRET_KEY: string;
+  SECRET_KEY: string;
 }
