@@ -9,7 +9,8 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { extname } from 'path';
-import { mergeMap, Observable, ReplaySubject } from 'rxjs';
+import { concatMap, Observable, ReplaySubject } from 'rxjs';
+
 import { UploadResponse } from '../../assets/interfaces/file-upload.interface';
 import { ChunkDto } from '../dtos/chunk.dto';
 import { FileService } from './file.service';
@@ -34,13 +35,15 @@ export class AppService {
 
     observableChunk
       .pipe(
-        mergeMap((unvalidatedData) => {
+        concatMap((unvalidatedData) => {
+          console.log(1);
           return this.validateIncomingData(
             correlationId,
             unvalidatedData,
           );
         }),
-        mergeMap((data) => {
+        concatMap((data) => {
+          console.log(2);
           if (!once) {
             return Promise.resolve({ fileService, data });
           }
@@ -54,17 +57,19 @@ export class AppService {
             receivedSize: data.data.length,
           });
         }),
-        mergeMap(({ data, fileService }) => {
+        concatMap((startMultipartUploadResult) => {
+          console.log(3);
           if (!fileService) {
-            fileService = fileService;
+            fileService = startMultipartUploadResult.fileService;
           }
 
           return this.uploadPart(correlationId, {
-            data,
+            data: startMultipartUploadResult.data,
             fileService,
           });
         }),
-        mergeMap((data) => {
+        concatMap((data) => {
+          console.log(4);
           if (!data.checksum) {
             return Promise.resolve(false);
           }

@@ -10,11 +10,9 @@ import {
 import { InternalServerErrorException } from '@nestjs/common';
 
 export class FileService {
-  private fileId?: string;
   private uploadId?: string;
   private bucketName?: string;
   private objectKey?: string;
-  private fileName?: string;
   private checksumAlgorithm?: string;
   private parts: CompletedPart[] = [];
 
@@ -61,7 +59,10 @@ export class FileService {
     });
     const response = await this.s3Client.send(command);
 
-    this.parts.push({ PartNumber: chunkPart, ETag: response.ETag });
+    this.parts.push({
+      PartNumber: chunkPart,
+      ETag: response.ETag,
+    });
   }
 
   async completeMultipartUpload(checksum: string) {
@@ -71,6 +72,7 @@ export class FileService {
       UploadId: this.uploadId,
       ChecksumType: 'FULL_OBJECT',
       [`Checksum` + this.checksumAlgorithm]: checksum,
+      MultipartUpload: { Parts: this.parts },
     });
 
     await this.s3Client.send(command);

@@ -10,6 +10,7 @@ import { randomUUID } from 'crypto';
 import { createReadStream } from 'fs';
 import { readFile, stat } from 'fs/promises';
 import { join } from 'path';
+
 import { Chunk } from '../../../file-upload/src/assets/interfaces/file-upload.interface';
 import {
   FileUploadServiceClient,
@@ -62,7 +63,6 @@ describe('Upload file', () => {
     // Act
     const error = await new Promise<GrpcErrorResponse | Error | null>(
       (resolve, _) => {
-        let partNumber = 1;
         const errorHandler = (error: Error) => {
           if (!error) {
             return;
@@ -75,13 +75,10 @@ describe('Upload file', () => {
           callHandler.end();
         };
 
-        callHandler
-          .on('data', console.log)
-          .on('error', errorHandler)
-          .on('end', resolve);
+        callHandler.on('error', errorHandler).on('end', resolve);
 
         stream
-          .on('data', (chunk) => {
+          .on('data', async (chunk) => {
             const data = Uint8Array.from(Buffer.from(chunk));
 
             callHandler.write(
@@ -105,7 +102,7 @@ describe('Upload file', () => {
     );
   });
 
-  it('should upload the file', async () => {
+  it.only('should upload the file', async () => {
     // Arrange
     const metadata = new Metadata();
     const callHandler = client.upload(metadata);
@@ -116,7 +113,9 @@ describe('Upload file', () => {
     const fileContent = await readFile(filePath);
     const checksumAlgorithm = ChecksumAlgorithm.CRC32;
     const checksum = generateChecksum(fileContent, checksumAlgorithm);
-    const stream = createReadStream(filePath);
+    const stream = createReadStream(filePath, {
+      highWaterMark: 5 * 1024 * 1024, // 5MB
+    });
     let isFirstCall = true;
 
     // Act
@@ -135,10 +134,7 @@ describe('Upload file', () => {
           callHandler.end();
         };
 
-        callHandler
-          .on('data', console.log)
-          .on('error', errorHandler)
-          .on('end', resolve);
+        callHandler.on('error', errorHandler).on('end', resolve);
 
         stream
           .on('data', (chunk) => {
@@ -152,11 +148,12 @@ describe('Upload file', () => {
             if (isFirstCall) {
               isFirstCall = false;
               messagePayload = {
+                ...messagePayload,
                 fileName,
                 checksumAlgorithm,
-                ...messagePayload,
                 id: fileId,
                 totalSize: fileTotalSize,
+                checksum: undefined,
               };
             }
 
