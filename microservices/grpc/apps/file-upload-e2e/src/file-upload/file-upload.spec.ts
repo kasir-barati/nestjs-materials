@@ -16,6 +16,7 @@ import {
   FileUploadServiceClient,
   LoadPackageDefinition,
 } from '../support/file-upload.type';
+import { generateLargeFile } from '../support/gen-huge-file';
 
 const PROTO_PATH = join(
   __dirname,
@@ -30,8 +31,11 @@ const PROTO_PATH = join(
 
 describe('Upload file', () => {
   let client: FileUploadServiceClient;
+  let fileName: string;
+  let filePath: string;
+  let fileTotalSize: number;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const packageDefinition = loadSync(PROTO_PATH, {
       defaults: true,
       oneofs: true,
@@ -46,7 +50,16 @@ describe('Upload file', () => {
       SERVER_ADDRESS,
       credentials.createInsecure(),
     );
-  });
+
+    fileName = 'upload-me.txt';
+    filePath = join(__dirname, fileName);
+    await generateLargeFile({
+      filePath,
+      sizeInMb: 15,
+    });
+    const { size } = await stat(filePath);
+    fileTotalSize = size;
+  }, 10000);
 
   it('should throw error on invalid data', async () => {
     // Arrange
@@ -107,9 +120,6 @@ describe('Upload file', () => {
     const metadata = new Metadata();
     const callHandler = client.upload(metadata);
     const fileId = randomUUID();
-    const fileName = 'upload-me.jpg';
-    const filePath = join(__dirname, fileName);
-    const { size: fileTotalSize } = await stat(filePath);
     const fileContent = await readFile(filePath);
     const checksumAlgorithm = ChecksumAlgorithm.CRC32;
     const checksum = generateChecksum(fileContent, checksumAlgorithm);
@@ -117,54 +127,55 @@ describe('Upload file', () => {
       highWaterMark: 5 * 1024 * 1024, // 5MB
     });
     let isFirstCall = true;
+    let partNumber = 1;
+    const messages = [];
+    for await (const chunk of stream) {
+      const data = Uint8Array.from(Buffer.from(chunk));
+      let messagePayload: Chunk = {
+        data,
+        checksum,
+        partNumber: partNumber++,
+      };
+      if (isFirstCall) {
+        isFirstCall = false;
+        messagePayload = {
+          ...messagePayload,
+          fileName,
+          checksumAlgorithm,
+          id: fileId,
+          totalSize: fileTotalSize,
+          checksum: undefined,
+        };
+      }
+      messages.push(messagePayload);
+    }
+    stream.close(); // Close the stream to prevent failing test due to open streams.
 
     // Act
-    const error = await new Promise<GrpcErrorResponse | Error | null>(
-      (resolve, _) => {
-        let partNumber = 1;
-        const errorHandler = (error: Error) => {
-          if (!error) {
-            return;
+    // It does not send the data to my backend
+    const error = new Promise((resolve, reject) => {
+      console.log('it reaches here'.repeat(100));
+      let index = 0;
+      callHandler.write(messages[index], 'utf-8', (error) => {
+        console.log('but not here!');
+        console.log(error);
+      });
+      callHandler
+        .on('data', () => {
+          console.log('And not here!'.repeat(100));
+          callHandler.write(messages[++index], 'utf-8');
+        })
+        .on('error', (error: Error) => {
+          if (error) {
+            reject(error);
           }
-          resolve(error);
-        };
-        const endHandler = () => {
-          // Close the stream to prevent failing test due to open streams.
-          stream.close();
-          callHandler.end();
-        };
-
-        callHandler.on('error', errorHandler).on('end', resolve);
-
-        stream
-          .on('data', (chunk) => {
-            const data = Uint8Array.from(Buffer.from(chunk));
-            let messagePayload: Chunk = {
-              data,
-              checksum,
-              partNumber: partNumber++,
-            };
-
-            if (isFirstCall) {
-              isFirstCall = false;
-              messagePayload = {
-                ...messagePayload,
-                fileName,
-                checksumAlgorithm,
-                id: fileId,
-                totalSize: fileTotalSize,
-                checksum: undefined,
-              };
-            }
-
-            callHandler.write(messagePayload, 'utf-8', errorHandler);
-          })
-          .on('error', errorHandler)
-          .on('end', endHandler);
-      },
-    );
+        })
+        .on('end', resolve)
+        .on('close', resolve)
+        .on('finish', resolve);
+    });
 
     // Assert
-    expect(error['details']).toBe('');
-  });
+    expect(error).rejects.toBeUndefined();
+  }, 10000);
 });

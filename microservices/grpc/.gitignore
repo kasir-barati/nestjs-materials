@@ -5,6 +5,7 @@ dist
 tmp
 out-tsc
 */**/assets/interfaces/*
+upload-me.txt
 
 # dependencies
 node_modules

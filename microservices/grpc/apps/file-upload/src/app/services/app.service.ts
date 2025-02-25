@@ -70,6 +70,7 @@ export class AppService {
         }),
         concatMap((data) => {
           console.log(4);
+          console.log(data);
           if (!data.checksum) {
             return Promise.resolve(false);
           }
@@ -82,14 +83,15 @@ export class AppService {
       )
       .subscribe({
         next: (hasCompleted) => {
-          if (once) {
-            once = false;
-          }
+          console.log(5);
+          console.log(hasCompleted);
 
           if (!hasCompleted) {
+            console.log(6);
             subject.next({});
             return;
           }
+          console.log(7);
 
           subject.complete();
         },
