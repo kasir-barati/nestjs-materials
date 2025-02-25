@@ -5,6 +5,7 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { join } from 'path';
+
 import { AppModule } from './app/app.module';
 import { FILE_PACKAGE_NAME } from './assets/interfaces/file-upload.interface';
 
@@ -25,6 +26,7 @@ async function bootstrap() {
         keepaliveTimeoutMs: 20000,
         keepalivePermitWithoutCalls: 1,
       },
+      maxMetadataSize: 6 * 1024 * 1024, // 6MB
     },
   });
 

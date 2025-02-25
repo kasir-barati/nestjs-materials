@@ -1,5 +1,6 @@
 import { ChannelCredentials, Metadata } from '@grpc/grpc-js';
 import { ClientDuplexStreamImpl } from '@grpc/grpc-js/build/src/call';
+
 import {
   Chunk,
   UploadResponse,
@@ -14,6 +15,7 @@ interface FileUploadService {
   new (
     url: string,
     credentials: ChannelCredentials,
+    option?: { 'grpc.max_send_message_length': number },
   ): FileUploadServiceClient;
 }
 export interface LoadPackageDefinition {
