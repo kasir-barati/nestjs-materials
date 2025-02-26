@@ -10,6 +10,8 @@
 InvalidPart: One or more of the specified parts could not be found.  The part may not have been uploaded, or the specified entity tag may not match the part's entity tag.
 ```
 
+https://github.com/aws/aws-sdk-js-v3/issues/6900
+
 ## Solved issues
 
 <details>
