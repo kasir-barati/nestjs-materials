@@ -37,7 +37,6 @@ export class AppService {
     observableChunk
       .pipe(
         concatMap((unvalidatedData) => {
-          debugger;
           console.log(1);
           return this.validateIncomingData(
             correlationId,
@@ -45,7 +44,6 @@ export class AppService {
           );
         }),
         concatMap((data) => {
-          debugger;
           console.log(2);
           if (!once) {
             return Promise.resolve({ fileService, data });
@@ -61,7 +59,6 @@ export class AppService {
           });
         }),
         concatMap((startMultipartUploadResult) => {
-          debugger;
           console.log(3);
           if (!fileService) {
             fileService = startMultipartUploadResult.fileService;
@@ -73,9 +70,8 @@ export class AppService {
           });
         }),
         concatMap((data) => {
-          debugger;
           console.log(4);
-          debugger;
+
           console.log(data);
           if (!data.checksum) {
             return Promise.resolve(false);
@@ -89,18 +85,16 @@ export class AppService {
       )
       .subscribe({
         next: (hasCompleted) => {
-          debugger;
           console.log(5);
-          debugger;
+
           console.log(hasCompleted);
 
           if (!hasCompleted) {
-            debugger;
             console.log(6);
             subject.next({});
             return;
           }
-          debugger;
+
           console.log(7);
 
           subject.complete();
