@@ -59,6 +59,9 @@ export class FileService {
     });
     const response = await this.s3Client.send(command);
 
+    console.log(response); // This logs the checksum!!!!
+    // It should not be doing that since I have said I want a FULL_OBJECT checksum check.
+
     this.parts.push({
       PartNumber: chunkPart,
       ETag: response.ETag,
@@ -66,6 +69,8 @@ export class FileService {
   }
 
   async completeMultipartUpload(checksum: string) {
+    console.log(this.parts);
+
     const command = new CompleteMultipartUploadCommand({
       Bucket: this.bucketName,
       Key: this.objectKey,

@@ -5,6 +5,11 @@
 3. `cp apps/file-upload/.env.example apps/file-upload/.env`.
 4. `nx serve file-upload`.
 5. `nx e2e file-upload-e2e`.`
+
+```bash
+InvalidPart: One or more of the specified parts could not be found.  The part may not have been uploaded, or the specified entity tag may not match the part's entity tag.
+```
+
 ## Solved issues
 
 <details>
