@@ -27,6 +27,7 @@ async function bootstrap() {
         keepalivePermitWithoutCalls: 1,
       },
       maxMetadataSize: 6 * 1024 * 1024, // 6MB
+      maxReceiveMessageLength: 6 * 1024 * 1024, // 6MB
     },
   });
 

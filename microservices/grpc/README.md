@@ -5,6 +5,10 @@
 3. `cp apps/file-upload/.env.example apps/file-upload/.env`.
 4. `nx serve file-upload`.
 5. `nx e2e file-upload-e2e`.`
+## Solved issues
+
+<details>
+<summary><code>Error: 8 RESOURCE_EXHAUSTED: Received message larger than max (5242952 vs 4194304)</code></summary>
 
 ```bash
 Error: 8 RESOURCE_EXHAUSTED: Received message larger than max (5242952 vs 4194304)
@@ -42,3 +46,7 @@ for call at
   }
 }
 ```
+
+Solution: [https://stackoverflow.com/a/79426630/8784518](https://stackoverflow.com/a/79426630/8784518).
+
+</details>
