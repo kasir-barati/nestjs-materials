@@ -21,6 +21,7 @@ export const s3ClientFactory: FactoryProvider<S3Client> = {
         accessKeyId,
         secretAccessKey,
       },
+      logger: console,
     };
 
     if (endpoint) {

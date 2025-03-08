@@ -32,19 +32,16 @@ export class AppService {
     const correlationId =
       this.correlationIdService.getCorrelationIdOrGenerate();
     let fileService: FileService | undefined;
-    console.log(0);
 
     observableChunk
       .pipe(
         concatMap((unvalidatedData) => {
-          console.log(1);
           return this.validateIncomingData(
             correlationId,
             unvalidatedData,
           );
         }),
         concatMap((data) => {
-          console.log(2);
           if (!once) {
             return Promise.resolve({ fileService, data });
           }
@@ -59,7 +56,6 @@ export class AppService {
           });
         }),
         concatMap((startMultipartUploadResult) => {
-          console.log(3);
           if (!fileService) {
             fileService = startMultipartUploadResult.fileService;
           }
@@ -70,9 +66,6 @@ export class AppService {
           });
         }),
         concatMap((data) => {
-          console.log(4);
-
-          console.log(data);
           if (!data.checksum) {
             return Promise.resolve(false);
           }
@@ -85,17 +78,10 @@ export class AppService {
       )
       .subscribe({
         next: (hasCompleted) => {
-          console.log(5);
-
-          console.log(hasCompleted);
-
           if (!hasCompleted) {
-            console.log(6);
             subject.next({});
             return;
           }
-
-          console.log(7);
 
           subject.complete();
         },
