@@ -56,19 +56,18 @@ export class AppService {
             throw 'File service is not initialized!';
           }
 
-          await this.uploadPart(correlationId, {
-            data: validatedData,
-            fileService,
-          });
+          await fileService.uploadPart(
+            validatedData.partNumber,
+            validatedData.data,
+          );
 
           if (isEmpty(validatedData.checksum)) {
             return false;
           }
 
-          await this.completeMultipartUpload(correlationId, {
-            fileService,
-            checksum: validatedData.checksum,
-          });
+          await fileService.completeMultipartUpload(
+            validatedData.checksum,
+          );
 
           return true;
         }),
@@ -137,20 +136,6 @@ export class AppService {
   }
 
   // @UseCorrelationId()
-  private async uploadPart(
-    correlationId: string,
-    args: {
-      data: ChunkDto;
-      fileService: FileService;
-    },
-  ) {
-    await args.fileService.uploadPart(
-      args.data.partNumber,
-      args.data.data,
-    );
-  }
-
-  // @UseCorrelationId()
   private async handleError(
     correlationId: string,
     args: {
@@ -166,16 +151,5 @@ export class AppService {
     }
 
     args.subject.error(new UnprocessableEntityException(args.error));
-  }
-
-  // @UseCorrelationId()
-  private async completeMultipartUpload(
-    correlationId: string,
-    args: {
-      fileService: FileService;
-      checksum: string;
-    },
-  ) {
-    await args.fileService.completeMultipartUpload(args.checksum);
   }
 }

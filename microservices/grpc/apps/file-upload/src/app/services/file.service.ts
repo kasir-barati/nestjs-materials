@@ -62,6 +62,12 @@ export class FileService {
     this.parts.push({
       PartNumber: chunkPart,
       ETag: response.ETag,
+      ...(response.ChecksumCRC32 && {
+        ChecksumCRC32: response.ChecksumCRC32,
+      }),
+      ...(response.ChecksumCRC32C && {
+        ChecksumCRC32C: response.ChecksumCRC32C,
+      }),
     });
   }
 

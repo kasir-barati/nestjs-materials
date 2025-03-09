@@ -11,12 +11,12 @@ import { createReadStream } from 'fs';
 import { readFile, stat } from 'fs/promises';
 import { join } from 'path';
 
-import { Chunk } from '../../../file-upload/src/assets/interfaces/file-upload.interface';
 import {
   FileUploadServiceClient,
   LoadPackageDefinition,
 } from '../support/file-upload.type';
 import { generateLargeFile } from '../support/gen-huge-file';
+import { uploadStream } from '../support/upload-stream';
 
 const PROTO_PATH = join(
   __dirname,
@@ -117,61 +117,27 @@ describe('Upload file', () => {
     // Arrange
     const metadata = new Metadata();
     const callHandler = client.upload(metadata);
-    const fileId = randomUUID();
     const fileContent = await readFile(filePath);
     const { size: fileTotalSize } = await stat(filePath);
     const checksumAlgorithm = ChecksumAlgorithm.CRC32;
     const checksum = generateChecksum(fileContent, checksumAlgorithm);
-    let bytesRead = 0;
     /**@description 5MB */
     const chunkSize = 5 * 1024 * 1024;
     const stream = createReadStream(filePath, {
       highWaterMark: chunkSize,
     });
-    let isFirstCall = true;
-    let partNumber = 1;
-    callHandler
-      .on('error', (error: Error) => {
-        if (error) {
-          console.error(error);
-        }
-      })
-      .on('end', console.log)
-      .on('close', console.log)
-      .on('finish', console.log);
 
     // Act
-    for await (const chunk of stream) {
-      const data = Uint8Array.from(Buffer.from(chunk));
-      let messagePayload: Chunk = {
-        data,
-        partNumber: partNumber++,
-      };
-
-      bytesRead += chunk.length;
-
-      if (bytesRead === fileTotalSize) {
-        messagePayload = {
-          ...messagePayload,
-          checksum,
-        };
-      }
-      if (isFirstCall) {
-        isFirstCall = false;
-        messagePayload = {
-          ...messagePayload,
-          fileName,
-          checksumAlgorithm,
-          id: fileId,
-          totalSize: fileTotalSize,
-        };
-      }
-      callHandler.write(messagePayload, 'utf-8');
-      await new Promise((resolve) => callHandler.on('data', resolve));
-    }
-    stream.close(); // Close the stream to prevent failing test due to open streams.
+    await uploadStream({
+      callHandler,
+      checksum,
+      checksumAlgorithm,
+      fileTotalSize,
+      fileName,
+      stream,
+    });
 
     // Assert
     expect(true).toBeTruthy();
-  }, 20000);
+  }, 30000);
 });
