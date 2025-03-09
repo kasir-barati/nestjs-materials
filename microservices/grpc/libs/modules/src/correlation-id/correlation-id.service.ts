@@ -35,9 +35,8 @@ export class CorrelationIdService {
     metadata.add(CORRELATION_ID_HEADER_NAME, correlationId);
   }
 
-  /**@private Try to use `@UseCorrelationId` instead. */
-  useCorrelationId<T>(correlationId: string, cb: () => T) {
-    this.clsStoreClsService.run(() => {
+  useCorrelationId<T>(correlationId: string, cb: () => T): T {
+    return this.clsStoreClsService.run(() => {
       this.clsStoreClsService.set(
         CORRELATION_ID_CLS_KEY,
         correlationId,

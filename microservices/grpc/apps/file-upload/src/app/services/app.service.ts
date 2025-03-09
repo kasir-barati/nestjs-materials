@@ -1,5 +1,8 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import { CorrelationIdService } from '@grpc/modules';
+import {
+  CORRELATION_ID_CLS_KEY,
+  CorrelationIdService,
+} from '@grpc/modules';
 import { constraintsToString } from '@grpc/shared';
 import {
   Injectable,
@@ -11,6 +14,7 @@ import { isEmpty, validate } from 'class-validator';
 import { extname } from 'path';
 import { concatMap, Observable, ReplaySubject } from 'rxjs';
 
+import { UseCls } from 'nestjs-cls';
 import { UploadResponse } from '../../assets/interfaces/file-upload.interface';
 import { ChunkDto } from '../dtos/chunk.dto';
 import { FileService } from './file.service';
@@ -34,42 +38,47 @@ export class AppService {
 
     observableChunk
       .pipe(
-        concatMap(async (unvalidatedData) => {
-          const validatedData = await this.validateIncomingData(
+        concatMap((unvalidatedData) => {
+          return this.correlationIdService.useCorrelationId(
             correlationId,
-            unvalidatedData,
+            async () => {
+              const validatedData = await this.validateIncomingData(
+                correlationId,
+                unvalidatedData,
+              );
+
+              if (validatedData.partNumber === 1) {
+                const createdFileService =
+                  await this.startMultipartUpload(correlationId, {
+                    data: validatedData,
+                    subject,
+                    totalSize: validatedData.totalSize,
+                    receivedSize: validatedData.data.length,
+                  });
+
+                fileService = createdFileService;
+              }
+
+              if (!fileService) {
+                throw 'File service is not initialized!';
+              }
+
+              await fileService.uploadPart(
+                validatedData.partNumber,
+                validatedData.data,
+              );
+
+              if (isEmpty(validatedData.checksum)) {
+                return false;
+              }
+
+              await fileService.completeMultipartUpload(
+                validatedData.checksum,
+              );
+
+              return true;
+            },
           );
-
-          if (validatedData.partNumber === 1) {
-            const createdFileService =
-              await this.startMultipartUpload(correlationId, {
-                data: validatedData,
-                subject,
-                totalSize: validatedData.totalSize,
-                receivedSize: validatedData.data.length,
-              });
-
-            fileService = createdFileService;
-          }
-
-          if (!fileService) {
-            throw 'File service is not initialized!';
-          }
-
-          await fileService.uploadPart(
-            validatedData.partNumber,
-            validatedData.data,
-          );
-
-          if (isEmpty(validatedData.checksum)) {
-            return false;
-          }
-
-          await fileService.completeMultipartUpload(
-            validatedData.checksum,
-          );
-
-          return true;
         }),
       )
       .subscribe({
@@ -94,7 +103,11 @@ export class AppService {
       });
   }
 
-  // @UseCorrelationId()
+  @UseCls<[string, ChunkDto]>({
+    setup: (cls, correlationId, _chunkDto) => {
+      cls.set(CORRELATION_ID_CLS_KEY, correlationId);
+    },
+  })
   private async validateIncomingData(
     correlationId: string,
     unvalidatedData: ChunkDto,
@@ -112,7 +125,11 @@ export class AppService {
     return data;
   }
 
-  // @UseCorrelationId()
+  @UseCls<[string, unknown]>({
+    setup: (cls, correlationId, _args) => {
+      cls.set(CORRELATION_ID_CLS_KEY, correlationId);
+    },
+  })
   private async startMultipartUpload(
     correlationId: string,
     args: {
@@ -135,7 +152,11 @@ export class AppService {
     return fileService;
   }
 
-  // @UseCorrelationId()
+  @UseCls<[string, unknown]>({
+    setup: (cls, correlationId, _args) => {
+      cls.set(CORRELATION_ID_CLS_KEY, correlationId);
+    },
+  })
   private async handleError(
     correlationId: string,
     args: {
