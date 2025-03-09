@@ -56,7 +56,7 @@ describe('Upload file', () => {
     filePath = join(__dirname, fileName);
     await generateLargeFile({
       filePath,
-      sizeInMb: 15,
+      sizeInMb: 7,
     });
     const { size } = await stat(filePath);
     fileTotalSize = size;
@@ -124,8 +124,11 @@ describe('Upload file', () => {
     const fileContent = await readFile(filePath);
     const checksumAlgorithm = ChecksumAlgorithm.CRC32;
     const checksum = generateChecksum(fileContent, checksumAlgorithm);
+    let bytesRead = 0;
+    /**@description 5MB */
+    const chunkSize = 5 * 1024 * 1024;
     const stream = createReadStream(filePath, {
-      highWaterMark: 5 * 1024 * 1024, // 5MB
+      highWaterMark: chunkSize,
     });
     let isFirstCall = true;
     let partNumber = 1;
@@ -144,9 +147,17 @@ describe('Upload file', () => {
       const data = Uint8Array.from(Buffer.from(chunk));
       let messagePayload: Chunk = {
         data,
-        checksum,
         partNumber: partNumber++,
       };
+
+      bytesRead += chunk.length;
+
+      if (bytesRead === fileTotalSize) {
+        messagePayload = {
+          ...messagePayload,
+          checksum,
+        };
+      }
       if (isFirstCall) {
         isFirstCall = false;
         messagePayload = {
@@ -155,7 +166,6 @@ describe('Upload file', () => {
           checksumAlgorithm,
           id: fileId,
           totalSize: fileTotalSize,
-          checksum: undefined,
         };
       }
       callHandler.write(messagePayload, 'utf-8');

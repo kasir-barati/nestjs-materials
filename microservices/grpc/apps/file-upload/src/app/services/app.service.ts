@@ -7,9 +7,9 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
+import { isEmpty, validate } from 'class-validator';
 import { extname } from 'path';
-import { concatMap, Observable, of, ReplaySubject } from 'rxjs';
+import { concatMap, Observable, ReplaySubject } from 'rxjs';
 
 import { UploadResponse } from '../../assets/interfaces/file-upload.interface';
 import { ChunkDto } from '../dtos/chunk.dto';
@@ -61,8 +61,8 @@ export class AppService {
             fileService,
           });
 
-          if (!validatedData.checksum) {
-            return of(false);
+          if (isEmpty(validatedData.checksum)) {
+            return false;
           }
 
           await this.completeMultipartUpload(correlationId, {
@@ -70,7 +70,7 @@ export class AppService {
             checksum: validatedData.checksum,
           });
 
-          return of(true);
+          return true;
         }),
       )
       .subscribe({
