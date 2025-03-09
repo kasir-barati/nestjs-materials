@@ -9,7 +9,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { extname } from 'path';
-import { concatMap, Observable, ReplaySubject } from 'rxjs';
+import { concatMap, Observable, of, ReplaySubject } from 'rxjs';
 
 import { UploadResponse } from '../../assets/interfaces/file-upload.interface';
 import { ChunkDto } from '../dtos/chunk.dto';
@@ -28,7 +28,6 @@ export class AppService {
     subject: ReplaySubject<UploadResponse>,
     observableChunk: Observable<ChunkDto>,
   ) {
-    let once = true;
     const correlationId =
       this.correlationIdService.getCorrelationIdOrGenerate();
     let fileService: FileService | undefined;
@@ -42,11 +41,9 @@ export class AppService {
           );
         }),
         concatMap((data) => {
-          if (!once) {
-            return Promise.resolve({ fileService, data });
+          if (data.partNumber !== 1) {
+            return of({ fileService, data });
           }
-
-          once = false;
 
           return this.startMultipartUpload(correlationId, {
             data,
