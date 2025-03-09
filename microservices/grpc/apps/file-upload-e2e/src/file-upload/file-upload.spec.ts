@@ -33,7 +33,6 @@ describe('Upload file', () => {
   let client: FileUploadServiceClient;
   let fileName: string;
   let filePath: string;
-  let fileTotalSize: number;
 
   beforeAll(async () => {
     const packageDefinition = loadSync(PROTO_PATH, {
@@ -58,9 +57,7 @@ describe('Upload file', () => {
       filePath,
       sizeInMb: 7,
     });
-    const { size } = await stat(filePath);
-    fileTotalSize = size;
-  }, 20000);
+  });
 
   it('should throw error on invalid data', async () => {
     // Arrange
@@ -122,6 +119,7 @@ describe('Upload file', () => {
     const callHandler = client.upload(metadata);
     const fileId = randomUUID();
     const fileContent = await readFile(filePath);
+    const { size: fileTotalSize } = await stat(filePath);
     const checksumAlgorithm = ChecksumAlgorithm.CRC32;
     const checksum = generateChecksum(fileContent, checksumAlgorithm);
     let bytesRead = 0;
