@@ -2,6 +2,8 @@ import { isUUID } from 'class-validator';
 import { CorrelationIdService } from './correlation-id.service';
 
 /**
+ * @todo Does not work!
+ *
  * @description
  * This decorator **assumes** that the first argument of the method is the correlation id & that the class has a `correlationIdService` property.
  */
