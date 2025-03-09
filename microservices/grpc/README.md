@@ -2,17 +2,18 @@
 
 ## File Upload
 
+> [!NOTE]
+>
+> - This file upload only works when each chunk is bigger than 5MB, meaning you need to use a file bigger than 5MB.
+> - You can add retry logic to your client side to try to upload a failing chunk again.
+> - You **MUST** send the algorithm you'll use to calculate the checksum of the file with the first message.
+> - You **MUST** send the checksum of the file with the last message.
+
 1. `cd microservices/grpc`.
 2. `pnpm i --frozen-lockfile`.
 3. `cp apps/file-upload/.env.example apps/file-upload/.env`.
 4. `nx serve file-upload`.
 5. `nx e2e file-upload-e2e`.`
-
-```bash
-InvalidPart: One or more of the specified parts could not be found.  The part may not have been uploaded, or the specified entity tag may not match the part's entity tag.
-```
-
-https://github.com/aws/aws-sdk-js-v3/issues/6900
 
 ## Solved issues
 
@@ -57,5 +58,14 @@ for call at
 ```
 
 Solution: [https://stackoverflow.com/a/79426630/8784518](https://stackoverflow.com/a/79426630/8784518).
+
+</details>
+
+<details>
+<summary><code>InvalidPart: One or more of the specified parts could not be found.  The part may not have been uploaded, or the specified entity tag may not match the part's entity tag</code></summary>
+
+I event opened this issue for the [`@aws-sdk/client-s3`](https://github.com/aws/aws-sdk-js-v3/issues/6900) :sweat_smile:.
+
+So this issue was cause because I was not adding the returned checksum from the `UploadPartCommand` to the `this.parts` array [here](https://github.com/kasir-barati/nestjs-materials/blob/8a17566e02988c349627addee4c71035acf64a12/microservices/grpc/apps/file-upload/src/app/services/file.service.ts#L62-L70). And when I added it it was working again.
 
 </details>
