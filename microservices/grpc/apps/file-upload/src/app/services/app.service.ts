@@ -34,43 +34,43 @@ export class AppService {
 
     observableChunk
       .pipe(
-        concatMap((unvalidatedData) => {
-          return this.validateIncomingData(
+        concatMap(async (unvalidatedData) => {
+          const validatedData = await this.validateIncomingData(
             correlationId,
             unvalidatedData,
           );
-        }),
-        concatMap((data) => {
-          if (data.partNumber !== 1) {
-            return of({ fileService, data });
+
+          if (validatedData.partNumber === 1) {
+            const createdFileService =
+              await this.startMultipartUpload(correlationId, {
+                data: validatedData,
+                subject,
+                totalSize: validatedData.totalSize,
+                receivedSize: validatedData.data.length,
+              });
+
+            fileService = createdFileService;
           }
 
-          return this.startMultipartUpload(correlationId, {
-            data,
-            subject,
-            totalSize: data.totalSize,
-            receivedSize: data.data.length,
-          });
-        }),
-        concatMap((startMultipartUploadResult) => {
           if (!fileService) {
-            fileService = startMultipartUploadResult.fileService;
+            throw 'File service is not initialized!';
           }
 
-          return this.uploadPart(correlationId, {
-            data: startMultipartUploadResult.data,
+          await this.uploadPart(correlationId, {
+            data: validatedData,
             fileService,
           });
-        }),
-        concatMap((data) => {
-          if (!data.checksum) {
-            return Promise.resolve(false);
+
+          if (!validatedData.checksum) {
+            return of(false);
           }
 
-          return this.completeMultipartUpload(correlationId, {
+          await this.completeMultipartUpload(correlationId, {
             fileService,
-            checksum: data.checksum,
+            checksum: validatedData.checksum,
           });
+
+          return of(true);
         }),
       )
       .subscribe({
@@ -122,7 +122,7 @@ export class AppService {
       receivedSize: number;
       totalSize: number;
     },
-  ): Promise<{ fileService: FileService; data: ChunkDto }> {
+  ): Promise<FileService> {
     const bucket = 'some-bucket';
     const key = args.data.id + extname(args.data.fileName);
     const fileService = new FileService(this.s3Client);
@@ -133,7 +133,7 @@ export class AppService {
       args.data.checksumAlgorithm,
     );
 
-    return { fileService, data: args.data };
+    return fileService;
   }
 
   // @UseCorrelationId()
@@ -148,8 +148,6 @@ export class AppService {
       args.data.partNumber,
       args.data.data,
     );
-
-    return args.data;
   }
 
   // @UseCorrelationId()
@@ -179,7 +177,5 @@ export class AppService {
     },
   ) {
     await args.fileService.completeMultipartUpload(args.checksum);
-
-    return true;
   }
 }
