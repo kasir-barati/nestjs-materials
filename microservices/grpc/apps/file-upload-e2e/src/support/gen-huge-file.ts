@@ -1,11 +1,11 @@
-import { accessSync, createWriteStream, unlinkSync } from 'fs';
-import { Readable } from 'stream';
+import { accessSync, unlinkSync } from 'fs';
+import { writeFile } from 'fs/promises';
 
 /**
  * @description
  * Generate a large file to be uploaded. By default, it will generate a file of 10MB with the name `upload-me.txt`.
  */
-export function generateLargeFile({
+export async function generateLargeFile({
   sizeInMb = 10,
   filePath = 'upload-me.txt',
 }: {
@@ -16,28 +16,7 @@ export function generateLargeFile({
 
   deleteFileIfExists(filePath);
 
-  return new Promise((resolve, reject) => {
-    const stream = new Readable({
-      read() {
-        this.push('Lorem ipsum');
-
-        if (--sizeInMb <= 0) {
-          this.push(null);
-        }
-      },
-    });
-    const writable = createWriteStream(filePath);
-
-    stream.pipe(writable);
-
-    writable
-      .on('finish', () => {
-        resolve(null);
-      })
-      .on('error', (err) => {
-        reject(err);
-      });
-  });
+  await writeFile(filePath, Buffer.alloc(sizeInMb, 'A'));
 }
 
 function deleteFileIfExists(filePath: string) {
