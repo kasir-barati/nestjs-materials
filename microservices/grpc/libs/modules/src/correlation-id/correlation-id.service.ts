@@ -36,13 +36,13 @@ export class CorrelationIdService {
   }
 
   /**@private Try to use `@UseCorrelationId` instead. */
-  useCorrelationId(correlationId: string, cb: () => void) {
+  useCorrelationId<T>(correlationId: string, cb: () => T) {
     this.clsStoreClsService.run(() => {
       this.clsStoreClsService.set(
         CORRELATION_ID_CLS_KEY,
         correlationId,
       );
-      cb();
+      return cb();
     });
   }
 }
