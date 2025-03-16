@@ -1,0 +1,4 @@
+package-lock.json -diff -merg
+package-lock.json linguist-generated=true
+
+* text=auto eof=lf

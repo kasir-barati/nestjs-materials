@@ -1,0 +1,19 @@
+{
+    "name": "testing",
+    "version": "0.0.1",
+    "description": "",
+    "main": "src/index.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "UNLICENSED",
+    "dependencies": {
+        "sinon": "^17.0.0"
+    },
+    "devDependencies": {
+        "@jest/types": "^29.6.3",
+        "@types/sinon": "^10.0.20"
+    }
+}
