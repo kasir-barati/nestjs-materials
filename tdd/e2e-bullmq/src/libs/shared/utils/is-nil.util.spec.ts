@@ -9,6 +9,6 @@ describe('isNil', () => {
     'should return false for a %p',
     (value) => {
       expect(isNil(value)).toBe(false);
-    }
+    },
   );
 });

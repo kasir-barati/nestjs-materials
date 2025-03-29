@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
+import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString } from 'class-validator';
 
-import { Type } from 'class-transformer';
 import { AppConfig } from '../types';
 import { validateEnv } from '../utils';
 

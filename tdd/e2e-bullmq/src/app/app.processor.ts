@@ -2,8 +2,8 @@ import { OnQueueEvent, Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { ClsService, UseCls } from 'nestjs-cls';
-import { CORRELATION_ID_CLS_KEY } from '../libs/shared';
 
+import { CORRELATION_ID_CLS_KEY } from '../libs/shared';
 import { APP_JOB, APP_QUEUE } from './app.constant';
 import { Message } from './types/jobs.type';
 

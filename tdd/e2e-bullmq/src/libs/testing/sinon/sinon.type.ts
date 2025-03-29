@@ -13,16 +13,20 @@ export type RecursivePartial<T> = Partial<{
         ...a: Array<U>
       ) => RecursivePartial<ReturnType<T[key]>> | ReturnType<T[key]> // tslint:disable-line
     : T[key] extends Array<unknown>
-    ? Array<RecursivePartial<T[key][number]>>
-    : RecursivePartial<T[key]> | T[key];
+      ? Array<RecursivePartial<T[key][number]>>
+      : RecursivePartial<T[key]> | T[key];
 }>;
 
-export type StubbedObject<TObject extends MockableEntity, TStub> = TObject & {
+export type StubbedObject<
+  TObject extends MockableEntity,
+  TStub,
+> = TObject & {
   [P in keyof TObject]: TStub;
 };
 
-export type MockedEntityWithSinonStubs<TObject extends MockableEntity> =
-  StubbedObject<TObject, SinonStub>;
+export type MockedEntityWithSinonStubs<
+  TObject extends MockableEntity,
+> = StubbedObject<TObject, SinonStub>;
 
 export interface MockGenerator<TStub> {
   /**
@@ -33,7 +37,7 @@ export interface MockGenerator<TStub> {
    */
   of<TObject extends MockableEntity>(
     mockableConstructor: MockableConstructor<TObject>,
-    overrides?: RecursivePartial<TObject>
+    overrides?: RecursivePartial<TObject>,
   ): StubbedObject<TObject, TStub>;
 
   /**
@@ -42,6 +46,6 @@ export interface MockGenerator<TStub> {
    * {@param overrides} can be used to set properties. They will not be replaced with stubs.
    */
   with<TObject extends MockableEntity>(
-    overrides: RecursivePartial<TObject>
+    overrides: RecursivePartial<TObject>,
   ): StubbedObject<TObject, TStub>;
 }

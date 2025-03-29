@@ -1,13 +1,13 @@
 import { randomUUID } from 'crypto';
 import { ClsService } from 'nestjs-cls';
-import { SinonMock } from '../libs/testing';
 
+import { SinonMock } from '../libs/testing';
 import { AppProcessor } from './app.processor';
 
 describe('AppProcessor', () => {
   let processor: AppProcessor;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     const clsService = SinonMock.of(ClsService);
 
     processor = new AppProcessor(clsService);

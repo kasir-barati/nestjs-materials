@@ -1,4 +1,5 @@
 import { IsNumber, IsString } from 'class-validator';
+
 import { validateEnv } from './validate-env.util';
 
 class EnvironmentVariables1 {

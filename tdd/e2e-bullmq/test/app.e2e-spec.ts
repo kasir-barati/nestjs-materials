@@ -16,9 +16,10 @@ describe('AppController (e2e)', () => {
     process.env.REDIS_URI = container.getHostname();
     process.env.REDIS_PORT = container.getPort() as any;
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    const moduleFixture: TestingModule =
+      await Test.createTestingModule({
+        imports: [AppModule],
+      }).compile();
 
     app = moduleFixture.createNestApplication();
 

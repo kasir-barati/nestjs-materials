@@ -1,8 +1,8 @@
 import { Queue } from 'bull';
 import Sinon from 'sinon';
+
 import { CorrelationIdService } from '../libs/shared';
 import { SinonMock, SinonMockType } from '../libs/testing';
-
 import { AppService } from './app.service';
 import { Message } from './types/jobs.type';
 

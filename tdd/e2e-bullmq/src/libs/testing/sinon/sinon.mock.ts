@@ -8,16 +8,14 @@ import {
   StubbedObject,
 } from './sinon.type';
 
-export type SinonMockType<TObject extends MockableEntity> = StubbedObject<
-  TObject,
-  SinonStub
->;
+export type SinonMockType<TObject extends MockableEntity> =
+  StubbedObject<TObject, SinonStub>;
 
 export const SinonMock: MockGenerator<SinonStub> =
   createMockImplementationWithStubFunction(stub());
 
 function createMockImplementationWithStubFunction<TStub>(
-  stubFunction: () => TStub
+  stubFunction: () => TStub,
 ): MockGenerator<TStub> {
   return class Mock {
     /**
@@ -28,12 +26,15 @@ function createMockImplementationWithStubFunction<TStub>(
      */
     public static of<TEntity extends MockableEntity>(
       mockableConstructor: MockableConstructor<TEntity> | null = null,
-      overrides: RecursivePartial<TEntity> = {}
+      overrides: RecursivePartial<TEntity> = {},
     ): StubbedObject<TEntity, TStub> {
       return new Proxy<StubbedObject<TEntity, TStub>>(
         overrides as StubbedObject<TEntity, TStub>,
         {
-          get(target: StubbedObject<TEntity, TStub>, key: PropertyKey) {
+          get(
+            target: StubbedObject<TEntity, TStub>,
+            key: PropertyKey,
+          ) {
             if (key === '$quoted$') {
               return undefined;
             }
@@ -51,9 +52,10 @@ function createMockImplementationWithStubFunction<TStub>(
             return target[name];
           },
           getPrototypeOf(): MockableEntity | null {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return mockableConstructor?.prototype ?? null;
           },
-        }
+        },
       );
     }
 
@@ -63,7 +65,7 @@ function createMockImplementationWithStubFunction<TStub>(
      * {@param overrides} can be used to set properties. They will not be replaced with stubs.
      */
     public static with<TObject extends MockableEntity>(
-      overrides: RecursivePartial<TObject> = {}
+      overrides: RecursivePartial<TObject> = {},
     ): StubbedObject<TObject, TStub> {
       return Mock.of<TObject>(null, overrides);
     }

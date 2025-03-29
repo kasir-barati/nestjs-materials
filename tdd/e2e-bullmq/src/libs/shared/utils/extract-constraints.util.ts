@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
 import { ValidationError } from 'class-validator';
 
 export function extractConstraints(
@@ -14,7 +18,6 @@ export function extractConstraints(
 }
 
 function deepSearchByKey(
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   object: any,
   originalKey: string,
   matches: string[] = [],
@@ -27,7 +30,9 @@ function deepSearchByKey(
     } else if (typeof object == 'object') {
       for (const key of Object.keys(object)) {
         if (key == originalKey) {
-          matches.push(...(Object.values(object[key]) as string[]));
+          matches.push(
+            ...Object.values(object[key] as Record<string, any>),
+          );
         } else {
           deepSearchByKey(object[key], originalKey, matches);
         }

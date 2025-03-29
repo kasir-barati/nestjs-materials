@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { ClsService } from 'nestjs-cls';
+
 import { CORRELATION_ID_CLS_KEY } from './correlation-id.constant';
 
 @Injectable()

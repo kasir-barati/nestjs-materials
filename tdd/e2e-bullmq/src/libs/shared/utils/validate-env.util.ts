@@ -23,7 +23,7 @@ export function validateEnv<T extends object>(
         }
 
         return {
-          value: error.value,
+          value: error.value as unknown,
           property: error.property,
           message: Object.values(error.constraints)[0],
         };

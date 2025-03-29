@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClsModule } from 'nestjs-cls';
 import { join } from 'path';
-import { appConfig, CorrelationIdModule } from '../libs/shared';
 
+import { appConfig, CorrelationIdModule } from '../libs/shared';
 import { APP_QUEUE } from './app.constant';
 import { AppController } from './app.controller';
 import { AppProcessor } from './app.processor';

@@ -1,8 +1,8 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
-import { CorrelationIdService } from '../libs/shared';
 
+import { CorrelationIdService } from '../libs/shared';
 import { APP_JOB, APP_QUEUE } from './app.constant';
 import { Message } from './types/jobs.type';
 
