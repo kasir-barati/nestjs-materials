@@ -37,4 +37,7 @@ class EnvironmentVariables implements AppConfig {
   @Type(() => Number)
   @IsInt()
   REDIS_PORT = 6379;
+
+  @IsString()
+  REDIS_PASSWORD: string;
 }

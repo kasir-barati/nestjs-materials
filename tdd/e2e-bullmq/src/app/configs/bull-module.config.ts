@@ -23,6 +23,7 @@ export class BullmoduleConfig
       redis: {
         host: this.appConfigs.REDIS_HOST,
         port: this.appConfigs.REDIS_PORT,
+        password: this.appConfigs.REDIS_PASSWORD,
       },
     };
   }

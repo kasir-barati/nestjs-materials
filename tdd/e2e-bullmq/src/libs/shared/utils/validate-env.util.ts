@@ -15,6 +15,7 @@ export function validateEnv<T extends object>(
   });
   const validatedConfigsErrors = validateSync(validatedConfigs, {
     skipMissingProperties: false,
+    whitelist: true,
   });
 
   if (validatedConfigsErrors.length > 0) {

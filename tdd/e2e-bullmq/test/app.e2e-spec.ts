@@ -12,11 +12,14 @@ describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeAll(async () => {
-    const container = await new RedisContainer().start();
+    const container = await new RedisContainer()
+      .withPassword('something')
+      .start();
 
     process.env.APP_NAME = 'e2e-test';
-    process.env.REDIS_HOST = container.getHostname();
+    process.env.REDIS_HOST = container.getHost(); // If this one did not work try to use container.getHostname()
     process.env.REDIS_PORT = container.getPort();
+    process.env.REDIS_PASSWORD = container.getPassword();
     process.env.PORT = 12301;
 
     const moduleFixture: TestingModule =
@@ -35,4 +38,8 @@ describe('AppController (e2e)', () => {
     expect(res.status).toBe(200);
     expect(res.text).toBe('Hello World!');
   }, 10000);
+
+  afterAll(async () => {
+    await app.close();
+  });
 });
