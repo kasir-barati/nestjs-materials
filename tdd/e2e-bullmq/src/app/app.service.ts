@@ -1,6 +1,7 @@
+import type { Queue } from 'bull';
+
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
-import { Queue } from 'bull';
 
 import { CorrelationIdService } from '../libs/shared';
 import { APP_JOB, APP_QUEUE } from './app.constant';
@@ -15,6 +16,8 @@ export class AppService {
   ) {}
 
   async getHello(): Promise<string> {
+    console.log('Start...');
+
     await this.appQueue.add(
       APP_JOB,
       {
@@ -23,6 +26,8 @@ export class AppService {
       },
       { jobId: Math.ceil(Math.random() * 1_000) },
     );
+
+    console.log('Never reaches this line...');
 
     return 'Hello World!';
   }

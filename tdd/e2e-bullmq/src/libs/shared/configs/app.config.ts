@@ -34,6 +34,7 @@ class EnvironmentVariables implements AppConfig {
   REDIS_HOST = 'localhost';
 
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   REDIS_PORT = 6379;
 }

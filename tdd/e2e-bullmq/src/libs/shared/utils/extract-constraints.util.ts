@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
-import { ValidationError } from 'class-validator';
+import type { ValidationError } from 'class-validator';
 
 export function extractConstraints(
   errors: ValidationError[],

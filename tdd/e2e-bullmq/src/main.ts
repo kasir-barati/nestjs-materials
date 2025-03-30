@@ -1,5 +1,6 @@
+import type { ConfigType } from '@nestjs/config';
+
 import { ConsoleLogger } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app/app.module';

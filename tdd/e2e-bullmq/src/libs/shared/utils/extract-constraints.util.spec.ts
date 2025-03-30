@@ -1,4 +1,5 @@
-import { ValidationError } from 'class-validator';
+import type { ValidationError } from 'class-validator';
+
 import { randomUUID } from 'crypto';
 
 import { extractConstraints } from './extract-constraints.util';

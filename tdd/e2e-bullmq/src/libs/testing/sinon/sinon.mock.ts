@@ -1,6 +1,8 @@
-import { SinonStub, stub } from 'sinon';
+import type { SinonStub } from 'sinon';
 
-import {
+import { stub } from 'sinon';
+
+import type {
   MockGenerator,
   MockableConstructor,
   MockableEntity,

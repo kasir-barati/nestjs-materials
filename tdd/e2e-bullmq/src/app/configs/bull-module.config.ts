@@ -1,9 +1,10 @@
+import type { ConfigType } from '@nestjs/config';
+
 import {
   BullRootModuleOptions,
   SharedBullConfigurationFactory,
 } from '@nestjs/bull';
 import { Inject } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
 
 import { appConfig } from '../../libs/shared';
 

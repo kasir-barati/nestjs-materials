@@ -1,5 +1,7 @@
+import type { ClassConstructor } from 'class-transformer';
+
 import { Logger } from '@nestjs/common';
-import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
 import { isNil } from './is-nil.util';

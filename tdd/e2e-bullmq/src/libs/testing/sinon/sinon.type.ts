@@ -1,4 +1,4 @@
-import { SinonStub } from 'sinon';
+import type { SinonStub } from 'sinon';
 
 export type MockableEntity = object;
 

@@ -1,10 +1,13 @@
-import { Queue } from 'bull';
+import type { Queue } from 'bull';
+
 import Sinon from 'sinon';
 
+import type { SinonMockType } from '../libs/testing';
+import type { Message } from './types/jobs.type';
+
 import { CorrelationIdService } from '../libs/shared';
-import { SinonMock, SinonMockType } from '../libs/testing';
+import { SinonMock } from '../libs/testing';
 import { AppService } from './app.service';
-import { Message } from './types/jobs.type';
 
 describe('AppService', () => {
   let service: AppService;

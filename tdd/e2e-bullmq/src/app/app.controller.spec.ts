@@ -1,6 +1,8 @@
 import Sinon from 'sinon';
 
-import { SinonMock, SinonMockType } from '../libs/testing';
+import type { SinonMockType } from '../libs/testing';
+
+import { SinonMock } from '../libs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
