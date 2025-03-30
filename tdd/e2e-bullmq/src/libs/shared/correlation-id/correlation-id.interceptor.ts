@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { ClsService } from 'nestjs-cls';
-import { Observable } from 'rxjs';
 
 import {
   CORRELATION_ID_CLS_KEY,
@@ -22,10 +21,7 @@ export class CorrelationIdInterceptor implements NestInterceptor {
 
   constructor(private readonly clsService: ClsService) {}
 
-  intercept(
-    executionContext: ExecutionContext,
-    next: CallHandler,
-  ): Observable<any> {
+  intercept(executionContext: ExecutionContext, next: CallHandler) {
     let correlationId: string;
 
     switch (executionContext.getType()) {
@@ -53,7 +49,7 @@ export class CorrelationIdInterceptor implements NestInterceptor {
         break;
       }
       default:
-        throw 'Unimplemented request type';
+        throw new Error('Unimplemented request type');
     }
 
     this.clsService.set(CORRELATION_ID_CLS_KEY, correlationId);

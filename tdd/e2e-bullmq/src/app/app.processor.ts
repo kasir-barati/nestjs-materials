@@ -23,7 +23,7 @@ export class AppProcessor {
     this.logger.error(
       JSON.stringify(job) + ' failed: ' + JSON.stringify(error),
     );
-    // ... or Send an email to somebody.
+    await Promise.resolve('Sending an email...');
   }
 
   @Process(APP_JOB)

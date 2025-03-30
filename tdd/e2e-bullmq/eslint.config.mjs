@@ -33,19 +33,21 @@ export default tseslint.config(
     },
   },
   {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+    },
+  },
+  {
     files: ['**/*.config.ts', '**/*.spec.ts', '**/*.e2e-spec.ts'],
     rules: {
       '@typescript-eslint/no-namespace': 'off',
       '@typescript-eslint/no-empty-interface': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
-    },
-  },
-  {
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
     },
   },
   {

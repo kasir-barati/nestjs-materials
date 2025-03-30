@@ -1,5 +1,5 @@
 import { BullModule } from '@nestjs/bull';
-import { Module } from '@nestjs/common';
+import { ConsoleLogger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClsModule } from 'nestjs-cls';
 import { join } from 'path';
@@ -33,7 +33,14 @@ import { QueueConfig } from './configs/queue.config';
       imports: [ConfigModule.forFeature(appConfig)],
       useClass: QueueConfig,
     }),
-    CorrelationIdModule,
+    {
+      module: CorrelationIdModule,
+      global: true,
+    },
+    {
+      module: ConsoleLogger,
+      global: true,
+    },
   ],
   controllers: [AppController],
   providers: [AppService, AppProcessor],
