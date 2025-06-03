@@ -3,18 +3,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Post, PostSchema, User, UserSchema } from './schemas';
+import { MongooseConfig } from './configs';
+import { schemaFactories } from './schema.factory';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.DB_URI, {
-      autoIndex: true,
-      autoCreate: true,
-    }),
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Post.name, schema: PostSchema },
-    ]),
+    MongooseModule.forRootAsync({ useClass: MongooseConfig }),
+    MongooseModule.forFeatureAsync(schemaFactories),
   ],
   controllers: [AppController],
   providers: [AppService],

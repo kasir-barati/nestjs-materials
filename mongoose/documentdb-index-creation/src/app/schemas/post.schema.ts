@@ -37,14 +37,6 @@ PostSchema.index(
   { name: 'SearchByTitleAndTags' },
 );
 PostSchema.index(
-  { title: 1, tags: 1, categories: 1 },
-  { name: 'SearchByTitleAndTagsAndCategories' },
-);
-PostSchema.index(
   { title: 1, categories: 1 },
   { name: 'SearchByTitleAndCategories' },
-);
-PostSchema.index(
-  { tags: 1, categories: 1 },
-  { name: 'SearchByTagsAndCategories' },
 );
