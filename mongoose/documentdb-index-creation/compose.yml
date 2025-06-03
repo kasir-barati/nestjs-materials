@@ -1,0 +1,81 @@
+# Ref: https://github.com/kasir-barati/docker/tree/main/docker-compose-files/mongodb/mongodb-cluster/single-node-cluster
+
+services:
+  app:
+    build:
+      context: .
+      target: development
+    ports:
+      - 3000:3000
+      - 9229:9229
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URI: mongodb://root:pass@db:27017/my-awesome-auto-index-db?authSource=admin
+      PORT: 3000
+      NODE_ENV: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev
+
+  db:
+    image: mongo:8.0.0-rc17-noble
+    entrypoint:
+      - bash
+      - -c
+      - |
+        openssl rand -base64 756 > /data/replica.key
+        chmod 400 /data/replica.key
+        chown 999:999 /data/replica.key
+        exec docker-entrypoint.sh $$@
+    command: mongod --bind_ip_all --replSet rs0 --keyFile /data/replica.key
+    environment:
+      MONGO_INITDB_DATABASE: my-awesome-auto-index-db
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  db-init:
+    image: mongo:8.0.0-rc17-noble
+    restart: no
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      mongosh --username root --password pass --host db:27017 --eval
+      '
+      rs.initiate( {
+         _id : "rs0",
+         members: [
+            { _id: 0, host: "db:27017" }
+         ]
+      })
+      '
+
+  mongo-express:
+    image: mongo-express:1.0.0-20-alpine3.18
+    environment:
+      ME_CONFIG_OPTIONS_EDITORTHEME: ambiance
+      ME_CONFIG_MONGODB_SERVER: db
+      ME_CONFIG_MONGODB_URL: mongodb://db/my-awesome-auto-index-db
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: root
+      ME_CONFIG_BASICAUTH_PASSWORD: pass
+      PORT: 9002
+    ports:
+      - 9002:9002
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_started
