@@ -11,10 +11,10 @@ import {
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { isEmpty, validate } from 'class-validator';
+import { UseCls } from 'nestjs-cls';
 import { extname } from 'path';
 import { concatMap, Observable, ReplaySubject } from 'rxjs';
 
-import { UseCls } from 'nestjs-cls';
 import { UploadResponse } from '../../assets/interfaces/file-upload.interface';
 import { ChunkDto } from '../dtos/chunk.dto';
 import { FileService } from './file.service';
@@ -143,11 +143,12 @@ export class AppService {
     const key = args.data.id + extname(args.data.fileName);
     const fileService = new FileService(this.s3Client);
 
-    await fileService.createMultipartUpload(
-      bucket,
-      key,
-      args.data.checksumAlgorithm,
-    );
+    await fileService.createMultipartUpload({
+      bucketName: bucket,
+      objectKey: key,
+      filename: args.data.fileName,
+      checksumAlgorithm: args.data.checksumAlgorithm,
+    });
 
     return fileService;
   }

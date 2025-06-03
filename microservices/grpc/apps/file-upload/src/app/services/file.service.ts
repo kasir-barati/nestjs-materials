@@ -8,6 +8,7 @@ import {
   UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import { InternalServerErrorException } from '@nestjs/common';
+import { fileTypeFromFile } from 'file-type';
 
 export class FileService {
   private uploadId?: string;
@@ -22,16 +23,25 @@ export class FileService {
    *
    * @returns upload ID. We'll use this ID to associate all of the parts in the specific multipart upload.
    */
-  async createMultipartUpload(
-    bucketName: string,
-    objectKey: string,
-    checksumAlgorithm: ChecksumAlgorithm,
-  ) {
+  async createMultipartUpload({
+    bucketName,
+    objectKey,
+    filename,
+    checksumAlgorithm,
+  }: {
+    filename: string;
+    objectKey: string;
+    bucketName: string;
+    checksumAlgorithm: ChecksumAlgorithm;
+  }) {
+    const { mime } = await fileTypeFromFile(filename);
     const command = new CreateMultipartUploadCommand({
       Bucket: bucketName,
       Key: objectKey,
       ChecksumAlgorithm: checksumAlgorithm,
       ChecksumType: 'FULL_OBJECT',
+      ContentType: mime,
+      ContentDisposition: `attachment; filename="${filename}"`,
     });
     const response = await this.s3Client.send(command);
 
