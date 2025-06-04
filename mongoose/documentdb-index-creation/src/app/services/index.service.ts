@@ -24,7 +24,8 @@ export class IndexService implements OnApplicationBootstrap {
       const model = this.connection.model(modelName);
 
       try {
-        await model.createCollection();
+        /**@description This action is idempotent, so we can call it as many times as we wanted and it will not recreate existing indexes */
+        // https://github.com/Automattic/mongoose/discussions/15463#discussion-8414826
         await model.createIndexes();
 
         this.logger.log(`✅ Indexes created for: ${modelName}`);
