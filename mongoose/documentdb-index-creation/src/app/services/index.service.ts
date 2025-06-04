@@ -15,17 +15,22 @@ export class IndexService implements OnApplicationBootstrap {
 
   private async createIndexes() {
     const models = this.connection.modelNames();
+
     this.logger.log(
       'Creating indexes for models: ' + models.join(', '),
     );
 
     for (const modelName of models) {
       const model = this.connection.model(modelName);
+
       try {
+        await model.createCollection();
         await model.createIndexes();
+
         this.logger.log(`✅ Indexes created for: ${modelName}`);
       } catch (err) {
         this.logger.error(`❌ Index error for ${modelName}:`, err);
+
         throw err;
       }
     }

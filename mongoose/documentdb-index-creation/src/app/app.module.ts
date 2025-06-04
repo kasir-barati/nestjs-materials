@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
 import { UserModule } from '../user';
 import { AppController } from './app.controller';
 import { Post, PostSchema } from './schemas';
 import { AppService, IndexService } from './services';
+
+mongoose.set('debug', true);
 
 @Module({
   imports: [
