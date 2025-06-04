@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { UserModule } from '../user';
 import { AppController } from './app.controller';
-import { Post, PostSchema, User, UserSchema } from './schemas';
+import { Post, PostSchema } from './schemas';
 import { AppService, IndexService } from './services';
 
 @Module({
@@ -12,9 +13,9 @@ import { AppService, IndexService } from './services';
       autoCreate: true,
     }),
     MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
       { name: Post.name, schema: PostSchema },
     ]),
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService, IndexService],
