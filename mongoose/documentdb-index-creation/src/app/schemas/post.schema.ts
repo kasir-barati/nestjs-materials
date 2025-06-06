@@ -10,14 +10,12 @@ export class Post {
   @Prop({
     type: String,
     required: true,
-    index: true,
   })
   title: string;
 
   @Prop({
     type: [String],
     default: [],
-    index: true,
   })
   tags: string[];
 
@@ -25,18 +23,23 @@ export class Post {
     type: [String],
     default: [],
     enum: Object.values(PostCategory),
-    index: true,
   })
   categories: PostCategory[];
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 
+PostSchema.index({ title: 1 }, { name: 'findPostsByTitle' });
+PostSchema.index({ tags: 1 }, { name: 'findPostsByTags' });
+PostSchema.index(
+  { categories: 1 },
+  { name: 'findPostsByCategories' },
+);
 PostSchema.index(
   { title: 1, tags: 1 },
-  { name: 'SearchByTitleAndTags' },
+  { name: 'SearchByTitleAndTags', background: false },
 );
 PostSchema.index(
   { title: 1, categories: 1 },
-  { name: 'SearchByTitleAndCategories' },
+  { name: 'SearchByTitleAndCategories', background: false },
 );

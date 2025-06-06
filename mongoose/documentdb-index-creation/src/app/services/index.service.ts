@@ -1,6 +1,12 @@
 import { Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import {
+  Collection,
+  Connection,
+  IndexDefinition,
+  IndexOptions,
+} from 'mongoose';
+import { isDeepStrictEqual } from 'util';
 
 export class IndexService implements OnApplicationBootstrap {
   private readonly logger = new Logger(IndexService.name);
@@ -24,9 +30,53 @@ export class IndexService implements OnApplicationBootstrap {
       const model = this.connection.model(modelName);
 
       try {
-        /**@description This action is idempotent, so we can call it as many times as we wanted and it will not recreate existing indexes */
-        // https://github.com/Automattic/mongoose/discussions/15463#discussion-8414826
-        await model.createIndexes();
+        await model.createCollection();
+
+        const existingIndexes = await model.collection.indexes();
+        const definedIndexes = model.schema.indexes();
+
+        for (const definedIndex of definedIndexes) {
+          const alreadyExistingIndex = existingIndexes.find(
+            (existingIndex) => {
+              return existingIndex.name === definedIndex[1].name;
+            },
+          );
+
+          if (alreadyExistingIndex) {
+            this.isIndexSchemaInSync(
+              modelName,
+              alreadyExistingIndex,
+              definedIndex,
+            );
+            continue;
+          }
+
+          const [indexSpecification, indexOptions] = definedIndex;
+          const indexName = indexOptions.name;
+
+          this.logger.log(
+            `⏳ Creating ${JSON.stringify(indexOptions)} index for ${modelName} where the index name is ${indexName}`,
+          );
+
+          await model.collection.createIndex(
+            indexSpecification as Parameters<
+              (typeof Collection)['createIndex']
+            >['0'],
+            indexOptions as Parameters<
+              (typeof Collection)['createIndex']
+            >['1'],
+          );
+
+          this.logger.log(
+            `✅ ${indexName} index has been created for ${modelName}`,
+          );
+        }
+
+        this.findOrphanedIndexes(
+          modelName,
+          existingIndexes,
+          definedIndexes,
+        );
 
         this.logger.log(`✅ Indexes created for: ${modelName}`);
       } catch (err) {
@@ -37,46 +87,50 @@ export class IndexService implements OnApplicationBootstrap {
     }
   }
 
-  private async createIndexIfTheyDoNotExists(
+  private isIndexSchemaInSync(
     modelName: string,
-    model: Model<unknown, unknown, unknown, object, unknown, unknown>,
+    existingIndex: Awaited<ReturnType<Collection['indexes']>>[number],
+    definedIndex: [IndexDefinition, IndexOptions],
   ) {
-    const existingIndexes = await model.collection.indexes();
-    const existingIndexesNames = existingIndexes
-      .map((index) => index.name)
-      .filter(Boolean) as string[];
-    const definedIndexes = model.schema.indexes();
-    const missingIndexes = definedIndexes.filter(
-      ([_, options]) =>
-        options?.name && !existingIndexesNames.includes(options.name),
-    );
+    const definedIndexOptions = definedIndex[1];
+    const { v: _v, key: _key, ...rest } = existingIndex;
 
-    if (missingIndexes.length > 0) {
-      this.logger.log(
-        `⏳ Creating ${missingIndexes.length} indexes for ${modelName}: ${missingIndexes.map(([_, options]) => options.name).join(', ')}`,
+    if (!isDeepStrictEqual(definedIndexOptions, rest)) {
+      this.logger.warn(
+        `${modelName}'s defined index in code does not match the index options in the database (Defined index: ${JSON.stringify(definedIndexOptions)}, existing index: ${JSON.stringify(existingIndex)})`,
       );
-
-      for (const [spec, options] of missingIndexes) {
-        // @ts-expect-error This is OK
-        await model.collection.createIndex(spec, options);
-      }
-
-      this.logger.log(`✅ Created indexes for ${modelName}`);
-    } else {
-      this.logger.log(`✅ All indexes exist for ${modelName}`);
+      return false;
     }
 
+    return true;
+  }
+
+  private findOrphanedIndexes(
+    modelName: string,
+    existingIndexes: Awaited<ReturnType<Collection['indexes']>>,
+    definedIndexes: [IndexDefinition, IndexOptions][],
+  ) {
     const definedIndexesNames = definedIndexes
       .map(([_, options]) => options.name)
       .filter(Boolean) as string[];
-    const extraIndexes = existingIndexesNames.filter(
-      (name) => !definedIndexesNames.includes(name),
-    );
+    const extraIndexes = existingIndexes
+      .filter(
+        (existingIndex) =>
+          existingIndex.name &&
+          !definedIndexesNames.includes(existingIndex.name),
+      )
+      .filter((extraIndex) => extraIndex.name !== '_id_');
 
     if (extraIndexes.length > 0) {
+      const extraIndexesNames = extraIndexes
+        .map((extraIndex) => extraIndex.name)
+        .filter(Boolean);
+
       this.logger.log(
-        `ℹ️ Extra indexes in DB for ${modelName}: ${extraIndexes.join(', ')}`,
+        `ℹ️ Extra indexes in DB for ${modelName}: ${extraIndexesNames.join(', ')}`,
       );
+
+      return extraIndexes;
     }
   }
 }
