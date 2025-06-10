@@ -21,3 +21,5 @@ You need to hook into the `onApplicationBootstrap` lifecycle event of NestJS and
 3. We need to call `createCollection` API before trying to get index and or create them.
 4. DocumentDB has another limitation, that is that we cannot create multiple indexes at the same time, so that is why I am getting all the defined indexes in the code and create them one after another for a given collection.
 5. If you need to create an index on a field in a shared nested-document, you need to create it in the collection which is using the shared nested schema, similar to [users collection](./src/user/schemas/user.schema.ts).
+
+   And if the field is an array of objects, the syntax does not change at all. You can look at [accounts collection](./src/user/schemas/account.schema.ts) for reference.
