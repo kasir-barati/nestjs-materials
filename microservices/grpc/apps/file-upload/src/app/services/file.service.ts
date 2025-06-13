@@ -33,7 +33,17 @@ export class FileService {
       Bucket: bucketName,
       Key: objectKey,
     });
-    const { Body } = await s3Client.send(getObjectCommand);
+    /**
+     * @description In case you need more info about the object feel free to use any of these. E.g. inside the ContentDisposition we have the filename.
+     */
+    const {
+      Body,
+      ContentDisposition,
+      LastModified,
+      ETag,
+      ContentLength,
+      ContentType,
+    } = await s3Client.send(getObjectCommand);
 
     return Body.transformToWebStream();
   }
