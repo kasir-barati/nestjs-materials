@@ -5,9 +5,9 @@ import { NodeEnv, SharedConfig } from '../types/shared-config.type';
 import { validateEnv } from '../utils/validate-env.util';
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
+   
   namespace NodeJS {
-    // eslint-disable-next-line
+     
     interface ProcessEnv extends SharedConfig {}
   }
 }

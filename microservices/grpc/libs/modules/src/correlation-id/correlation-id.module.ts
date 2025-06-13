@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ClsModule } from 'nestjs-cls';
+
 import { CorrelationIdInterceptor } from './correlation-id.interceptor';
 import { CorrelationIdService } from './correlation-id.service';
 

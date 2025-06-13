@@ -8,7 +8,7 @@ describe('POST /api/orders/:id/processed', () => {
         `/api/orders/${invalidId}/processed`,
         undefined,
         {
-          validateStatus(status) {
+          validateStatus(_status) {
             return true;
           },
         },

@@ -1,6 +1,7 @@
+import type { Request } from 'express';
+
 import { Metadata } from '@grpc/grpc-js';
 import { ExecutionContext } from '@nestjs/common';
-import type { Request } from 'express';
 
 export function getHeaderFromExecutionContext(
   executionContext: ExecutionContext,

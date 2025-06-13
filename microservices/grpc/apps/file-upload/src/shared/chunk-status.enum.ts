@@ -1,6 +1,6 @@
 export enum ChunkStatus {
-  PLANNED = 'PLANNED',
-  CREATED = 'CREATED',
-  UPLOADED = 'UPLOADED',
   CLEANED = 'CLEANED',
+  CREATED = 'CREATED',
+  PLANNED = 'PLANNED',
+  UPLOADED = 'UPLOADED',
 }

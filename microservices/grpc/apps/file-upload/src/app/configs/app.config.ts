@@ -1,6 +1,7 @@
 import { validateEnv } from '@grpc/shared';
 import { registerAs } from '@nestjs/config';
 import { IsIn, IsOptional, IsString } from 'class-validator';
+
 import { AppConfig } from '../types/app.type';
 
 declare global {

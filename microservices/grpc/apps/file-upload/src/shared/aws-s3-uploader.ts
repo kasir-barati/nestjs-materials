@@ -12,6 +12,7 @@ import { fromIni } from '@aws-sdk/credential-providers';
 import { createHash } from 'crypto';
 import { FileHandle, open, readFile, unlink } from 'fs/promises';
 import { basename, dirname, extname, join } from 'path';
+
 import { Chunk } from './chunk';
 import { getFileSize } from './get-file-size.util';
 import { getMd5 } from './get-md5.util';

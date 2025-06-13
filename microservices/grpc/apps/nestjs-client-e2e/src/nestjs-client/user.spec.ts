@@ -5,6 +5,7 @@ import {
 } from '@grpc/grpc-js';
 import { loadSync } from '@grpc/proto-loader';
 import { join } from 'path';
+
 import {
   GrpcUserServiceClient,
   User,

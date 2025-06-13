@@ -8,6 +8,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
+
 import { Chunk } from '../../assets/interfaces/file-upload.interface';
 
 export class ChunkDto implements Chunk {

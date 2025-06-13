@@ -1,7 +1,7 @@
 import { CurrentUser, GetCurrentUser } from '@grpc/shared';
 import { Controller, HttpCode, Param, Post } from '@nestjs/common';
-
 import { IsUUID } from 'class-validator';
+
 import { UserService } from '../user/user.service';
 
 class ProcessedOrderId {

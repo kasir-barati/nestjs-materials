@@ -1,6 +1,7 @@
 import { CorrelationIdModule } from '@grpc/modules';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+
 import { AppGrpcController } from './app.grpc-controller';
 import appConfigs from './configs/app.config';
 import { s3ClientFactory } from './s3-client.factory';

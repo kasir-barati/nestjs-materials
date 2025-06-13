@@ -1,8 +1,8 @@
+import { ChecksumAlgorithm } from '@aws-sdk/client-s3';
 import { ChannelCredentials, Metadata } from '@grpc/grpc-js';
 import { ClientDuplexStreamImpl } from '@grpc/grpc-js/build/src/call';
-
-import { ChecksumAlgorithm } from '@aws-sdk/client-s3';
 import { ReadStream } from 'fs';
+
 import {
   Chunk,
   UploadResponse,

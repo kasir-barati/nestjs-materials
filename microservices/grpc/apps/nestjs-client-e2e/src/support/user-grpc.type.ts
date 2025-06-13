@@ -1,5 +1,6 @@
 import { ChannelCredentials } from '@grpc/grpc-js';
 import { GrpcErrorResponse } from '@grpc/shared';
+
 import {
   GrpcUserServiceClient,
   User,
