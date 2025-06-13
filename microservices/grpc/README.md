@@ -13,7 +13,11 @@
 2. `pnpm i --frozen-lockfile`.
 3. `cp apps/file-upload/.env.example apps/file-upload/.env`.
 4. `nx serve file-upload`.
-5. `nx e2e file-upload-e2e`.`
+5. `nx e2e file-upload-e2e`.
+
+### Minio
+
+- Default username and password comes from the [`.env`](./apps/file-upload/.env) file. If you have not change anything they should be `adminadmin`.
 
 ## Solved issues
 

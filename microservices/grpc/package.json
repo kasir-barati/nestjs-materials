@@ -20,6 +20,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "file-type": "^20.4.0",
+    "mime-types": "^3.0.1",
     "nestjs-cls": "^5.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0"
@@ -42,6 +43,7 @@
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
     "@types/jest": "^29.5.12",
+    "@types/mime-types": "^3.0.1",
     "@types/node": "~18.16.9",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.0.0",

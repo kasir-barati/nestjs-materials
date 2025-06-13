@@ -10,11 +10,11 @@ export async function uploadStream({
   fileTotalSize,
   checksumAlgorithm,
   fileName,
+  id = randomUUID(),
 }: UploadStreamArguments) {
   let isFirstCall = true;
   let partNumber = 1;
   let bytesRead = 0;
-  const fileId = randomUUID();
 
   // Act
   for await (const chunk of stream) {
@@ -38,7 +38,7 @@ export async function uploadStream({
         ...messagePayload,
         fileName,
         checksumAlgorithm,
-        id: fileId,
+        id,
         totalSize: fileTotalSize,
       };
     }

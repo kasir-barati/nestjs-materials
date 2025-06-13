@@ -12,6 +12,7 @@ import {
 import { Chunk } from '../../assets/interfaces/file-upload.interface';
 
 export class ChunkDto implements Chunk {
+  // For the first message it's not optional!
   @IsOptional()
   @IsUUID()
   id?: string;

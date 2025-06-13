@@ -17,15 +17,18 @@ import { concatMap, Observable, ReplaySubject } from 'rxjs';
 
 import { UploadResponse } from '../../assets/interfaces/file-upload.interface';
 import { ChunkDto } from '../dtos/chunk.dto';
+import { FileRepository } from '../repositories/file.repository';
 import { FileService } from './file.service';
 
 @Injectable()
 export class AppService {
   private logger = new Logger(AppService.name);
+  private bucketName = 'some-bucket';
 
   constructor(
     private readonly correlationIdService: CorrelationIdService,
     private readonly s3Client: S3Client,
+    private readonly fileRepository: FileRepository,
   ) {}
 
   upload(
@@ -35,6 +38,7 @@ export class AppService {
     const correlationId =
       this.correlationIdService.getCorrelationIdOrGenerate();
     let fileService: FileService | undefined;
+    let fileId: string | undefined;
 
     observableChunk
       .pipe(
@@ -56,7 +60,15 @@ export class AppService {
                     receivedSize: validatedData.data.length,
                   });
 
+                this.fileRepository.create({
+                  id: validatedData.id,
+                  filename: validatedData.fileName,
+                  checksum: validatedData.checksum,
+                  checksumAlgorithm: validatedData.checksumAlgorithm,
+                  });
+
                 fileService = createdFileService;
+                fileId = validatedData.id;
               }
 
               if (!fileService) {
@@ -96,6 +108,7 @@ export class AppService {
         error: (error) => {
           this.handleError(correlationId, {
             error,
+            fileId,
             subject,
             fileService,
           });
@@ -139,12 +152,11 @@ export class AppService {
       totalSize: number;
     },
   ): Promise<FileService> {
-    const bucket = 'some-bucket';
-    const key = args.data.id + extname(args.data.fileName);
+    const key = this.getKey(args.data.id, args.data.fileName);
     const fileService = new FileService(this.s3Client);
 
     await fileService.createMultipartUpload({
-      bucketName: bucket,
+      bucketName: this.bucketName,
       objectKey: key,
       filename: args.data.fileName,
       checksumAlgorithm: args.data.checksumAlgorithm,
@@ -164,14 +176,23 @@ export class AppService {
       error: any;
       subject: ReplaySubject<UploadResponse>;
       fileService?: FileService;
+      fileId?: string;
     },
   ) {
     this.logger.error(args.error);
+
+    if (args.fileId) {
+      this.fileRepository.delete(args.fileId);
+    }
 
     if (args.fileService) {
       await args.fileService.abortMultipartUpload();
     }
 
     args.subject.error(new UnprocessableEntityException(args.error));
+  }
+
+  private getKey(id: string, filename: string) {
+    return id + extname(filename);
   }
 }

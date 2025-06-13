@@ -8,7 +8,7 @@ import {
   UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import { InternalServerErrorException } from '@nestjs/common';
-import { fileTypeFromFile } from 'file-type';
+import mime from 'mime-types';
 
 export class FileService {
   private uploadId?: string;
@@ -34,13 +34,13 @@ export class FileService {
     bucketName: string;
     checksumAlgorithm: ChecksumAlgorithm;
   }) {
-    const { mime } = await fileTypeFromFile(filename);
+    const contentType = mime.lookup(filename);
     const command = new CreateMultipartUploadCommand({
       Bucket: bucketName,
       Key: objectKey,
       ChecksumAlgorithm: checksumAlgorithm,
       ChecksumType: 'FULL_OBJECT',
-      ContentType: mime,
+      ContentType: contentType === false ? 'unknown' : contentType,
       ContentDisposition: `attachment; filename="${filename}"`,
     });
     const response = await this.s3Client.send(command);

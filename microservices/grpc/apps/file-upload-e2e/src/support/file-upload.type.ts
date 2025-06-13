@@ -35,4 +35,5 @@ export interface UploadStreamArguments {
   fileTotalSize: number;
   fileName: string;
   checksumAlgorithm: ChecksumAlgorithm;
+  id?: string;
 }
