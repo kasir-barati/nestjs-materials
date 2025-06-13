@@ -4,6 +4,7 @@ import {
   CompletedPart,
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
+  GetObjectCommand,
   S3Client,
   UploadPartCommand,
 } from '@aws-sdk/client-s3';
@@ -18,6 +19,24 @@ export class FileService {
   private parts: CompletedPart[] = [];
 
   constructor(private readonly s3Client: S3Client) {}
+
+  static async download({
+    s3Client,
+    bucketName,
+    objectKey,
+  }: {
+    s3Client: S3Client;
+    objectKey: string;
+    bucketName: string;
+  }) {
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: objectKey,
+    });
+    const { Body } = await s3Client.send(getObjectCommand);
+
+    return Body.transformToWebStream();
+  }
 
   /**
    *

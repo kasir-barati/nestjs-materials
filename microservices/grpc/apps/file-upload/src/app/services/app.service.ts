@@ -3,7 +3,10 @@ import {
   CORRELATION_ID_CLS_KEY,
   CorrelationIdService,
 } from '@grpc/modules';
-import { constraintsToString } from '@grpc/shared';
+import {
+  constraintsToString,
+  readableStreamToObservable,
+} from '@grpc/shared';
 import {
   Injectable,
   Logger,
@@ -15,7 +18,10 @@ import { UseCls } from 'nestjs-cls';
 import { extname } from 'path';
 import { concatMap, Observable, ReplaySubject } from 'rxjs';
 
-import { UploadResponse } from '../../assets/interfaces/file-upload.interface';
+import {
+  DownloadResponse,
+  UploadResponse,
+} from '../../assets/interfaces/file-upload.interface';
 import { ChunkDto } from '../dtos/chunk.dto';
 import { FileRepository } from '../repositories/file.repository';
 import { FileService } from './file.service';
@@ -65,7 +71,7 @@ export class AppService {
                   filename: validatedData.fileName,
                   checksum: validatedData.checksum,
                   checksumAlgorithm: validatedData.checksumAlgorithm,
-                  });
+                });
 
                 fileService = createdFileService;
                 fileId = validatedData.id;
@@ -114,6 +120,18 @@ export class AppService {
           });
         },
       });
+  }
+
+  async download(id: string): Promise<Observable<DownloadResponse>> {
+    const file = this.fileRepository.read(id);
+    const key = this.getKey(file.id, file.filename);
+    const data = await FileService.download({
+      s3Client: this.s3Client,
+      objectKey: key,
+      bucketName: this.bucketName,
+    });
+
+    return readableStreamToObservable(data);
   }
 
   @UseCls<[string, ChunkDto]>({

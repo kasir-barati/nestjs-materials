@@ -11,5 +11,6 @@ export * from './utils/constraints-to-string.util';
 export * from './utils/generate-checksum.util';
 export * from './utils/get-header-from-execution-context.util';
 export * from './utils/retry.util';
+export * from './utils/stream-to-observable.util';
 export * from './utils/validate-env.util';
 export { sharedConfig };

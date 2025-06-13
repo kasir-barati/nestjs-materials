@@ -1,10 +1,15 @@
 import { ChecksumAlgorithm } from '@aws-sdk/client-s3';
 import { ChannelCredentials, Metadata } from '@grpc/grpc-js';
-import { ClientDuplexStreamImpl } from '@grpc/grpc-js/build/src/call';
+import {
+  ClientDuplexStreamImpl,
+  ClientReadableStreamImpl,
+} from '@grpc/grpc-js/build/src/call';
 import { ReadStream } from 'fs';
 
 import {
   Chunk,
+  DownloadRequest,
+  DownloadResponse,
   UploadResponse,
 } from '../../../file-upload/src/assets/interfaces/file-upload.interface';
 
@@ -12,6 +17,10 @@ export interface FileUploadServiceClient {
   upload(
     metadata: Metadata,
   ): ClientDuplexStreamImpl<Chunk, UploadResponse>;
+  download(
+    request: DownloadRequest,
+    metadata: Metadata,
+  ): ClientReadableStreamImpl<DownloadResponse>;
 }
 interface FileUploadService {
   new (

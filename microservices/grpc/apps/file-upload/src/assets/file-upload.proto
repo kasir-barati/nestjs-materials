@@ -2,6 +2,11 @@ syntax = "proto3";
 
 package File;
 
+service FileUploadService {
+  rpc Upload(stream Chunk) returns (stream UploadResponse) {}
+  rpc Download(DownloadRequest) returns (stream DownloadResponse) {}
+}
+
 message Chunk {
   optional string file_name = 1;
   optional float total_size = 2;
@@ -14,9 +19,13 @@ message Chunk {
   bytes data = 7;
 }
 
-service FileUploadService {
-  rpc Upload(stream Chunk) returns (stream UploadResponse) {}
+message DownloadRequest {
+  string id = 1;
 }
 
 message UploadResponse {
+}
+
+message DownloadResponse {
+  bytes data = 1;
 }

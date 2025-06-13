@@ -141,4 +141,40 @@ describe('Upload file', () => {
     // Assert
     expect(true).toBeTruthy();
   }, 30000);
+
+  it('should download the uploaded file', async () => {
+    // Arrange
+    const metadata = new Metadata();
+    const uploadCallHandler = client.upload(metadata);
+    const fileContent = await readFile(filePath);
+    const { size: fileTotalSize } = await stat(filePath);
+    const checksumAlgorithm = ChecksumAlgorithm.CRC32;
+    const checksum = generateChecksum(fileContent, checksumAlgorithm);
+    /**@description 5MB */
+    const chunkSize = 5 * 1024 * 1024;
+    const stream = createReadStream(filePath, {
+      highWaterMark: chunkSize,
+    });
+    const id = randomUUID();
+    await uploadStream({
+      callHandler: uploadCallHandler,
+      checksum,
+      checksumAlgorithm,
+      fileTotalSize,
+      fileName,
+      stream,
+      id,
+    });
+
+    // Act
+    await new Promise<void>((resolve, reject) => {
+      const callHandler = client.download({ id }, metadata);
+      callHandler.on('data', (res) => console.log(res));
+      callHandler.on('error', (err) => reject(err));
+      callHandler.on('end', () => resolve());
+    });
+
+    // Assert
+    expect(true).toBeTruthy();
+  }, 30000);
 });
