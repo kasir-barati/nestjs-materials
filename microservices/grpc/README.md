@@ -15,6 +15,10 @@
 4. `nx serve file-upload`.
 5. `nx e2e file-upload-e2e`.
 
+> [!CAUTION]
+>
+> https://github.com/Papooch/nestjs-cls/issues/348
+
 ### Minio
 
 - Default username and password comes from the [`.env`](./apps/file-upload/.env) file. If you have not change anything they should be `adminadmin`.
