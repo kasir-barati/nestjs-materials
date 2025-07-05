@@ -48,10 +48,6 @@ export class FileService {
     return Body.transformToWebStream();
   }
 
-  /**
-   *
-   * @returns upload ID. We'll use this ID to associate all of the parts in the specific multipart upload.
-   */
   async createMultipartUpload({
     bucketName,
     objectKey,
