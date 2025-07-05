@@ -10,7 +10,7 @@ export function appendUint8Array(
   }
 
   combined.set(data);
-  combined.set(newData, newData.length + 1);
+  combined.set(newData, data.length);
 
   return combined;
 }

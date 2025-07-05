@@ -13,6 +13,12 @@ import {
   UploadResponse,
 } from '../../../file-upload/src/assets/interfaces/file-upload.interface';
 
+export interface FileUploaderServiceClient {
+  upload(
+    metadata: Metadata,
+  ): ClientDuplexStreamImpl<Chunk, UploadResponse>;
+}
+
 export interface FileUploadServiceClient {
   upload(
     metadata: Metadata,

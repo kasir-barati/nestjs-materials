@@ -17,7 +17,10 @@ async function bootstrap() {
     options: {
       url: `0.0.0.0:3000`,
       package: FILE_PACKAGE_NAME,
-      protoPath: [join(__dirname, 'assets', 'file-upload.proto')],
+      protoPath: [
+        join(__dirname, 'assets', 'file-upload.proto'),
+        join(__dirname, 'assets', 'file-uploader.proto'),
+      ],
       loader: {
         includeDirs: [join(__dirname, 'assets')],
       },

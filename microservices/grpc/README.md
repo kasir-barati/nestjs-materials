@@ -77,3 +77,10 @@ I event opened this issue for the [`@aws-sdk/client-s3`](https://github.com/aws/
 So this issue was cause because I was not adding the returned checksum from the `UploadPartCommand` to the `this.parts` array [here](https://github.com/kasir-barati/nestjs-materials/blob/8a17566e02988c349627addee4c71035acf64a12/microservices/grpc/apps/file-upload/src/app/services/file.service.ts#L62-L70). And when I added it it was working again.
 
 </details>
+
+<details>
+<summary><strong>Upload smaller parts and yet have the <code>FULL_OBJECT</code> checksum validation</strong></summary>
+
+So I wanted to be able to upload smaller chunks of data and not touch configurations like `grpc.max_send_message_length`. So I made some adjustments to my [`FileService`](./apps/file-upload/src/app/services/file.service.ts) and now it is called [`UploaderService`](./apps/file-upload/src/file-uploader/services/uploader.service.ts) which will detect when it should use multipart and when to use a simple `PutObjectCommand`.
+
+</details>

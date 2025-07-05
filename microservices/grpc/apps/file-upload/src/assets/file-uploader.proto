@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package File;
+
+import "file-upload.proto";
+
+service FileUploaderService {
+  rpc Upload(stream Chunk) returns (stream UploadResponse) {}
+  rpc Download(DownloadRequest) returns (stream DownloadResponse) {}
+}
