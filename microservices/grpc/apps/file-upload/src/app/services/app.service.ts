@@ -3,17 +3,13 @@ import {
   CORRELATION_ID_CLS_KEY,
   CorrelationIdService,
 } from '@grpc/modules';
-import {
-  constraintsToString,
-  readableStreamToObservable,
-} from '@grpc/shared';
+import { readableStreamToObservable } from '@grpc/shared';
 import {
   Injectable,
   Logger,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { isEmpty, validate } from 'class-validator';
+import { isEmpty } from 'class-validator';
 import { UseCls } from 'nestjs-cls';
 import { extname } from 'path';
 import { concatMap, Observable, ReplaySubject } from 'rxjs';
@@ -22,7 +18,7 @@ import {
   DownloadResponse,
   UploadResponse,
 } from '../../assets/interfaces/file-upload.interface';
-import { ChunkDto } from '../dtos/chunk.dto';
+import { ChunkDto, validateData } from '../../shared';
 import { FileRepository } from '../repositories/file.repository';
 import { FileService } from './file.service';
 
@@ -52,9 +48,9 @@ export class AppService {
           return this.correlationIdService.useCorrelationId(
             correlationId,
             async () => {
-              const validatedData = await this.validateIncomingData(
-                correlationId,
+              const validatedData = await validateData(
                 unvalidatedData,
+                ChunkDto,
               );
 
               if (validatedData.partNumber === 1) {
@@ -132,28 +128,6 @@ export class AppService {
     });
 
     return readableStreamToObservable(data);
-  }
-
-  @UseCls<[string, ChunkDto]>({
-    setup: (cls, correlationId, _chunkDto) => {
-      cls.set(CORRELATION_ID_CLS_KEY, correlationId);
-    },
-  })
-  private async validateIncomingData(
-    correlationId: string,
-    unvalidatedData: ChunkDto,
-  ): Promise<ChunkDto> {
-    const data = plainToInstance(ChunkDto, unvalidatedData, {
-      enableImplicitConversion: true,
-    });
-    const validationResult = await validate(data);
-
-    if (validationResult.length > 0) {
-      const error = constraintsToString(validationResult);
-      throw error?.join(', ') ?? 'Validation failed';
-    }
-
-    return data;
   }
 
   @UseCls<[string, unknown]>({

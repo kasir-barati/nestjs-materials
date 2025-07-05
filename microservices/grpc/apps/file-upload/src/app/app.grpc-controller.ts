@@ -9,8 +9,7 @@ import {
   FileUploadServiceControllerMethods,
   UploadResponse,
 } from '../assets/interfaces/file-upload.interface';
-import { ChunkDto } from './dtos/chunk.dto';
-import { DownloadDto } from './dtos/download.dto';
+import { ChunkDto, DownloadDto } from '../shared';
 import { AppService } from './services/app.service';
 
 @Controller()
