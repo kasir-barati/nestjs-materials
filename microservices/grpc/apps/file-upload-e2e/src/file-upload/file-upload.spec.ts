@@ -53,10 +53,7 @@ describe('Upload file', () => {
 
     fileName = 'upload-me.txt';
     filePath = join(__dirname, fileName);
-    await generateLargeFile({
-      filePath,
-      sizeInMb: 7,
-    });
+    await generateLargeFile(7, filePath);
   });
 
   // FIXME:
@@ -169,9 +166,10 @@ describe('Upload file', () => {
     // Act
     await new Promise<void>((resolve, reject) => {
       const callHandler = client.download({ id }, metadata);
-      callHandler.on('data', (res) => console.log(res));
-      callHandler.on('error', (err) => reject(err));
-      callHandler.on('end', () => resolve());
+      callHandler
+        // .on('data', (res) => console.log(res))
+        .on('error', (err) => reject(err))
+        .on('end', () => resolve());
     });
 
     // Assert

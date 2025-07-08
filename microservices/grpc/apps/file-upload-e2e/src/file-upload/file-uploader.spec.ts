@@ -48,16 +48,10 @@ describe('Upload file', () => {
 
     largeFilename = 'upload-me1.txt';
     largeFilePath = join(__dirname, largeFilename);
-    await generateLargeFile({
-      filePath: largeFilePath,
-      sizeInMb: 7,
-    });
+    await generateLargeFile(50, largeFilePath);
     smallFilename = 'upload-me2.txt';
     smallFilePath = join(__dirname, largeFilename);
-    await generateLargeFile({
-      filePath: largeFilePath,
-      sizeInMb: 3,
-    });
+    await generateLargeFile(3, smallFilename);
   });
 
   it('should upload a huge file with MultipartUploadCommand', async () => {

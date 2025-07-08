@@ -8,12 +8,14 @@ import {
   S3Client,
   UploadPartCommand,
 } from '@aws-sdk/client-s3';
-import { InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 import mime from 'mime-types';
 
 import { appendUint8Array } from '../../shared';
 
 export class UploaderService {
+  private readonly logger = new Logger(UploaderService.name);
+
   private uploadId?: string;
   private parts: CompletedPart[] = [];
   private chunk: Uint8Array;
@@ -88,8 +90,10 @@ export class UploaderService {
       Bucket: this.bucketName,
       Key: this.objectKey,
       UploadId: this.uploadId,
-      ChecksumType: 'FULL_OBJECT',
-      [`Checksum` + this.checksumAlgorithm]: checksum,
+      ...(checksum && {
+        ChecksumType: 'FULL_OBJECT',
+        [`Checksum` + this.checksumAlgorithm]: checksum,
+      }),
       MultipartUpload: { Parts: this.parts },
     });
 
@@ -97,12 +101,18 @@ export class UploaderService {
   }
 
   private async createMultipartUpload() {
+    this.logger.verbose(
+      `Initiate multipart upload (bucket: ${this.bucketName}, key: ${this.objectKey}, filename: ${this.filename})!`,
+    );
+
     const contentType = mime.lookup(this.filename);
     const command = new CreateMultipartUploadCommand({
       Bucket: this.bucketName,
       Key: this.objectKey,
-      ChecksumAlgorithm: this.checksumAlgorithm,
-      ChecksumType: 'FULL_OBJECT',
+      ...(this.checksumAlgorithm && {
+        ChecksumAlgorithm: this.checksumAlgorithm,
+        ChecksumType: 'FULL_OBJECT',
+      }),
       ContentType: contentType === false ? 'unknown' : contentType,
       ContentDisposition: `attachment; filename="${this.filename}"`,
     });
@@ -118,6 +128,11 @@ export class UploaderService {
 
   private async uploadPart() {
     const partNumber = this.parts.length + 1;
+
+    this.logger.verbose(
+      `Upload part #${partNumber} (upload ID: ${this.uploadId})`,
+    );
+
     const command = new UploadPartCommand({
       Bucket: this.bucketName,
       Key: this.objectKey,
