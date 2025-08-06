@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -40,6 +41,7 @@ export class DriverController {
     private readonly driverSanitizer: DriverSanitizer,
   ) {}
 
+  @ApiConsumes('application/merge-patch+json')
   @ApiOperation({
     summary: 'Create or update a driver resource.',
     description:
