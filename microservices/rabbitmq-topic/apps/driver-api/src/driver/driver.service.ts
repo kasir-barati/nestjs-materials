@@ -2,7 +2,6 @@ import {
   containsNull,
   DRIVER_CREATED_ROUTING_KEY,
   DRIVER_UPDATED_ROUTING_KEY,
-  Event,
   NullFieldError,
   TOPIC_EXCHANGE,
 } from '@app/common';
@@ -50,7 +49,7 @@ export class DriverService {
           session,
         );
 
-        await this.amqpConnection.publish<Event<Driver, Driver>>(
+        await this.amqpConnection.publish(
           TOPIC_EXCHANGE,
           DRIVER_UPDATED_ROUTING_KEY,
           {
@@ -82,7 +81,7 @@ export class DriverService {
         session,
       );
 
-      await this.amqpConnection.publish<Event<undefined, Driver>>(
+      await this.amqpConnection.publish(
         TOPIC_EXCHANGE,
         DRIVER_CREATED_ROUTING_KEY,
         {

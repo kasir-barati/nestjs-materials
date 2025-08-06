@@ -39,17 +39,19 @@ export class RabbitmqService {
         driverId: payload.afterEvent._id,
       });
 
-      await this.amqpConnection.publish<
-        Event<undefined, Verification>
-      >(TOPIC_EXCHANGE, VERIFICATION_CREATED_ROUTING_KEY, {
-        beforeEvent: undefined,
-        afterEvent: verification,
-        eventType: 'create',
-        requestId: payload.requestId,
-        tags: ['verification'],
-        timestamp: new Date().toISOString(),
-        userId: payload.userId,
-      });
+      await this.amqpConnection.publish(
+        TOPIC_EXCHANGE,
+        VERIFICATION_CREATED_ROUTING_KEY,
+        {
+          beforeEvent: undefined,
+          afterEvent: verification,
+          eventType: 'create',
+          requestId: payload.requestId,
+          tags: ['verification'],
+          timestamp: new Date().toISOString(),
+          userId: payload.userId,
+        },
+      );
     } catch (error) {
       if (verification) {
         await this.verificationRepository.delete(
@@ -57,17 +59,19 @@ export class RabbitmqService {
         );
       }
 
-      await this.amqpConnection.publish<
-        Event<Verification, undefined>
-      >(TOPIC_EXCHANGE, VERIFICATION_DELETED_ROUTING_KEY, {
-        beforeEvent: verification,
-        afterEvent: undefined,
-        eventType: 'delete',
-        requestId: payload.requestId,
-        userId: payload.userId,
-        tags: ['verification'],
-        timestamp: new Date().toISOString(),
-      });
+      await this.amqpConnection.publish(
+        TOPIC_EXCHANGE,
+        VERIFICATION_DELETED_ROUTING_KEY,
+        {
+          beforeEvent: verification,
+          afterEvent: undefined,
+          eventType: 'delete',
+          requestId: payload.requestId,
+          userId: payload.userId,
+          tags: ['verification'],
+          timestamp: new Date().toISOString(),
+        },
+      );
 
       throw error;
     }

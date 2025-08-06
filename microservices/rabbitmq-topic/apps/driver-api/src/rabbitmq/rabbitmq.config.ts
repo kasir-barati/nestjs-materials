@@ -3,14 +3,17 @@ import {
   DRIVER_VERIFICATION_REQ_QUEUE,
   TOPIC_EXCHANGE,
 } from '@app/common';
-import { ModuleConfigFactory } from '@golevelup/nestjs-modules';
 import { RabbitMQConfig } from '@golevelup/nestjs-rabbitmq';
-import { Inject } from '@nestjs/common';
+import {
+  ConfigurableModuleOptionsFactory,
+  Inject,
+} from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import driverApiConfig from '../configs/driver-api.config';
 
 export class RabbitmqModuleConfig
-  implements ModuleConfigFactory<RabbitMQConfig>
+  implements
+    ConfigurableModuleOptionsFactory<RabbitMQConfig, 'create'>
 {
   constructor(
     @Inject(driverApiConfig.KEY)
@@ -19,7 +22,7 @@ export class RabbitmqModuleConfig
     >,
   ) {}
 
-  createModuleConfig(): RabbitMQConfig | Promise<RabbitMQConfig> {
+  create(): RabbitMQConfig | Promise<RabbitMQConfig> {
     const { RABBITMQ_URL } = this.driverApiConfigs;
 
     return {

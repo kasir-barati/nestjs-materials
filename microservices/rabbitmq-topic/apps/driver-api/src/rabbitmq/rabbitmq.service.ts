@@ -47,7 +47,7 @@ export class RabbitmqService {
       const { retryCount = 0, ...rest } = payload;
 
       if (retryCount < 4) {
-        await this.amqpConnection.publish<Event<undefined, any>>(
+        await this.amqpConnection.publish(
           TOPIC_EXCHANGE,
           VERIFICATION_CREATED_ROUTING_KEY,
           {
@@ -86,7 +86,7 @@ export class RabbitmqService {
       const { retryCount = 0, ...rest } = payload;
 
       if (retryCount < 4) {
-        await this.amqpConnection.publish<Event<any, undefined>>(
+        await this.amqpConnection.publish(
           TOPIC_EXCHANGE,
           VERIFICATION_DELETED_ROUTING_KEY,
           {

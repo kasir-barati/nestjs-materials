@@ -5,14 +5,17 @@ import {
   VERIFICATION_CREATED_ROUTING_KEY,
   VERIFICATION_DELETED_ROUTING_KEY,
 } from '@app/common';
-import { ModuleConfigFactory } from '@golevelup/nestjs-modules';
 import { RabbitMQConfig } from '@golevelup/nestjs-rabbitmq';
-import { Inject } from '@nestjs/common';
+import {
+  ConfigurableModuleOptionsFactory,
+  Inject,
+} from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import verificationApiConfig from '../configs/verification-api.config';
 
 export class RabbitmqModuleConfig
-  implements ModuleConfigFactory<RabbitMQConfig>
+  implements
+    ConfigurableModuleOptionsFactory<RabbitMQConfig, 'create'>
 {
   constructor(
     @Inject(verificationApiConfig.KEY)
@@ -21,7 +24,7 @@ export class RabbitmqModuleConfig
     >,
   ) {}
 
-  createModuleConfig(): RabbitMQConfig | Promise<RabbitMQConfig> {
+  create(): RabbitMQConfig | Promise<RabbitMQConfig> {
     const { RABBITMQ_URL } = this.verificationApiConfigs;
 
     return {

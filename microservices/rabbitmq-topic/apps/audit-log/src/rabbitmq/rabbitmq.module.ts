@@ -8,7 +8,7 @@ import { RabbitmqService } from './rabbitmq.service';
 
 @Module({
   imports: [
-    RabbitMQModule.forRootAsync(RabbitMQModule, {
+    RabbitMQModule.forRootAsync({
       imports: [ConfigModule.forFeature(auditLogApiConfig)],
       useClass: RabbitmqModuleConfig,
     }),
