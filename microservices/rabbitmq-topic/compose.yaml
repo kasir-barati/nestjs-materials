@@ -15,9 +15,11 @@ services:
         condition: service_healthy
       message-broker:
         condition: service_healthy
+    environment:
+      DATABASE_URL: mongodb://root:pass@audit-log-db:27017
+      MONGO_INITDB_DATABASE: audit-log
     env_file:
       - .env
-      - apps/audit-log/.env
 
   driver-api:
     image: driver-api
@@ -35,9 +37,11 @@ services:
         condition: service_healthy
       message-broker:
         condition: service_healthy
+    environment:
+      DATABASE_URL: mongodb://root:pass@driver-api-db:27017
+      MONGO_INITDB_DATABASE: driver-api
     env_file:
       - .env
-      - apps/driver-api/.env
 
   verification-api:
     image: verification-api
@@ -55,9 +59,11 @@ services:
         condition: service_healthy
       message-broker:
         condition: service_healthy
+    environment:
+      DATABASE_URL: mongodb://root:pass@verification-api-db:27017
+      MONGO_INITDB_DATABASE: verification-api
     env_file:
       - .env
-      - apps/verification-api/.env
 
   audit-log-db:
     image: mongo:8.0.0-rc17-noble
