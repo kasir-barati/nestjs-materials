@@ -1,5 +1,6 @@
 # Table of contents
 
+- [Docs](./docs/README.md).
 - [Microservices](./microservices/README.md)
   - [gRPC](./docs/grpc/README.md).
   - [Protobuf](./docs/grpc/protobuf.md).

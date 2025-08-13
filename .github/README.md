@@ -6,6 +6,7 @@
 
 NestJS tips, tricks, Notes, Things which are not in doc and I used to figure them out and use them
 
+- [Docs](../docs/README.md).
 - [Microservices](../microservices/README.md)
   - [gRPC](../docs/grpc/README.md).
   - [Protobuf](../docs/grpc/protobuf.md).
