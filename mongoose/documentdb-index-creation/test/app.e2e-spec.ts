@@ -13,14 +13,17 @@ describe('AppController (e2e)', () => {
     const mongodbContainer = await new MongoDBContainer(
       'mongo:8.0.0',
     ).start();
+
     process.env.DB_URI = mongodbContainer.getConnectionString();
     process.env.NODE_ENV = 'test';
+
     const moduleFixture: TestingModule =
       await Test.createTestingModule({
         imports: [AppModule],
       }).compile();
 
     app = moduleFixture.createNestApplication();
+
     await app.init();
     await app.listen(0);
   });
@@ -31,4 +34,12 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('Hello World!');
   });
+
+  it.todo('/users (GET)');
+  // , () => {
+  //   return request(app.getHttpServer())
+  //     .get('/users')
+  //     .expect(200)
+  //     .expect([]);
+  // });
 });

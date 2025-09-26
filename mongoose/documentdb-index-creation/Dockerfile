@@ -2,6 +2,8 @@ FROM node:20.10.0-slim AS development
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV CI=true
+
 RUN corepack enable
 
 ARG NODE_ENV=development

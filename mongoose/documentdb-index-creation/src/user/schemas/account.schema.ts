@@ -10,7 +10,9 @@ export class Account {
   @Prop({ type: [AddressSchema], default: [] })
   addresses: Address[];
 }
+
 export const AccountSchema = SchemaFactory.createForClass(Account);
+
 AccountSchema.index(
   { 'addresses.city': 1 },
   { name: 'accountAddressUniqueCity' },

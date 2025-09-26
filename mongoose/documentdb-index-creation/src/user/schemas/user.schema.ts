@@ -12,9 +12,24 @@ export class User {
 
   @Prop({ type: AddressSchema })
   address: Address;
+
+  @Prop()
+  isVerified: boolean;
+
+  @Prop({
+    default: function () {
+      if ((this as User).isVerified) {
+        return 'user';
+      }
+
+      return 'guest';
+    },
+  })
+  role: 'user' | 'guest';
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
 UserSchema.index(
   { email: 1 },
   { unique: true, name: 'userUniqueEmail' },

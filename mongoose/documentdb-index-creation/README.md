@@ -23,3 +23,19 @@ You need to hook into the `onApplicationBootstrap` lifecycle event of NestJS and
 5. If you need to create an index on a field in a shared nested-document, you need to create it in the collection which is using the shared nested schema, similar to [users collection](./src/user/schemas/user.schema.ts).
 
    And if the field is an array of objects, the syntax does not change at all. You can look at [accounts collection](./src/user/schemas/account.schema.ts) for reference.
+
+# Default Value for a New Field
+
+- I wanted to add `role` field to the user collection.
+- But with no database migration.
+- And its value should be calculated if not provided when we are creating a new document like this:
+  - If `isVerified` field is `true` then they're user.
+  - Else they are guest.
+
+## How to Test
+
+```bash
+docker compose up -d
+```
+
+Then open mongo-express to create a new user without any value or role field, but with a `isVerified`. Then try to fetch all users: http://localhost:3000/users.
