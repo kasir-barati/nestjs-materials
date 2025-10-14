@@ -1,7 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-import { PostCategory } from '../enums';
+import { PostCategory, PostType } from '../enums';
+import { PostTypeUnion } from '../types';
+import { NewsPostSchema } from './news-post.schema';
+import { PostTypeDiscriminator } from './post-type.schema';
+import { TechPostSchema } from './tech-post.schema';
 
 export type PostDocument = HydratedDocument<Post>;
 
@@ -25,10 +29,24 @@ export class Post {
     enum: Object.values(PostCategory),
   })
   categories: PostCategory[];
+
+  @Prop({
+    type: [PostTypeDiscriminator],
+    required: true,
+  })
+  type: PostTypeUnion[];
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 
+PostSchema.path('type').schema.discriminator(
+  PostType.NEWS,
+  NewsPostSchema,
+);
+PostSchema.path('type').schema.discriminator(
+  PostType.TECH,
+  TechPostSchema,
+);
 PostSchema.index({ title: 1 }, { name: 'findPostsByTitle' });
 PostSchema.index({ tags: 1 }, { name: 'findPostsByTags' });
 PostSchema.index(
