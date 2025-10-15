@@ -3,9 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { randomString } from '../../shared';
-import { PostCategory, PostType } from '../enums';
+import { PostCategory, PostStyle, PostType } from '../enums';
 import { Post, PostDocument } from '../schemas';
-import { isNewsPost, isTechPost } from '../types';
+import {
+  isFeaturedPost,
+  isNewsPost,
+  isStandardPost,
+  isTechPost,
+} from '../types';
 
 @Injectable()
 export class AppService {
@@ -28,6 +33,11 @@ export class AppService {
           techStack: ['Node.js', 'TypeScript', 'MongoDB'],
         },
       ],
+      style: {
+        type: PostStyle.FEATURED,
+        border: '1px solid #000',
+        poster: 'https://example.com/poster.jpg',
+      },
     });
 
     await this.postModel.create({
@@ -40,6 +50,11 @@ export class AppService {
           headlines: ['Breaking News', 'Latest Updates'],
         },
       ],
+      style: {
+        type: PostStyle.STANDARD,
+        border: '1px dashed #ccc',
+        color: 'blue',
+      },
     });
 
     const posts = await this.postModel.find();
@@ -53,6 +68,9 @@ export class AppService {
           console.log(post.title);
           console.log(type.techStack);
           console.log(post.categories);
+          if (post.style && isFeaturedPost(post.style)) {
+            console.log(post.style.poster);
+          }
           // type.headlines; // Property 'headlines' does not exist on type 'TechPostMap'
           console.log('='.repeat(20));
         }
@@ -63,6 +81,9 @@ export class AppService {
           console.log(post.title);
           console.log(type.headlines);
           console.log(post.categories);
+          if (post.style && isStandardPost(post.style)) {
+            console.log(post.style.color);
+          }
           // type.techStack; // Property 'techStack' does not exist on type 'NewsPostMap'
           console.log('='.repeat(20));
         }

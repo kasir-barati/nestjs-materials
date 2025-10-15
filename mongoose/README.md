@@ -1,7 +1,8 @@
 # Mongoose
 
 - [Auto index creation in DocumentDB](./documentdb-index-creation/README.md).
-- [An array of discriminators](./documentdb-index-creation/src/app/schemas/post.schema.ts).
+- [An array of discriminators](./documentdb-index-creation/src/app/schemas/post-type.schema.ts).
+- [A nested document with different schemas (nested discriminator)](./documentdb-index-creation/src/app/schemas/post-style.schema.ts).
 - [One to many](./one-to-many).
 - [Transactions](./transactions/README.md).
 

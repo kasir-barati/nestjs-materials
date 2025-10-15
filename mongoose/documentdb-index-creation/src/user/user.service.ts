@@ -11,16 +11,16 @@ export class UserService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    await this.userModel.create({
-      email: 'jawad@barati.com',
-      isVerified: true,
-      address: { city: 'Forsaken Land' },
-    });
-    await this.userModel.create({
-      email: 'kasir@barati.com',
-      isVerified: false,
-      address: { city: 'Never Winter' },
-    });
+    // await this.userModel.create({
+    //   email: 'jawad@barati.com',
+    //   isVerified: true,
+    //   address: { city: 'Forsaken Land' },
+    // });
+    // await this.userModel.create({
+    //   email: 'kasir@barati.com',
+    //   isVerified: false,
+    //   address: { city: 'Never Winter' },
+    // });
   }
 
   async users() {
