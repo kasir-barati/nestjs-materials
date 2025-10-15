@@ -12,5 +12,5 @@
 - [Kafka intro](./docs/kafka/README.md).
 - [RabbitMQ intro](./docs/rabbitmq/README.md).
 - [NestJS and GraphQL with `nestjs-query`](./docs/nestjs-query/README.md)
-- Mongoose
-  - [How to define the indexes automatically in DocumentDB](./mongoose/documentdb-index-creation/README.md).
+- [Mongoose](./mongoose)
+- [Custom decorators](./decorator).

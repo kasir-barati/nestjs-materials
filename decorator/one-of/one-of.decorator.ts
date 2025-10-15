@@ -8,7 +8,8 @@ import {
 } from "class-validator";
 
 /**
- * @description Throws an error if more than one of the properties are present in the request body/querystring.
+ * @description
+ * Throws an error if more than one of the properties are present in the request body/querystring.
  */
 export function OneOf(properties: string[]) {
   return function (target: any) {
