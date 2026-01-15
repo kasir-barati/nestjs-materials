@@ -12,7 +12,7 @@
 - [Kafka intro](./docs/kafka/README.md).
 - RabbitMQ:
   - [Intro](./docs/rabbitmq/README.md).
-  - [Batch processing and requeueing the failed messages and not the whole batch](https://github.com/kasir-barati/bugs/blob/34276f3c17b8a9e28c998a483676d180f8517636/README.md).
+  - [Batch processing and requeueing the failed messages and not the whole batch](https://github.com/kasir-barati/bugs/tree/nestjs-rabbitmq-batch-processing-messages).
 - [NestJS and GraphQL with `nestjs-query`](./docs/nestjs-query/README.md)
 - [Mongoose](./mongoose)
 - [Custom decorators](./decorator).
