@@ -225,8 +225,16 @@ The routing algorithm used depends on the exchange type and bindings.
 - Host multiple isolated environments (groups of users, exchanges, queues and so on) on a single broker.
 - Specify what `vhosts` you wanted to use during connection negotiation.
 
-# Refs
+<hr/>
+
+Refs
 
 - [AMQP 0-9-1 Model Explained](https://www.rabbitmq.com/tutorials/amqp-concepts).
 - [RabbitMQ Explained - Exchanges](https://youtu.be/o8eU5WiO8fw?si=bi50jN9kUIrjrKIa).
 - [My own doc for Microservices](https://github.com/kasir-barati/you-say/blob/main/.github/docs/microservices/README.md)
+
+<hr/>
+
+# RabbitMQ & NestJS
+
+- [Share a RabbitMQ connection with a Dynamic modules](./share-rabbitmq-connection-with-dynamic-module/README.md).
