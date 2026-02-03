@@ -234,7 +234,3 @@ Refs
 - [My own doc for Microservices](https://github.com/kasir-barati/you-say/blob/main/.github/docs/microservices/README.md)
 
 <hr/>
-
-# RabbitMQ & NestJS
-
-- [Share a RabbitMQ connection with a Dynamic modules](./share-rabbitmq-connection-with-dynamic-module/README.md).
