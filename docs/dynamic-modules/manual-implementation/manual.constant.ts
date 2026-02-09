@@ -1,0 +1,1 @@
+export const MODULE_OPTIONS_TOKEN = Symbol('MANUAL_MODULE_OPTIONS');

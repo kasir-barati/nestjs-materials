@@ -1,7 +1,7 @@
 # Table of contents
 
 - [DTO](./docs/dto.md).
-- [Dynamic modules](./docs/dynamic-modules.md).
+- [Dynamic modules](./docs/dynamic-modules/README.md).
 - [Microservices](./microservices/README.md)
   - [gRPC](./docs/grpc/README.md).
   - [Protobuf](./docs/grpc/protobuf.md).
