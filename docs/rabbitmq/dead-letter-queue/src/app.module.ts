@@ -4,11 +4,12 @@ import { join } from 'path';
 
 import { AppController } from './app.controller';
 import appConfig from './configs/app.config';
-import { MessagingModule } from './modules';
+import { EventModule, MessagingModule } from './modules';
 
 @Module({
   imports: [
     MessagingModule,
+    EventModule,
     ConfigModule.forRoot({
       load: [appConfig],
       cache: true,
