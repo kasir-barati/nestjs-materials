@@ -1,23 +1,17 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import {
   Controller,
-  Get,
+  Headers,
   InternalServerErrorException,
   Logger,
+  Post,
 } from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Types } from 'mongoose';
-
-import {
-  DRIVER_VERIFICATION_REQ_HEADER,
-  DRIVER_VERIFICATION_REQ_QUEUE,
-  HEADERS_EXCHANGE,
-} from './app.constant';
-import { DriverVerificationRequestPayload } from './app.type';
+import { randomUUID } from 'node:crypto';
 
 @ApiTags('App')
 @Controller()
@@ -27,26 +21,34 @@ export class AppController {
   constructor(private readonly amqpConnection: AmqpConnection) {}
 
   @ApiOperation({
-    description: `Send a message to ${DRIVER_VERIFICATION_REQ_QUEUE}.`,
+    description: `Register a new user.`,
   })
   @ApiInternalServerErrorResponse({
     type: InternalServerErrorException,
     description: 'Internal server error.',
   })
-  @Get()
-  async sendMessageToDriverVerificationReqQueue() {
-    this.logger.log('controller');
-
-    // Here I wanna send a message to a queue which bound to the specified header.
-    // But instead I am getting:
-    const message: DriverVerificationRequestPayload = {
-      driverId: new Types.ObjectId().toString(),
+  @Post('users')
+  async createUser(
+    @Headers('correlation-id') correlationId: string = randomUUID(),
+  ): Promise<void> {
+    const message = {
+      messageId: randomUUID(),
+      userInfo: {
+        id: randomUUID(),
+        name: 'John Doe',
+      },
+    };
+    const headers = {
+      'x-delivery-count': 0,
+      'correlation-id': correlationId,
     };
 
-    await this.amqpConnection.publish(HEADERS_EXCHANGE, '', message, {
-      headers: {
-        [DRIVER_VERIFICATION_REQ_HEADER]: DRIVER_VERIFICATION_REQ_QUEUE,
-      },
+    this.logger.log(
+      `Message: ${JSON.stringify(message)}, headers: ${JSON.stringify(headers)}`,
+    );
+
+    await this.amqpConnection.publish('events', 'user.registered', message, {
+      headers,
     });
   }
 }

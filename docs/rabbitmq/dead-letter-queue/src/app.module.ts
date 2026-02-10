@@ -4,13 +4,11 @@ import { join } from 'path';
 
 import { AppController } from './app.controller';
 import appConfig from './configs/app.config';
-import { DriverVerificationReqResModule } from './driver-verification-req-res/driver-verification-req-res.module';
-import { DriverVerificationModule } from './driver-verification/driver-verification.module';
+import { MessagingModule } from './modules';
 
 @Module({
   imports: [
-    DriverVerificationModule,
-    DriverVerificationReqResModule,
+    MessagingModule,
     ConfigModule.forRoot({
       load: [appConfig],
       cache: true,
