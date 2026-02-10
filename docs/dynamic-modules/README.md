@@ -77,7 +77,14 @@ MyModule.registerAsync({
 
 > [!NOTE]
 >
-> If you need to be able to inject extra options you need to define a new provider which provides exactly the extra options.
+> - If you need to be able to inject extra options you need to define a new provider which provides exactly the extra options.
+> - **NestJS's `ConfigurableModuleBuilder.setExtras()` has a design limitation**, it requires you to provide default values for **ALL** properties in the extras type, which makes them all effectively optional from TypeScript's perspective. So we need to make sure at runtime that we got all mandatory extra options:
+>   ```ts
+>   if (!myExtra) {
+>     throw new Error('myExtra is required in MyModule options');
+>   }
+>   ```
+
 
 ## More examples
 
