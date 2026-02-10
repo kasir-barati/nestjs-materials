@@ -1,10 +1,12 @@
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConsumeMessage } from 'amqplib';
+
+import { CustomLoggerService } from '../logger/custom-logger.service';
 
 @Injectable()
 export class EventConsumer {
-  private readonly logger = new Logger(EventConsumer.name);
+  constructor(private readonly logger: CustomLoggerService) {}
 
   @RabbitSubscribe({
     exchange: 'events',
@@ -33,22 +35,25 @@ export class EventConsumer {
     if (!correlationId) {
       this.logger.warn(
         `Received message without correlation-id: ${JSON.stringify(message)}`,
+        { context: EventConsumer.name },
       );
     }
 
     this.logger.log(
       `Received message: ${JSON.stringify(message)}, deliveryCount: ${deliveryCount}`,
-      { correlationId },
+      { context: EventConsumer.name, correlationId },
     );
 
     if (this.shouldFail()) {
       this.logger.error(`Failed to process message: ${message.messageId}`, {
+        context: EventConsumer.name,
         correlationId,
       });
       throw new Error('Random failure occurred during message processing');
     }
 
     this.logger.log(`Successfully processed message: ${message.messageId}`, {
+      context: EventConsumer.name,
       correlationId,
     });
   }

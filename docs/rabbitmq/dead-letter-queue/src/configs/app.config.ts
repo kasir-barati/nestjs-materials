@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-export default registerAs('appConfigs', (): AppConfig => {
+export const appConfigs = registerAs('appConfigs', (): AppConfig => {
   const validatedEnvs = validateEnv(process.env, EnvironmentVariables);
 
   return validatedEnvs;

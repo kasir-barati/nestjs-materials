@@ -1,16 +1,19 @@
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 import { AppModule } from './app.module';
 import { urlBuilder } from './utils';
 import { createSwaggerConfiguration } from './utils/create-swagger-configuration.util';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
   const PORT = 3000;
   const SWAGGER_PATH = '/docs';
   const appUrl = `http://localhost:${PORT}/`;
-  const logger = new Logger('NestApplication');
+  const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);
 
   app.useGlobalPipes(
     new ValidationPipe({
