@@ -4,7 +4,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import {
   ASYNC_OPTIONS_TYPE,
   ConfigurableModuleClass,
-  RegisterMyModuleOptions
+  ExtraMyModuleOptions,
+  MODULE_EXTRAS_TOKEN,
+  RegisterMyModuleOptions,
 } from './my.module-definition';
 import { MyService } from './my.service';
 
@@ -13,10 +15,21 @@ import { MyService } from './my.service';
   exports: [MyService],
 })
 export class MyModule extends ConfigurableModuleClass {
-  static override register(
-    options: RegisterMyModuleOptions,
-  ): DynamicModule {
+  private static extractExtras(
+    options: RegisterMyModuleOptions | typeof ASYNC_OPTIONS_TYPE,
+  ): ExtraMyModuleOptions {
+    const { myExtra, global } = options;
+
+    if (!myExtra) {
+      throw new Error('myExtra is required in MyModule options');
+    }
+
+    return { myExtra, global };
+  }
+
+  static override register(options: RegisterMyModuleOptions): DynamicModule {
     const baseModule = super.register(options);
+    const extraOptions = this.extractExtras(options);
 
     return {
       ...baseModule,
@@ -24,17 +37,31 @@ export class MyModule extends ConfigurableModuleClass {
         ScheduleModule.forRoot(),
         /* ... */
       ],
+      providers: [
+        ...(baseModule.providers || []),
+        {
+          provide: MODULE_EXTRAS_TOKEN,
+          useValue: extraOptions,
+        },
+      ],
     };
   }
 
-  static override registerAsync(options: typeof ASYNC_OPTIONS_TYPE): DynamicModule {
+  static override registerAsync(
+    options: typeof ASYNC_OPTIONS_TYPE,
+  ): DynamicModule {
     const baseModule = super.registerAsync(options);
+    const extraOptions = this.extractExtras(options);
 
     return {
       ...baseModule,
-      imports: [
-        ...(baseModule.imports || []),
-        ScheduleModule.forRoot(),
+      imports: [...(baseModule.imports || []), ScheduleModule.forRoot()],
+      providers: [
+        ...(baseModule.providers || []),
+        {
+          provide: MODULE_EXTRAS_TOKEN,
+          useValue: extraOptions,
+        },
       ],
     };
   }

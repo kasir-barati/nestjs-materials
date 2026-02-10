@@ -1,8 +1,12 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
-import {
-  MODULE_OPTIONS_TOKEN,
+import type {
+  ExtraMyModuleOptions,
   MyModuleOptions,
+} from './my.module-definition';
+import {
+  MODULE_EXTRAS_TOKEN,
+  MODULE_OPTIONS_TOKEN,
 } from './my.module-definition';
 
 @Injectable()
@@ -11,9 +15,9 @@ export class MyService {
 
   constructor(
     @Inject(MODULE_OPTIONS_TOKEN) private readonly options: MyModuleOptions,
+    @Inject(MODULE_EXTRAS_TOKEN) private readonly extras: ExtraMyModuleOptions,
   ) {
-    this.logger.log(options.batchSize);
-    this.logger.log(options.maxRetryAttempts);
-    this.logger.log(options.processingIntervalMs);
+    this.logger.log(`Options: ${JSON.stringify(this.options, null, 2)}`);
+    this.logger.log(`Extras: ${JSON.stringify(this.extras, null, 2)}`);
   }
 }

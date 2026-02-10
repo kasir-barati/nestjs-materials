@@ -47,10 +47,12 @@ ManualModule.registerAsync({
 MyModule.register({
   global: true,
   someOption: 123,
+  myExtra: 'extra-register',
 })
 
 MyModule.registerAsync({
   global: true,
+  myExtra: 'extra-register-async-useFactory',
   useFactory() {
     return {
       someOption: 123,
@@ -68,9 +70,14 @@ class MyModuleOptions implements MyModuleOptionsFactory {
 
 MyModule.registerAsync({
   global: true,
+  myExtra: 'extra-register-async-useClass',
   useClass: MyModuleOptions,
 })
 ```
+
+> [!NOTE]
+>
+> If you need to be able to inject extra options you need to define a new provider which provides exactly the extra options.
 
 ## More examples
 
