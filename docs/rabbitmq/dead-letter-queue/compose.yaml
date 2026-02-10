@@ -1,0 +1,15 @@
+services:
+  message-brocker:
+    image: rabbitmq:4.0-rc-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    user: ${RABBITMQ_DEFAULT_USER}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 1s
+      timeout: 3s
+      retries: 30
