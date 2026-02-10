@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 
-import { AppConfig, NodeEnv } from '../app.type';
+import { AppConfig, LogMode, NodeEnv } from '../app.type';
 import { validateEnv } from '../utils/validate-env.util';
 
 declare global {
@@ -23,4 +23,7 @@ class EnvironmentVariables implements AppConfig {
 
   @IsString()
   RABBITMQ_URL: string;
+
+  @IsIn(['JSON', 'PLAIN_TEXT'])
+  LOG_MODE: LogMode;
 }

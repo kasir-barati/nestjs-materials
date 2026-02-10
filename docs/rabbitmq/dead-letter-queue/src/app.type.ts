@@ -5,10 +5,11 @@ export enum NodeEnv {
   production = 'production',
   development = 'development',
 }
-
+export type LogMode = 'JSON' | 'PLAIN_TEXT';
 export interface AppConfig {
   NODE_ENV: NodeEnv;
   RABBITMQ_URL: string;
+  LOG_MODE: LogMode;
 }
 
 export type Constructor<T = any> = new (...args: any[]) => T;
