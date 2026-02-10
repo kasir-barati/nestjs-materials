@@ -27,9 +27,7 @@ import { nestLikeWithDashFormat } from './nest-like-with-dash.format';
               format: isJsonMode
                 ? jsonFormat
                 : winston.format.combine(
-                    winston.format.timestamp({
-                      format: 'MM/DD/YYYY, h:mm:ss A',
-                    }),
+                    winston.format.timestamp(),
                     nestLikeWithDashFormat, // Add " - " before timestamp
                     winston.format.ms(),
                     correlationIdFormat, // Process correlationId before nestLike
