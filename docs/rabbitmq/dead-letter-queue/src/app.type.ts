@@ -10,6 +10,8 @@ export interface AppConfig {
   NODE_ENV: NodeEnv;
   RABBITMQ_URL: string;
   LOG_MODE: LogMode;
+  RABBITMQ_PREFETCH_COUNT: number;
+  RABBITMQ_MAX_RETRY_COUNT: number;
 }
 
 export type Constructor<T = any> = new (...args: any[]) => T;

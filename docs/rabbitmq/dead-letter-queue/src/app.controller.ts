@@ -12,7 +12,8 @@ import {
 } from '@nestjs/swagger';
 import { randomUUID } from 'node:crypto';
 
-import { CustomLoggerService } from './modules/logger/custom-logger.service';
+import { CustomLoggerService } from './modules';
+import { GenericUserEvent } from './shared';
 
 @ApiTags('App')
 @Controller()
@@ -33,7 +34,7 @@ export class AppController {
   async createUser(
     @Headers('correlation-id') correlationId: string = randomUUID(),
   ): Promise<void> {
-    const message = {
+    const message: GenericUserEvent<{ id: string; name: string }> = {
       messageId: randomUUID(),
       userInfo: {
         id: randomUUID(),

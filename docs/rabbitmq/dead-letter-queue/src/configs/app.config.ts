@@ -1,5 +1,12 @@
 import { registerAs } from '@nestjs/config';
-import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 import { AppConfig, LogMode, NodeEnv } from '../app.type';
 import { validateEnv } from '../utils/validate-env.util';
@@ -26,4 +33,12 @@ class EnvironmentVariables implements AppConfig {
 
   @IsIn(['JSON', 'PLAIN_TEXT'])
   LOG_MODE: LogMode;
+
+  @IsInt()
+  @Min(1)
+  RABBITMQ_PREFETCH_COUNT: number;
+
+  @IsInt()
+  @Min(1)
+  RABBITMQ_MAX_RETRY_COUNT: number;
 }
