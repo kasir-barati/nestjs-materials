@@ -14,7 +14,7 @@ export class EventConsumer {
     exchange: 'events',
     routingKey: ['user.*'],
     queue: 'events-queue',
-    errorHandler: async (channel, message, _error) => {
+    errorHandler: (channel, message, _error) => {
       const deliveryCount = getDeliveryCount(message);
       const maxRetryCount = Number(process.env.RABBITMQ_MAX_RETRY_COUNT) ?? 3;
 
@@ -29,19 +29,19 @@ export class EventConsumer {
           'x-delivery-count': deliveryCount + 1,
         };
 
-        // We need to access the AmqpConnection from the context
-        // Since we can't access 'this' here, we'll use the channel to publish
-        await channel.publish(exchange, routingKey, message.content, {
+        // Requeue the message!
+        channel.publish(exchange, routingKey, message.content, {
           ...message.properties,
           headers,
         });
 
         // Acknowledge the original message to prevent redelivery
         channel.ack(message);
-      } else {
-        // Reject the message without requeue to send it to DLQ
-        channel.nack(message, false, false);
+        return;
       }
+
+      // Reject the message without requeue to send it to DLQ
+      channel.nack(message, false, false);
     },
     queueOptions: {
       durable: true,
@@ -89,6 +89,9 @@ export class EventConsumer {
       correlationId,
     });
   }
+
+  // DLQ consumer removed - messages will pile up in the queue
+  // Use the EventService.reprocessDLQMessages() method via API to manually process DLQ messages
 
   private shouldFail(): boolean {
     return Math.random() < 0.5;
