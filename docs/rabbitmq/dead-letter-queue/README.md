@@ -45,13 +45,13 @@
      $ curl -u $RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS \
             -H "content-type: application/json" \
             -X PUT http://$RABBITMQ_HTTP_BASE_URL/api/policies/%2F/events-poison-limit \
-            -d '{"pattern":"^events-queue$","definition":{"delivery-limit":3,"dead-letter-exchange":"events.dlx","dead-letter-routing-key":"user.dead-letter"},"priority":10,"apply-to":"queues"}'
+            -d '{"pattern":"^events-queue$","definition":{"delivery-limit":3,"dead-letter-exchange":"events.dlx","dead-letter-routing-key":"events.dead-letter"},"priority":10,"apply-to":"queues"}'
      ```
      This is exactly what `this.rabbitmqPolicyService.upsertDeliveryLimitPolicy(...)` does for us. Another way of configuring it is using `rabbitmqctl`:
      ```cmd
      $ rabbitmqctl set_policy --vhost / --apply-to queues events-poison-limit \
                    '^events-queue$' \
-                   '{"delivery-limit": 3, "dead-letter-exchange":"events.dlx", "dead-letter-routing-key":"user.dead-letter"}' \
+                   '{"delivery-limit": 3, "dead-letter-exchange":"events.dlx", "dead-letter-routing-key":"events.dead-letter"}' \
                    --priority 10
      ```
    - You can of course handle the retry and pushing the messages to the DLQ inside the `errorHandler`. But that is too much work.

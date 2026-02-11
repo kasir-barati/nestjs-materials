@@ -2,48 +2,44 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Message } from 'amqplib';
 
-import { GenericUserEvent } from '../../shared';
+import {
+  EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
+  GenericUserEvent,
+  ROUTING_KEY_OF_DLQ_FOR_EVENTS_QUEUE,
+} from '../../shared';
 import { CustomLoggerService } from '../logger';
 
 @Injectable()
 export class EventService implements OnModuleInit {
+  private readonly EVENTS_DEAD_LETTER_QUEUE = 'events-dlq';
+
   constructor(
     private readonly amqpConnection: AmqpConnection,
     private readonly logger: CustomLoggerService,
   ) {}
 
   async onModuleInit() {
-    // try {
-    //   const channel = this.amqpConnection.channel;
-    //   // Declare the main events queue with DLX configuration
-    //   await channel.assertQueue('events-queue', {
-    //     durable: true,
-    //     arguments: {
-    //       'x-queue-type': 'quorum',
-    //       'x-dead-letter-exchange': 'events.dlx',
-    //       'x-dead-letter-routing-key': 'events.dlq',
-    //       'x-delivery-limit': 3, // Max retries before going to DLQ
-    //     },
-    //   });
-    //   // Declare the dead letter queue as quorum type
-    //   await channel.assertQueue('events-dlq', {
-    //     durable: true,
-    //     arguments: {
-    //       'x-queue-type': 'quorum',
-    //     },
-    //   });
-    //   // Bind the DLQ to the dead letter exchange
-    //   await channel.bindQueue('events-dlq', 'events.dlx', 'events.dlq');
-    //   this.logger.log(
-    //     'Successfully declared queues: events-queue (with DLX) and events-dlq',
-    //     { context: EventService.name },
-    //   );
-    // } catch (error) {
-    //   this.logger.error(`Failed to declare queues: ${error.message}`, {
-    //     context: EventService.name,
-    //   });
-    //   throw error;
-    // }
+    try {
+      const channel = this.amqpConnection.channel;
+      await channel.assertQueue(this.EVENTS_DEAD_LETTER_QUEUE, {
+        durable: true,
+        arguments: { 'x-queue-type': 'quorum' },
+      });
+      await channel.bindQueue(
+        this.EVENTS_DEAD_LETTER_QUEUE,
+        EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
+        ROUTING_KEY_OF_DLQ_FOR_EVENTS_QUEUE,
+      );
+      this.logger.log(
+        `Successfully declared queues: ${this.EVENTS_DEAD_LETTER_QUEUE}`,
+        { context: EventService.name },
+      );
+    } catch (error) {
+      this.logger.error(`Failed to declare queues: ${error.message}`, {
+        context: EventService.name,
+      });
+      throw error;
+    }
   }
   /**
    * @description Consumes all messages from the DLQ and republish them back to the source queue for reprocessing.
@@ -52,7 +48,6 @@ export class EventService implements OnModuleInit {
     processed: number;
     errors: number;
   }> {
-    const queueName = 'events-dlq';
     let processed = 0;
     let errors = 0;
 
@@ -60,7 +55,7 @@ export class EventService implements OnModuleInit {
       const channel = this.amqpConnection.channel;
 
       // Check queue stats
-      const queueInfo = await channel.checkQueue(queueName);
+      const queueInfo = await channel.checkQueue(this.EVENTS_DEAD_LETTER_QUEUE);
       const messageCount = queueInfo.messageCount;
 
       this.logger.log(
@@ -74,7 +69,9 @@ export class EventService implements OnModuleInit {
 
       // Process messages one by one
       for (let i = 0; i < messageCount; i++) {
-        const msg = await channel.get(queueName, { noAck: false });
+        const msg = await channel.get(this.EVENTS_DEAD_LETTER_QUEUE, {
+          noAck: false,
+        });
 
         if (!msg) {
           // No more messages

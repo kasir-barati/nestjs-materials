@@ -2,6 +2,12 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import {
+  EVENTS_EXCHANGE,
+  EVENTS_EXCHANGE_TYPE,
+  EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
+  EXCHANGE_TYPE_OF_DLQ_FOR_EVENTS_QUEUE,
+} from '../../shared';
 import { RabbitmqPolicyService } from './rabbitmq-policy.service';
 
 @Global()
@@ -18,12 +24,12 @@ import { RabbitmqPolicyService } from './rabbitmq-policy.service';
           uri: configService.getOrThrow('RABBITMQ_URL'),
           exchanges: [
             {
-              name: 'events',
-              type: 'topic',
+              name: EVENTS_EXCHANGE,
+              type: EVENTS_EXCHANGE_TYPE,
             },
             {
-              name: 'events.dlx',
-              type: 'topic',
+              name: EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
+              type: EXCHANGE_TYPE_OF_DLQ_FOR_EVENTS_QUEUE,
             },
           ],
           channels: {

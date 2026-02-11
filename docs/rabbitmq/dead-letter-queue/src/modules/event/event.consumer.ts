@@ -2,7 +2,12 @@ import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConsumeMessage } from 'amqplib';
 
-import { GenericUserEvent } from '../../shared';
+import {
+  EVENTS_EXCHANGE,
+  EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
+  GenericUserEvent,
+  ROUTING_KEY_OF_DLQ_FOR_EVENTS_QUEUE,
+} from '../../shared';
 import { getDeliveryCount } from '../../utils';
 import { CustomLoggerService } from '../logger';
 import { RabbitmqPolicyService } from '../messaging';
@@ -22,13 +27,13 @@ export class EventConsumer implements OnModuleInit {
       policyName: 'events-delivery-limit-policy',
       queueNameRegex: '^events-queue$',
       deliveryLimit: 3,
-      deadLetterExchange: 'events.dlx',
-      deadLetterRoutingKey: 'user.dead-letter',
+      deadLetterExchange: EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
+      deadLetterRoutingKey: ROUTING_KEY_OF_DLQ_FOR_EVENTS_QUEUE,
     });
   }
 
   @RabbitSubscribe({
-    exchange: 'events',
+    exchange: EVENTS_EXCHANGE,
     routingKey: ['user.*'],
     queue: 'events-queue',
     // Note: The errorHandler is commented out because we're relying on RabbitMQ's built-in x-delivery-count and DLQ mechanism for retries and dead-lettering.
@@ -65,8 +70,8 @@ export class EventConsumer implements OnModuleInit {
       durable: true,
       arguments: {
         'x-queue-type': 'quorum',
-        'x-dead-letter-exchange': 'events.dlx',
-        'x-dead-letter-routing-key': 'user.dead-letter',
+        'x-dead-letter-exchange': EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
+        'x-dead-letter-routing-key': ROUTING_KEY_OF_DLQ_FOR_EVENTS_QUEUE,
       },
     },
   })
@@ -113,7 +118,7 @@ export class EventConsumer implements OnModuleInit {
   }
 
   @RabbitSubscribe({
-    exchange: 'events',
+    exchange: EVENTS_EXCHANGE,
     routingKey: 'user.reprocess-dlq',
     queue: 'reprocess-dlq-queue',
     queueOptions: {
