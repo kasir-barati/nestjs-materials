@@ -23,7 +23,10 @@ export class CustomLoggerService implements LoggerService {
         message,
         context: contextOrMeta,
       });
-    } else if (contextOrMeta && typeof contextOrMeta === 'object') {
+      return;
+    }
+
+    if (contextOrMeta && typeof contextOrMeta === 'object') {
       const { context, ...meta } = contextOrMeta as any;
       this.winstonLogger.log({
         level: 'info',
@@ -31,13 +34,14 @@ export class CustomLoggerService implements LoggerService {
         context: context || this.context,
         ...meta,
       });
-    } else {
-      this.winstonLogger.log({
-        level: 'info',
-        message,
-        context: this.context,
-      });
+      return;
     }
+
+    this.winstonLogger.log({
+      level: 'info',
+      message,
+      context: this.context,
+    });
   }
 
   error(
@@ -52,7 +56,10 @@ export class CustomLoggerService implements LoggerService {
         context: contextOrUndefined || this.context,
         stack: traceOrMeta,
       });
-    } else if (traceOrMeta && typeof traceOrMeta === 'object') {
+      return;
+    }
+
+    if (traceOrMeta && typeof traceOrMeta === 'object') {
       const { context, ...meta } = traceOrMeta as any;
       this.winstonLogger.log({
         level: 'error',
@@ -60,13 +67,14 @@ export class CustomLoggerService implements LoggerService {
         context: context || this.context,
         ...meta,
       });
-    } else {
-      this.winstonLogger.log({
-        level: 'error',
-        message,
-        context: this.context,
-      });
+      return;
     }
+
+    this.winstonLogger.log({
+      level: 'error',
+      message,
+      context: this.context,
+    });
   }
 
   warn(message: any, contextOrMeta?: string | Record<string, any>) {
@@ -76,7 +84,10 @@ export class CustomLoggerService implements LoggerService {
         message,
         context: contextOrMeta,
       });
-    } else if (contextOrMeta && typeof contextOrMeta === 'object') {
+      return;
+    }
+
+    if (contextOrMeta && typeof contextOrMeta === 'object') {
       const { context, ...meta } = contextOrMeta as any;
       this.winstonLogger.log({
         level: 'warn',
@@ -84,13 +95,14 @@ export class CustomLoggerService implements LoggerService {
         context: context || this.context,
         ...meta,
       });
-    } else {
-      this.winstonLogger.log({
-        level: 'warn',
-        message,
-        context: this.context,
-      });
+      return;
     }
+
+    this.winstonLogger.log({
+      level: 'warn',
+      message,
+      context: this.context,
+    });
   }
 
   debug(message: any, contextOrMeta?: string | Record<string, any>) {
@@ -100,7 +112,10 @@ export class CustomLoggerService implements LoggerService {
         message,
         context: contextOrMeta,
       });
-    } else if (contextOrMeta && typeof contextOrMeta === 'object') {
+      return;
+    }
+
+    if (contextOrMeta && typeof contextOrMeta === 'object') {
       const { context, ...meta } = contextOrMeta as any;
       this.winstonLogger.log({
         level: 'debug',
@@ -108,13 +123,14 @@ export class CustomLoggerService implements LoggerService {
         context: context || this.context,
         ...meta,
       });
-    } else {
-      this.winstonLogger.log({
-        level: 'debug',
-        message,
-        context: this.context,
-      });
+      return;
     }
+
+    this.winstonLogger.log({
+      level: 'debug',
+      message,
+      context: this.context,
+    });
   }
 
   verbose(message: any, contextOrMeta?: string | Record<string, any>) {
@@ -124,7 +140,10 @@ export class CustomLoggerService implements LoggerService {
         message,
         context: contextOrMeta,
       });
-    } else if (contextOrMeta && typeof contextOrMeta === 'object') {
+      return;
+    }
+
+    if (contextOrMeta && typeof contextOrMeta === 'object') {
       const { context, ...meta } = contextOrMeta as any;
       this.winstonLogger.log({
         level: 'verbose',
@@ -132,12 +151,13 @@ export class CustomLoggerService implements LoggerService {
         context: context || this.context,
         ...meta,
       });
-    } else {
-      this.winstonLogger.log({
-        level: 'verbose',
-        message,
-        context: this.context,
-      });
+      return;
     }
+
+    this.winstonLogger.log({
+      level: 'verbose',
+      message,
+      context: this.context,
+    });
   }
 }

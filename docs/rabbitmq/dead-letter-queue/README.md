@@ -1,4 +1,4 @@
-## Dead Letter Queue
+# Dead Letter Queue
 
 - What is the appropriate exchange type for the DLQ messages? There is **NOT** a special "DLQ exchange type" in RabbitMQ.
   - A DLQ is just a normal queue that receives messages routed through a dead‑letter exchange (DLX).
@@ -31,6 +31,30 @@
   - Limit: maxMessages, maxDuration.
   - Filter: only reprocess certain event types or time ranges.
   - Poison message handling: if the same payload fails again, park it (e.g., “parking-lot queue/topic”) for manual inspection.
+
+## How it Works
+
+1. RabbitMQ increases the `x-delivery-count` header with each retry automatically, no need for your majesty to do anything!
+   - RabbitMQ increases this counter by one each time we throw an error in our handler.
+   - We are **CANNOT** auto acknowledging messages.
+2. In `@RabbitSubscribe` decorator we should configure `x-dead-letter-exchange` and `x-dead-letter-routing-key` properties of a queue. This way it will know what it should do once it reaches the maximum retry count (we have to configure this as a policy separately).
+3. Lastly we need to create a policy for the queue to automatically send a message to the DLQ:
+   - To do this we need to configure the `delivery-limit` policy (learn more [here](https://www.rabbitmq.com/docs/quorum-queues#position-message-handling-configuring-limit)).
+   - We cannot configure policies unfortunately with `@golevelup/nestjs-rabbitmq` or `amqplib`. But we can configure it like this:
+     ```cmd
+     $ curl -u $RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS \
+            -H "content-type: application/json" \
+            -X PUT http://$RABBITMQ_HTTP_BASE_URL/api/policies/%2F/events-poison-limit \
+            -d '{"pattern":"^events-queue$","definition":{"delivery-limit":3,"dead-letter-exchange":"events.dlx","dead-letter-routing-key":"user.dead-letter"},"priority":10,"apply-to":"queues"}'
+     ```
+     This is exactly what `this.rabbitmqPolicyService.upsertDeliveryLimitPolicy(...)` does for us. Another way of configuring it is using `rabbitmqctl`:
+     ```cmd
+     $ rabbitmqctl set_policy --vhost / --apply-to queues events-poison-limit \
+                   '^events-queue$' \
+                   '{"delivery-limit": 3, "dead-letter-exchange":"events.dlx", "dead-letter-routing-key":"user.dead-letter"}' \
+                   --priority 10
+     ```
+   - You can of course handle the retry and pushing the messages to the DLQ inside the `errorHandler`. But that is too much work.
 
 ## How to start it
 

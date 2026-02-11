@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: dev
-    user: "${UID:-1000}:${GID:-1000}"
+    user: '${UID:-1000}:${GID:-1000}'
     ports:
       - 3000:3000
       - 9229:9229 # Debug port
@@ -16,7 +16,6 @@ services:
     depends_on:
       message-brocker:
         condition: service_healthy
-
 
   message-brocker:
     image: rabbitmq:4.0-rc-management-alpine

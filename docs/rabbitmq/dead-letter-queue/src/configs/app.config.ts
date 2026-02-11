@@ -8,7 +8,7 @@ import {
   Min,
 } from 'class-validator';
 
-import { AppConfig, LogMode, NodeEnv } from '../app.type';
+import { AppConfig, LogLevel, LogMode, NodeEnv } from '../app.type';
 import { validateEnv } from '../utils/validate-env.util';
 
 declare global {
@@ -33,6 +33,9 @@ class EnvironmentVariables implements AppConfig {
 
   @IsIn(['JSON', 'PLAIN_TEXT'])
   LOG_MODE: LogMode;
+
+  @IsIn(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'])
+  LOG_LEVEL: LogLevel;
 
   @IsInt()
   @Min(1)
