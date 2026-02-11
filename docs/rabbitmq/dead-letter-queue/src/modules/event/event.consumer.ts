@@ -85,7 +85,7 @@ export class EventConsumer implements OnModuleInit {
 
     if (correlationId === '978b00a9-1435-4768-9ddf-b2c1a78c1206') {
       // eslint-disable-next-line no-console
-      console.log('=========DELIVERY_COUNT=========', deliveryCount);
+      this.logger.debug('=========DELIVERY_COUNT========= ' + deliveryCount, { context: EventConsumer.name, correlationId });
       throw new Error('Simulated failure for testing DLQ');
     }
 
