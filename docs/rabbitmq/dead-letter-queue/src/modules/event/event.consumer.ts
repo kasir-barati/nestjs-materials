@@ -31,6 +31,7 @@ export class EventConsumer implements OnModuleInit {
     exchange: 'events',
     routingKey: ['user.*'],
     queue: 'events-queue',
+    // Note: The errorHandler is commented out because we're relying on RabbitMQ's built-in x-delivery-count and DLQ mechanism for retries and dead-lettering.
     // errorHandler: (channel, message, _error) => {
     //   const deliveryCount = getDeliveryCount(message);
     //   const maxRetryCount = Number(process.env.RABBITMQ_MAX_RETRY_COUNT) ?? 3;
@@ -84,8 +85,10 @@ export class EventConsumer implements OnModuleInit {
     }
 
     if (correlationId === '978b00a9-1435-4768-9ddf-b2c1a78c1206') {
-      // eslint-disable-next-line no-console
-      this.logger.debug('=========DELIVERY_COUNT========= ' + deliveryCount, { context: EventConsumer.name, correlationId });
+      this.logger.debug('=========DELIVERY_COUNT========= ' + deliveryCount, {
+        context: EventConsumer.name,
+        correlationId,
+      });
       throw new Error('Simulated failure for testing DLQ');
     }
 
@@ -107,31 +110,6 @@ export class EventConsumer implements OnModuleInit {
       context: EventConsumer.name,
       correlationId,
     });
-  }
-
-  @RabbitSubscribe({
-    exchange: 'events.dlx',
-    routingKey: 'user.dead-letter',
-    queue: 'events-dlq',
-    queueOptions: {
-      durable: true,
-      arguments: {
-        'x-queue-type': 'quorum',
-      },
-    },
-  })
-  async handleDeadLetterQueue(
-    message: any,
-    amqpMsg: ConsumeMessage,
-  ): Promise<void> {
-    const correlationId = amqpMsg.properties.headers['correlation-id'];
-
-    this.logger.log(`DLQ consumer: ${JSON.stringify(message)}`, {
-      context: EventConsumer.name,
-      correlationId,
-    });
-
-    await this.eventService.reprocessDlqMessages(correlationId);
   }
 
   @RabbitSubscribe({
