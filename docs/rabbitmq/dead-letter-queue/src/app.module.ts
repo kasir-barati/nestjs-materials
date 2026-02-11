@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -11,6 +12,7 @@ import { EventModule, LoggerModule, MessagingModule } from './modules';
   imports: [
     LoggerModule,
     MessagingModule,
+    HttpModule.register({ global: true }),
     EventModule,
     ConfigModule.forRoot({
       load: [appConfigs],

@@ -2,6 +2,8 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { RabbitmqPolicyService } from './rabbitmq-policy.service';
+
 @Global()
 @Module({
   imports: [
@@ -36,6 +38,7 @@ import { ConfigService } from '@nestjs/config';
       },
     }),
   ],
-  exports: [RabbitMQModule],
+  providers: [RabbitmqPolicyService],
+  exports: [RabbitMQModule, RabbitmqPolicyService],
 })
 export class MessagingModule {}

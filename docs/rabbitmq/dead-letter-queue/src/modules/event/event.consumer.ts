@@ -1,48 +1,65 @@
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConsumeMessage } from 'amqplib';
 
 import { GenericUserEvent } from '../../shared';
 import { getDeliveryCount } from '../../utils';
 import { CustomLoggerService } from '../logger';
+import { RabbitmqPolicyService } from '../messaging';
+import { EventService } from './event.service';
 
 @Injectable()
-export class EventConsumer {
-  constructor(private readonly logger: CustomLoggerService) {}
+export class EventConsumer implements OnModuleInit {
+  constructor(
+    private readonly logger: CustomLoggerService,
+    private readonly eventService: EventService,
+    private readonly rabbitmqPolicyService: RabbitmqPolicyService,
+  ) {}
+
+  async onModuleInit() {
+    await this.rabbitmqPolicyService.upsertDeliveryLimitPolicy({
+      vhost: '/',
+      policyName: 'events-delivery-limit-policy',
+      queueNameRegex: '^events-queue$',
+      deliveryLimit: 3,
+      deadLetterExchange: 'events.dlx',
+      deadLetterRoutingKey: 'user.dead-letter',
+    });
+  }
 
   @RabbitSubscribe({
     exchange: 'events',
     routingKey: ['user.*'],
     queue: 'events-queue',
-    errorHandler: (channel, message, _error) => {
-      const deliveryCount = getDeliveryCount(message);
-      const maxRetryCount = Number(process.env.RABBITMQ_MAX_RETRY_COUNT) ?? 3;
+    // errorHandler: (channel, message, _error) => {
+    //   const deliveryCount = getDeliveryCount(message);
+    //   const maxRetryCount = Number(process.env.RABBITMQ_MAX_RETRY_COUNT) ?? 3;
 
-      // eslint-disable-next-line no-console
-      console.log('=========DELIVERY_COUNT=========', deliveryCount);
+    //   // eslint-disable-next-line no-console
+    //   console.log('=========DELIVERY_COUNT=========', deliveryCount);
 
-      if (deliveryCount < maxRetryCount) {
-        // Requeue the message with incremented x-delivery-count
-        const { exchange, routingKey } = message.fields;
-        const headers = {
-          ...message.properties.headers,
-          'x-delivery-count': deliveryCount + 1,
-        };
+    //   if (deliveryCount < maxRetryCount) {
+    //     // Requeue the message with incremented x-delivery-count
+    //     const { exchange, routingKey } = message.fields;
+    //     const headers = {
+    //       ...message.properties.headers,
+    //       'x-delivery-count': deliveryCount + 1,
+    //     };
 
-        // Requeue the message!
-        channel.publish(exchange, routingKey, message.content, {
-          ...message.properties,
-          headers,
-        });
+    //     // Requeue the message!
+    //     channel.publish(exchange, routingKey, message.content, {
+    //       ...message.properties,
+    //       headers,
+    //     });
 
-        // Acknowledge the original message to prevent redelivery
-        channel.ack(message);
-        return;
-      }
+    //     // Acknowledge the original message to prevent redelivery
+    //     channel.ack(message);
+    //     return;
+    //   }
 
-      // Reject the message without requeue to send it to DLQ
-      channel.nack(message, false, false);
-    },
+    //   // Reject the message without requeue to send it to DLQ
+    //   channel.nack(message, false, false);
+    // },
     queueOptions: {
       durable: true,
       arguments: {
@@ -67,6 +84,8 @@ export class EventConsumer {
     }
 
     if (correlationId === '978b00a9-1435-4768-9ddf-b2c1a78c1206') {
+      // eslint-disable-next-line no-console
+      console.log('=========DELIVERY_COUNT=========', deliveryCount);
       throw new Error('Simulated failure for testing DLQ');
     }
 
@@ -90,8 +109,55 @@ export class EventConsumer {
     });
   }
 
-  // DLQ consumer removed - messages will pile up in the queue
-  // Use the EventService.reprocessDLQMessages() method via API to manually process DLQ messages
+  @RabbitSubscribe({
+    exchange: 'events.dlx',
+    routingKey: 'user.dead-letter',
+    queue: 'events-dlq',
+    queueOptions: {
+      durable: true,
+      arguments: {
+        'x-queue-type': 'quorum',
+      },
+    },
+  })
+  async handleDeadLetterQueue(
+    message: any,
+    amqpMsg: ConsumeMessage,
+  ): Promise<void> {
+    const correlationId = amqpMsg.properties.headers['correlation-id'];
+
+    this.logger.log(`DLQ consumer: ${JSON.stringify(message)}`, {
+      context: EventConsumer.name,
+      correlationId,
+    });
+
+    await this.eventService.reprocessDlqMessages(correlationId);
+  }
+
+  @RabbitSubscribe({
+    exchange: 'events',
+    routingKey: 'user.reprocess-dlq',
+    queue: 'reprocess-dlq-queue',
+    queueOptions: {
+      durable: true,
+      arguments: {
+        'x-queue-type': 'quorum',
+      },
+    },
+  })
+  async handleReprocessDlq(
+    _message: unknown,
+    amqpMsg: ConsumeMessage,
+  ): Promise<void> {
+    const correlationId = amqpMsg.properties.headers['correlation-id'];
+
+    this.logger.log(`Reprocessing DLQ message...`, {
+      context: EventConsumer.name,
+      correlationId,
+    });
+
+    await this.eventService.reprocessDlqMessages(correlationId);
+  }
 
   private shouldFail(): boolean {
     return Math.random() < 0.5;

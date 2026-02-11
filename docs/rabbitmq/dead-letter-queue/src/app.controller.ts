@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -54,5 +55,37 @@ export class AppController {
     await this.amqpConnection.publish('events', 'user.registered', message, {
       headers,
     });
+  }
+
+  @ApiOperation({
+    description: `Reprocess messages in the dead-letter queue for user events.`,
+  })
+  @ApiOkResponse({
+    description: 'DLQ reprocessing initiated.',
+  })
+  @ApiInternalServerErrorResponse({
+    type: InternalServerErrorException,
+    description: 'Internal server error.',
+  })
+  @Post('users/reprocess-events')
+  async reprocessEvents(
+    @Headers('correlation-id') correlationId: string = randomUUID(),
+  ): Promise<void> {
+    const headers = {
+      'x-delivery-count': 0,
+      'correlation-id': correlationId,
+    };
+
+    this.logger.log(`Reprocess DLQ initiated.`, {
+      context: AppController.name,
+      correlationId,
+    });
+
+    await this.amqpConnection.publish(
+      'events',
+      'user.reprocess-dlq',
+      {},
+      { headers },
+    );
   }
 }
