@@ -1,3 +1,12 @@
+import type { ConsumeMessage } from 'amqplib';
+
+export function comesFromDeadLetterQueue(amqpMsg: ConsumeMessage): boolean {
+  return (
+    amqpMsg.properties.headers['x-death'] &&
+    Array.isArray(amqpMsg.properties.headers['x-death']) &&
+    amqpMsg.properties.headers['x-death'].length > 0
+  );
+}
 export interface GenericUserEvent<TUserInfo = any> {
   messageId: string;
   userInfo: TUserInfo;

@@ -17,6 +17,7 @@ export type LogLevel =
 export interface AppConfig {
   NODE_ENV: NodeEnv;
   RABBITMQ_URL: string;
+  MONGODB_URL: string;
   LOG_MODE: LogMode;
   LOG_LEVEL: LogLevel;
   RABBITMQ_PREFETCH_COUNT: number;

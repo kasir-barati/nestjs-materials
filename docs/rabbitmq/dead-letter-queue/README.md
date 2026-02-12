@@ -58,7 +58,7 @@
 
 > [!NOTE]
 >
-> If user triggers the reprocess and it fails we requeue the message in the DLQ. So client can trigger the reprocessing once more. The only reason this might happen is that we fail to publish the message back to the normal queue, or something else goes wrong before that (e.g. some assumptions turns out to be wrong). 
+> If user triggers the reprocess and it fails we requeue the message in the DLQ. So client can trigger the reprocessing once more. The only reason this might happen is that we fail to publish the message back to the normal queue, or something else goes wrong before that (e.g. some assumptions turns out to be wrong).
 
 ## How to start it
 

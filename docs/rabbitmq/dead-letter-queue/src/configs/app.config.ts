@@ -3,6 +3,7 @@ import {
   IsEnum,
   IsIn,
   IsInt,
+  IsNotEmpty,
   IsOptional,
   IsString,
   Min,
@@ -27,6 +28,10 @@ class EnvironmentVariables implements AppConfig {
   @IsEnum(NodeEnv)
   @IsOptional()
   NODE_ENV: NodeEnv = NodeEnv.development;
+
+  @IsNotEmpty()
+  @IsString()
+  MONGODB_URL: string;
 
   @IsString()
   RABBITMQ_URL: string;

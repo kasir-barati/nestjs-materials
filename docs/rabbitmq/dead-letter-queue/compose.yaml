@@ -16,6 +16,8 @@ services:
     depends_on:
       message-brocker:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
 
   message-brocker:
     image: rabbitmq:4.0-rc-management-alpine
@@ -31,3 +33,39 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
+
+  mongodb:
+    image: mongo:8.0
+    entrypoint: ['mongod', '--bind_ip_all', '--replSet', 'rs0']
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  mongodb-init:
+    image: mongo:8.0
+    restart: on-failure
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      MONGO_INITDB_DATABASE: dead-letter-queue-example
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    volumes:
+      - ./setup.sh:/scripts/setup.sh
+    entrypoint: ['/scripts/setup.sh']
+
+  mongo-express:
+    image: mongo-express:1.0.2-20-alpine3.19
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_URL=mongodb://mongodb/dead-letter-queue-example
+      - PORT=8082
+    ports:
+      - '8082:8082'
+    restart: unless-stopped
+    depends_on:
+      - mongodb

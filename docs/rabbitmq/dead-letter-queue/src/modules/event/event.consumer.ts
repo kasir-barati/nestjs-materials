@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
 
 import {
+  comesFromDeadLetterQueue,
   EVENTS_EXCHANGE,
   EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
   GenericUserEvent,
@@ -12,25 +13,31 @@ import {
 import { getDeliveryCount } from '../../utils';
 import { CustomLoggerService } from '../logger';
 import { RabbitmqPolicyService } from '../messaging';
+import { EventRepository } from './event.repository';
 import { EventService } from './event.service';
 
 @Injectable()
 export class EventConsumer implements OnModuleInit {
+  private readonly maxRetryCount: number;
+
   constructor(
     private readonly logger: CustomLoggerService,
     private readonly eventService: EventService,
     private readonly rabbitmqPolicyService: RabbitmqPolicyService,
-    private readonly configService: ConfigService,
-  ) {}
+    configService: ConfigService,
+    private readonly eventRepository: EventRepository,
+  ) {
+    this.maxRetryCount = configService.getOrThrow<number>(
+      'appConfigs.RABBITMQ_MAX_RETRY_COUNT',
+    );
+  }
 
   async onModuleInit() {
     await this.rabbitmqPolicyService.upsertDeliveryLimitPolicy({
       vhost: '/',
       policyName: 'events-delivery-limit-policy',
       queueNameRegex: '^events-queue$',
-      deliveryLimit: this.configService.getOrThrow<number>(
-        'appConfigs.RABBITMQ_MAX_RETRY_COUNT',
-      ),
+      deliveryLimit: this.maxRetryCount,
       deadLetterExchange: EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
       deadLetterRoutingKey: ROUTING_KEY_OF_DLQ_FOR_EVENTS_QUEUE,
     });
@@ -93,32 +100,60 @@ export class EventConsumer implements OnModuleInit {
       );
     }
 
-    if (correlationId === '978b00a9-1435-4768-9ddf-b2c1a78c1206') {
-      this.logger.debug('=========DELIVERY_COUNT========= ' + deliveryCount, {
-        context: EventConsumer.name,
-        correlationId,
-      });
-      throw new Error('Simulated failure for testing DLQ');
-    }
+    try {
+      if (correlationId === '978b00a9-1435-4768-9ddf-b2c1a78c1206') {
+        this.logger.debug('=========DELIVERY_COUNT========= ' + deliveryCount, {
+          context: EventConsumer.name,
+          correlationId,
+        });
+        throw new Error('Simulated failure for testing DLQ');
+      }
+      if (correlationId === '6bf87b25-0060-4d9b-bec5-521609817741') {
+        this.logger.debug('=========DELIVERY_COUNT========= ' + deliveryCount, {
+          context: EventConsumer.name,
+          correlationId,
+        });
+        throw new Error('Simulated failure for testing corrupted event');
+      }
 
-    this.logger.log(
-      `Received message: ${JSON.stringify(message)}, deliveryCount: ${deliveryCount}`,
-      { context: EventConsumer.name, correlationId },
-    );
-
-    if (this.shouldFail()) {
-      this.logger.error(
-        `Failed to process message: ${JSON.stringify(message)}, headers: ${JSON.stringify(amqpMsg.properties.headers)}`,
+      this.logger.log(
+        `Received message: ${JSON.stringify(message)}, deliveryCount: ${deliveryCount}`,
         { context: EventConsumer.name, correlationId },
       );
 
-      throw new Error('Random failure occurred during message processing');
-    }
+      if (this.shouldFail()) {
+        this.logger.error(
+          `Failed to process message: ${JSON.stringify(message)}, headers: ${JSON.stringify(amqpMsg.properties.headers)}`,
+          { context: EventConsumer.name, correlationId },
+        );
 
-    this.logger.log(`Successfully processed message: ${message.messageId}`, {
-      context: EventConsumer.name,
-      correlationId,
-    });
+        throw new Error('Random failure occurred during message processing');
+      }
+
+      this.logger.log(`Successfully processed message: ${message.messageId}`, {
+        context: EventConsumer.name,
+        correlationId,
+      });
+    } catch (error) {
+      if (
+        comesFromDeadLetterQueue(amqpMsg) &&
+        this.isLastRetryAttempt(amqpMsg)
+      ) {
+        // You can do more than just storing the message, send an alert to the dev team, trigger a workflow to investigate the corrupted message, etc.
+        await this.eventRepository.storeCorruptedEvent({
+          messageId: message.messageId,
+          rabbitmqHeaders: amqpMsg.properties.headers,
+          rabbitmqMessage: message,
+        });
+        this.logger.warn(
+          `Message was sent to the DLQ once and now has reached max retry attempts (${this.maxRetryCount}) once more. Stored as corrupted: ${message.messageId}`,
+          { context: EventConsumer.name, correlationId },
+        );
+        return; // This will automatically acknowledge the message, preventing it from being sent to DLQ again.
+      }
+
+      throw error;
+    }
   }
 
   @RabbitSubscribe({
@@ -144,6 +179,12 @@ export class EventConsumer implements OnModuleInit {
     });
 
     await this.eventService.reprocessDlqMessagesOfEvents(correlationId);
+  }
+
+  private isLastRetryAttempt(amqpMsg: ConsumeMessage): boolean {
+    const deliveryCount = getDeliveryCount(amqpMsg);
+    const maxRetryCount = this.maxRetryCount;
+    return deliveryCount === maxRetryCount;
   }
 
   private shouldFail(): boolean {

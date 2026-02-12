@@ -148,12 +148,6 @@ export class EventService implements OnModuleInit {
       'correlation-id': correlationId,
     };
 
-    delete headers['x-death'];
-    delete headers['x-first-death-exchange'];
-    delete headers['x-first-death-queue'];
-    delete headers['x-first-death-reason'];
-    delete headers['x-first-death-routing-key'];
-
     for (const routingKey of originalRoutingKey) {
       await this.amqpConnection.publish(originalExchange, routingKey, message, {
         headers,
