@@ -16,6 +16,7 @@
   - [Batch processing and requeueing the failed messages and not the whole batch](https://github.com/kasir-barati/bugs/tree/nestjs-rabbitmq-batch-processing-messages).
   - [Default value for prefetch count in `@golevelup/nestjs-rabbitmq`](https://github.com/kasir-barati/bugs/tree/golevelup-nestjs-rabbitmq-default-value-for-prefetch).
   - [Share a RabbitMQ connection with a Dynamic modules](./docs/rabbitmq/share-rabbitmq-connection-with-dynamic-module/README.md).
+  - [How to configure a Dead letter queue (DLQ) in NestJS](./docs/rabbitmq/dead-letter-queue/README.md).
 - [NestJS and GraphQL with `nestjs-query`](./docs/nestjs-query/README.md)
 - [Mongoose](./mongoose)
 - [Custom decorators](./decorator).
