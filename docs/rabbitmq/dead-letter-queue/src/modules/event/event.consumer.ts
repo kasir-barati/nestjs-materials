@@ -101,6 +101,8 @@ export class EventConsumer implements OnModuleInit {
     }
 
     try {
+      // YOUR business logic goes here!
+
       if (correlationId === '978b00a9-1435-4768-9ddf-b2c1a78c1206') {
         this.logger.debug('=========DELIVERY_COUNT========= ' + deliveryCount, {
           context: EventConsumer.name,
