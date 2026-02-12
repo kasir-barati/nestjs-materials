@@ -44,17 +44,14 @@ export class EventService implements OnModuleInit {
   /**
    * @description Consumes all messages from the DLQ and republish them back to the source queue for reprocessing.
    */
-  async reprocessDlqMessages(correlationId: string): Promise<{
+  async reprocessDlqMessagesOfEvents(correlationId: string): Promise<{
     processed: number;
     errors: number;
   }> {
-    let processed = 0;
-    let errors = 0;
+    let failedToProcessCounter = 0;
 
     try {
       const channel = this.amqpConnection.channel;
-
-      // Check queue stats
       const queueInfo = await channel.checkQueue(this.EVENTS_DEAD_LETTER_QUEUE);
       const messageCount = queueInfo.messageCount;
 
@@ -64,33 +61,24 @@ export class EventService implements OnModuleInit {
       );
 
       if (messageCount === 0) {
-        return { processed: 0, errors: 0 };
+        return;
       }
 
-      // Process messages one by one
       for (let i = 0; i < messageCount; i++) {
         const msg = await channel.get(this.EVENTS_DEAD_LETTER_QUEUE, {
-          noAck: false,
+          noAck: false, // NO auto acknowledging the message!
         });
 
         if (!msg) {
-          // No more messages
           break;
         }
 
         try {
-          await this.republishToSourceQueue(msg);
+          await this.republishToSourceQueue(msg, correlationId);
           channel.ack(msg);
-          processed++;
-
-          this.logger.log(
-            `Successfully republished message ${i + 1}/${messageCount}`,
-            { context: EventService.name },
-          );
         } catch (error) {
-          errors++;
-          // Nack the message to keep it in DLQ if republishing fails
-          channel.nack(msg, false, true);
+          channel.nack(msg, false, true); // Keep the message in the DLQ.
+          failedToProcessCounter++;
 
           this.logger.error(`Failed to republish message: ${error.message}`, {
             context: EventService.name,
@@ -100,11 +88,9 @@ export class EventService implements OnModuleInit {
       }
 
       this.logger.log(
-        `DLQ reprocessing completed. Processed: ${processed}, Errors: ${errors}`,
+        `DLQ republished messages. It failed to republish ${failedToProcessCounter} out of ${messageCount} messages.`,
         { context: EventService.name, correlationId },
       );
-
-      return { processed, errors };
     } catch (error) {
       this.logger.error(`DLQ reprocessing failed: ${error.message}`, {
         context: EventService.name,
@@ -117,46 +103,63 @@ export class EventService implements OnModuleInit {
   /**
    * Republish a message from DLQ back to the source queue
    */
-  private async republishToSourceQueue(amqpMsg: Message): Promise<void> {
+  private async republishToSourceQueue(
+    amqpMsg: Message,
+    correlationId: string,
+  ): Promise<void> {
     const message: GenericUserEvent = JSON.parse(amqpMsg.content.toString());
-    const correlationId = amqpMsg.properties.headers['correlation-id'];
+    /**
+     * `amqpMsg.properties.headers` example:
+       {
+         "correlation-id": "978b00a9-1435-4768-9ddf-b2c1a78c1206",
+         "x-death": [
+             {
+                 "count": 1,
+                 "reason": "delivery_limit",
+                 "queue": "events-queue",
+                 "time": { "!": "timestamp", "value": 1770892018 },
+                 "exchange": "events",
+                 "routing-keys": ["user.registered"]
+             }
+         ],
+         "x-delivery-count":0,
+         "x-first-death-exchange": "events",
+         "x-first-death-queue": "events-queue",
+         "x-first-death-reason": "delivery_limit",
+         "x-last-death-exchange": "events",
+         "x-last-death-queue": "events-queue",
+         "x-last-death-reason": "delivery_limit"
+       }
+     */
 
-    // Get original exchange and routing key from dead letter headers
     const originalExchange =
-      amqpMsg.properties.headers['x-first-death-exchange'] || 'events';
-    const originalRoutingKey =
-      amqpMsg.properties.headers['x-first-death-routing-key'] ||
-      'user.registered';
+      amqpMsg.properties.headers['x-first-death-exchange'];
+    const originalRoutingKey: string[] =
+      amqpMsg.properties.headers['x-death'][0]['routing-keys'];
 
     this.logger.log(
-      `Republishing message to exchange: ${originalExchange}, routingKey: ${originalRoutingKey}`,
+      `Republishing message to exchange: ${originalExchange}, routingKeys: ${JSON.stringify(originalRoutingKey)}`,
       { context: EventService.name, correlationId },
     );
 
-    // Reset delivery count for fresh retry attempts
     const headers = {
       ...amqpMsg.properties.headers,
       'x-delivery-count': 0,
       'correlation-id': correlationId,
     };
 
-    // Remove dead letter specific headers
     delete headers['x-death'];
     delete headers['x-first-death-exchange'];
     delete headers['x-first-death-queue'];
     delete headers['x-first-death-reason'];
     delete headers['x-first-death-routing-key'];
 
-    // Republish to the original queue via the original exchange
-    await this.amqpConnection.publish(
-      originalExchange,
-      originalRoutingKey,
-      message,
-      {
+    for (const routingKey of originalRoutingKey) {
+      await this.amqpConnection.publish(originalExchange, routingKey, message, {
         headers,
         persistent: true,
-      },
-    );
+      });
+    }
 
     this.logger.log(
       `Message republished successfully: ${JSON.stringify(message)}`,

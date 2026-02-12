@@ -56,6 +56,10 @@
      ```
    - You can of course handle the retry and pushing the messages to the DLQ inside the `errorHandler`. But that is too much work.
 
+> [!NOTE]
+>
+> If user triggers the reprocess and it fails we requeue the message in the DLQ. So client can trigger the reprocessing once more. The only reason this might happen is that we fail to publish the message back to the normal queue, or something else goes wrong before that (e.g. some assumptions turns out to be wrong). 
+
 ## How to start it
 
 1. `pnpm install`.

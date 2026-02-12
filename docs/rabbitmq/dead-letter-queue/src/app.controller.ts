@@ -83,7 +83,7 @@ export class AppController {
 
     await this.amqpConnection.publish(
       'events',
-      'user.reprocess-dlq',
+      'reprocess-dlq.user',
       {},
       { headers },
     );

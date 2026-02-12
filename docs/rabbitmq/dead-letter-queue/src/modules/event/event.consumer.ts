@@ -1,5 +1,6 @@
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
 
 import {
@@ -19,6 +20,7 @@ export class EventConsumer implements OnModuleInit {
     private readonly logger: CustomLoggerService,
     private readonly eventService: EventService,
     private readonly rabbitmqPolicyService: RabbitmqPolicyService,
+    private readonly configService: ConfigService,
   ) {}
 
   async onModuleInit() {
@@ -26,7 +28,9 @@ export class EventConsumer implements OnModuleInit {
       vhost: '/',
       policyName: 'events-delivery-limit-policy',
       queueNameRegex: '^events-queue$',
-      deliveryLimit: 3,
+      deliveryLimit: this.configService.getOrThrow<number>(
+        'appConfigs.RABBITMQ_MAX_RETRY_COUNT',
+      ),
       deadLetterExchange: EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
       deadLetterRoutingKey: ROUTING_KEY_OF_DLQ_FOR_EVENTS_QUEUE,
     });
@@ -119,8 +123,8 @@ export class EventConsumer implements OnModuleInit {
 
   @RabbitSubscribe({
     exchange: EVENTS_EXCHANGE,
-    routingKey: 'user.reprocess-dlq',
-    queue: 'reprocess-dlq-queue',
+    routingKey: 'reprocess-dlq.user',
+    queue: 'reprocess-dlq-user',
     queueOptions: {
       durable: true,
       arguments: {
@@ -128,7 +132,7 @@ export class EventConsumer implements OnModuleInit {
       },
     },
   })
-  async handleReprocessDlq(
+  async handleReprocessDlqMessagesOfEvents(
     _message: unknown,
     amqpMsg: ConsumeMessage,
   ): Promise<void> {
@@ -139,7 +143,7 @@ export class EventConsumer implements OnModuleInit {
       correlationId,
     });
 
-    await this.eventService.reprocessDlqMessages(correlationId);
+    await this.eventService.reprocessDlqMessagesOfEvents(correlationId);
   }
 
   private shouldFail(): boolean {
