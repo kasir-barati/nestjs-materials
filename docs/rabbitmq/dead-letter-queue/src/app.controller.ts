@@ -67,7 +67,7 @@ export class AppController {
     type: InternalServerErrorException,
     description: 'Internal server error.',
   })
-  @Post('users/reprocess-events')
+  @Post('users/replay-dlq')
   async reprocessEvents(
     @Headers('correlation-id') correlationId: string = randomUUID(),
   ): Promise<void> {

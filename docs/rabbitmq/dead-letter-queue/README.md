@@ -7,7 +7,7 @@
     - **Topic**: good if you want to route dead letters to different DLQs based on routing patterns (e.g., by tenant, domain, or original routing key).
     - **Fanout**: rarely used; would broadcast dead letters to multiple queues (usually not desirable).
     - **Headers**: uncommon unless you specifically need header-based routing.
-- Can I have an API (let's imagine `POST /users/reprocess-events` which is in `app.controller.ts`), that will trigger the DLQ consumer to starts consuming messages? Yes, actually exposing an admin-only "redrive DLQ" action is a common and reasonable practice.
+- Can I have an API (let's imagine `POST /users/replay-dlq` which is in `app.controller.ts`), that will trigger the DLQ consumer to starts consuming messages? Yes, actually exposing an admin-only "redrive DLQ" action is a common and reasonable practice.
   - Put strong guardrails around it (authN/Z, rate limits, observability, idempotency, and safe defaults).
   - **DLQ Redrive** refers to the process of moving messages that have been transferred to a Dead Letter Queue (DLQ) back to their original source queue (or another specified queue) for reprocessing.
 
@@ -59,6 +59,12 @@
 > [!NOTE]
 >
 > If user triggers the reprocess and it fails we requeue the message in the DLQ. So client can trigger the reprocessing once more. The only reason this might happen is that we fail to publish the message back to the normal queue, or something else goes wrong before that (e.g. some assumptions turns out to be wrong).
+
+> [!TIP]
+>
+> You can also use [RabbitMQ shovels](https://www.rabbitmq.com/docs/shovel) to move the messages from DLQ back to the original queue they came from in your NodeJS app as explain [here](https://stackoverflow.com/a/54979637/8784518). **But** the current implementation is also a common implementation which gives you more control over what should we do.
+>
+> What is Shovel? It is a **plugin** that can move messages between queues automatically. But of course we need to first enable it.
 
 ## How to start it
 
