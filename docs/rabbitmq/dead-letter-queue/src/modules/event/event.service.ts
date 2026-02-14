@@ -44,10 +44,7 @@ export class EventService implements OnModuleInit {
   /**
    * @description Consumes all messages from the DLQ and republish them back to the source queue for reprocessing.
    */
-  async reprocessDlqMessagesOfEvents(correlationId: string): Promise<{
-    processed: number;
-    errors: number;
-  }> {
+  async reprocessDlqMessagesOfEvents(correlationId: string): Promise<void> {
     let failedToProcessCounter = 0;
 
     try {
