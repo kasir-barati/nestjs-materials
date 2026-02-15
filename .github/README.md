@@ -6,6 +6,7 @@
 
 - [DTO](../docs/dto.md).
 - [Dynamic modules](../docs/dynamic-modules/README.md).
+- [Dependency Injection](../docs/dependency-injection.md).
 - [Microservices](../microservices/README.md)
   - [gRPC](../docs/grpc/README.md).
   - [Protobuf](../docs/grpc/protobuf.md).
