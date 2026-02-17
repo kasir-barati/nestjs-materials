@@ -81,6 +81,9 @@ export class EventConsumer implements OnModuleInit {
       durable: true,
       arguments: {
         'x-queue-type': 'quorum',
+        // You cannot change this variable after the queue is created, if you want to change it you have to delete the queue and recreate it.
+        // Learn more here: https://github.com/kasir-barati/nestjs-materials/blob/main/docs/rabbitmq/updating-queue.md
+        // 'x-delivery-limit': Number(process.env.RABBITMQ_MAX_RETRY_COUNT),
         'x-dead-letter-exchange': EXCHANGE_OF_DLQ_FOR_EVENTS_QUEUE,
         'x-dead-letter-routing-key': ROUTING_KEY_OF_DLQ_FOR_EVENTS_QUEUE,
       },

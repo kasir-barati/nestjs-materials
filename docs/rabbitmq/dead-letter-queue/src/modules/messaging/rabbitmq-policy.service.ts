@@ -27,6 +27,7 @@ export class RabbitmqPolicyService {
 
   async upsertDeliveryLimitPolicy(args: ApplyPolicy) {
     const base = this.configService.getOrThrow('RABBITMQ_HTTP_BASE_URL')!;
+    /** @description This user needs to have permission to manage policies on the specified vhost */
     const user = this.configService.getOrThrow('RABBITMQ_DEFAULT_USER');
     const pass = this.configService.getOrThrow('RABBITMQ_DEFAULT_PASS');
     const rabbitmqHttpUrl = urlBuilder(
