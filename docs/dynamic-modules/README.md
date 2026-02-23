@@ -38,6 +38,10 @@ ManualModule.registerAsync({
 
 ## Seconds Approach
 
+> [!NOTE]
+>
+> A concrete example [`RedisModule`](./helper-class-implemtnation/redis-example/app.module.ts).
+
 - A better way.
 - My personal preference.
 - Use [`ConfigurableModuleBuilder`](./helper-class-implemtnation/my.module.ts).
