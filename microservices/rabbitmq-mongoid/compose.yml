@@ -1,0 +1,34 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: demo-rabbitmq
+    ports:
+      - "5672:5672"      # AMQP
+      - "15672:15672"    # Management UI (guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  publisher:
+    build: .
+    container_name: demo-publisher
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672
+      QUEUE: demo.events
+    command: ["node", "publisher.js"]
+
+  consumer:
+    build: .
+    container_name: demo-consumer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672
+      QUEUE: demo.events
+    command: ["node", "consumer.js"]

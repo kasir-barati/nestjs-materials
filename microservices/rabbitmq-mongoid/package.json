@@ -1,0 +1,14 @@
+{
+  "name": "rabbitmq-objectid-demo",
+  "version": "1.0.0",
+  "description": "Demo publishing/consuming RabbitMQ events with nested body + MongoDB ObjectId",
+  "main": "publisher.js",
+  "scripts": {
+    "publish": "node publisher.js",
+    "consume": "node consumer.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "bson": "^6.8.0"
+  }
+}
