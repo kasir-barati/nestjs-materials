@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/forbidden"
+  },
+  "response": {
+    "status": 403,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "statusCode": 403,
+      "error": "Forbidden",
+      "message": "You are not allowed to access this preset"
+    }
+  }
+}

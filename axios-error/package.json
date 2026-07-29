@@ -1,0 +1,38 @@
+{
+  "name": "axios-error",
+  "version": "0.0.1",
+  "description": "what does GraphQL surface when a NestJS service throws an unhandled AxiosError from HttpService?",
+  "private": true,
+  "engines": {
+    "node": "24.13.0"
+  },
+  "scripts": {
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "format": "prettier -w -u ."
+  },
+  "dependencies": {
+    "@apollo/server": "^5.0.0",
+    "@as-integrations/express5": "^1.0.0",
+    "@nestjs/apollo": "^13.0.0",
+    "@nestjs/axios": "^4.0.0",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/graphql": "^13.0.0",
+    "@nestjs/platform-express": "^11.0.0",
+    "axios": "^1.7.0",
+    "graphql": "^16.9.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.0",
+    "@types/node": "^24.0.0",
+    "prettier": "^3.9.5",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.6.0"
+  }
+}

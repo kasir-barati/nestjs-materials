@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/conflict"
+  },
+  "response": {
+    "status": 409,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "statusCode": 409,
+      "error": "Conflict",
+      "message": "An agentic vision preset named \"leak-detector\" already exists on this site"
+    }
+  }
+}

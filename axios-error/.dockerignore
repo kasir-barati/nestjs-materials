@@ -1,0 +1,4 @@
+node_modules/
+dist/
+.nvmrc
+schema.gql

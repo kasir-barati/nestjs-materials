@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/not-found"
+  },
+  "response": {
+    "status": 404,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "statusCode": 404,
+      "error": "Not Found",
+      "message": "Preset with id 507f1f77bcf86cd799439011 does not exist"
+    }
+  }
+}

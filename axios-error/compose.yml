@@ -1,0 +1,21 @@
+services:
+  wiremock:
+    image: wiremock/wiremock:3.9.1
+    container_name: axios-sandbox-wiremock
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./wiremock/mappings:/home/wiremock/mappings:ro
+    command: ["--verbose", "--global-response-templating"]
+
+  app:
+    build:
+      context: .
+    container_name: axios-sandbox-app
+    depends_on:
+      - wiremock
+    environment:
+      - NODE_ENV=development
+      - MOCK_UPSTREAM_URL=http://wiremock:8080
+    ports:
+      - "3000:3000"

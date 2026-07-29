@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/bad-request"
+  },
+  "response": {
+    "status": 400,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "statusCode": 400,
+      "error": "Bad Request",
+      "message": [
+        "name must be shorter than or equal to 64 characters",
+        "query should not be empty"
+      ]
+    }
+  }
+}
