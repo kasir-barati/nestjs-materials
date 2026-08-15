@@ -26,4 +26,3 @@
   - [Classic VS Quorum queues](../docs/rabbitmq/classic-vs-quorum.md).
 - [NestJS and GraphQL with `nestjs-query`](../docs/nestjs-query/README.md)
 - [Mongoose](../mongoose)
-- [Custom decorators](../decorator).
